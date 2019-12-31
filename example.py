@@ -35,7 +35,10 @@ def child(a, b):
 @recursive
 def descendant(a, c):
     b = var()
-    return and_then(child(a, b), either(unify(b, c), descendant(b, c)))
+    return either(
+        child(a, c),
+        and_then(child(a, b), descendant(b, c)),
+    )
 
 def mortal(a):
     b = var()
@@ -64,15 +67,15 @@ z = var()
 _ = var()
 
 
-for each in resolve(append(((1, 2, 3, x), x),
-                           ((4, 5, 6, y), y),
-                           (z, []))):
-    print('yes.')
-    print(each[x])
-    print(each[y])
-    print(each[z])
-else:
-    print('no.')
+# for each in resolve(append(((1, 2, 3, x), x),
+                           # ((4, 5, 6, y), y),
+                           # (z, []))):
+    # print('yes.')
+    # print(each[x])
+    # print(each[y])
+    # print(each[z])
+# else:
+    # print('no.')
 
 
 # for each in resolve(and_then(dog(y), child(x, y))):
@@ -87,11 +90,11 @@ else:
     # break
 # else:
     # print('no.')
-# for each in resolve(and_then(child(x, y), descendant(y, z))):
-    # print('yes.')
-    # print(each[x], each[y], each[z])
-# else:
-    # print('no.')
+for each in resolve(and_then(child(x, y), descendant(y, z))):
+    print('yes.')
+    print(each[x], each[y], each[z])
+else:
+    print('no.')
 # for each in resolve(mortal(x)):
     # print(each[x])
 # print()
