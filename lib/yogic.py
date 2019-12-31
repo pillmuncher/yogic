@@ -66,18 +66,8 @@ def _unify(this: Variable, that: object):
     return _
 
 @multimethod
-def _unify(this: (list, tuple), that: (list, tuple)):
-    if type(this) == type(that) and len(this) == len(that):
-        return and_then(*starmap(unify, zip(this, that)))
-    else:
-        return nothing
-
-@multimethod
 def _unify(this: object, that: object):
-    if this == that:
-        return unit
-    else:
-        return nothing
+    return unify(this, that)
 
 
 @multimethod
@@ -93,8 +83,18 @@ def unify(this: object, that: Variable):
     return lambda s: _unify(chase(that, s), this)(s)
 
 @multimethod
+def unify(this: (list, tuple), that: (list, tuple)):
+    if len(this) == len(that):
+        return and_then(*starmap(unify, zip(this, that)))
+    else:
+        return nothing
+
+@multimethod
 def unify(this: object, that: object):
-    return _unify(this, that)
+    if this == that:
+        return unit
+    else:
+        return nothing
 
 
 def recursive(g):
