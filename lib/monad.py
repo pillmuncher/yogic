@@ -27,3 +27,12 @@ def and_then(*gens):
 
 def nothing(_):
     yield from ()
+
+def never(gen):
+    def _(v):
+        for each in gen(v):
+            return nothing(v)
+        return unit(v)
+    return _
+
+

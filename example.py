@@ -11,7 +11,7 @@ __license__ = 'MIT'
 import time
 
 from lib.yogic import (
-    and_then, bind, either, nothing, recursive, resolve, unify, unit, var,
+    and_then, bind, either, never, nothing, recursive, resolve, unify, unit, var,
 )
 
 
@@ -24,6 +24,10 @@ def human(a):
 
 def dog(a):
     return unify(a, 'fifi')
+
+def not_dog(a):
+    return never(dog(a))
+
 
 def child(a, b):
     return either(
@@ -75,8 +79,8 @@ for each in resolve(and_then(child(x, y), descendant(y, z))):
     print(each[x], each[y], each[z])
 print()
 
-for each in resolve(mortal(x)):
-    print(each[x])
+for each in resolve(and_then(mortal(x), not_dog(x))):
+    print('>>>', each[x])
 print()
 
 for each in resolve(mortal('archimedes')):
