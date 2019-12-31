@@ -26,7 +26,7 @@ from functools import wraps
 from itertools import count, starmap, repeat
 
 from .util import multimethod
-from .monad import alt, bind, cut, never, nothing, seq, unit
+from .monad import alt, bind, cut, never, nothing, recursive, seq, unit
 
 
 Variable = namedtuple('Variable', 'id')
@@ -64,15 +64,6 @@ def chase(o: (list, tuple), subst: Subst):
 @multimethod
 def chase(o: object, subst: Subst):
     return o
-
-
-def recursive(genfunc):
-    @wraps(genfunc)
-    def __(*args):
-        def _(subst):
-            return (each for each in genfunc(*args)(subst))
-        return _
-    return __
 
 
 @multimethod
