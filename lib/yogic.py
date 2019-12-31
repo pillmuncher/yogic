@@ -3,18 +3,30 @@
 #
 # Copyright (C) 2020 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.4a'
+__version__ = '0.5a'
 __date__ = '2020-01-01'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
+__all__ = (
+    'alt',
+    'bind',
+    'never',
+    'nothing',
+    'recursive',
+    'resolve',
+    'seq',
+    'unify',
+    'unit',
+    'var',
+)
 
 from collections import namedtuple, ChainMap
 from functools import wraps
 from itertools import count, starmap, repeat
 
 from .util import multimethod
-from .monad import seq, bind, alt, never, nothing, unit
+from .monad import alt, bind, cut, never, nothing, seq, unit
 
 
 Variable = namedtuple('Variable', 'id')
@@ -102,7 +114,3 @@ def unify(this: object, that: object):
         return unit
     else:
         return nothing
-
-
-def cut(subst):  # TODO: make it work
-    yield subst

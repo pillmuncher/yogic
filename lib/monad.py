@@ -3,11 +3,20 @@
 #
 # Copyright (C) 2020 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.4a'
+__version__ = '0.5a'
 __date__ = '2020-01-01'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
+__all__ = (
+    'alt',
+    'bind',
+    'cut',
+    'never',
+    'nothing',
+    'seq',
+    'unit',
+)
 
 from .util import foldr
 
@@ -34,3 +43,6 @@ def never(gen):
             return nothing(v)
         return unit(v)
     return _
+
+def cut(v):  # TODO: make it work
+    yield v
