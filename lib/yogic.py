@@ -50,23 +50,6 @@ def chase(o: object, subst: Subst):
     return o
 
 
-def resolve(goal):
-    return (subst.proxy for subst in goal(Subst()))
-
-
-def recursive(g):
-    @wraps(g)
-    def __(*args):
-        def _(subst):
-            return (each for each in g(*args)(subst))
-        return _
-    return __
-
-
-def cut(subst):
-    yield subst
-
-
 @multimethod
 def _unify(this: Variable, that: Variable):
     def _(subst):
@@ -92,6 +75,7 @@ def _unify(this: object, that: Variable):
 @multimethod
 def _unify(this: object, that: object):
     return unify(this, that)
+
 
 @multimethod
 def unify(this: Variable, that: Variable):
@@ -126,3 +110,20 @@ def unify(this: object, that: object):
         return unit
     else:
         return nothing
+
+
+def recursive(g):
+    @wraps(g)
+    def __(*args):
+        def _(subst):
+            return (each for each in g(*args)(subst))
+        return _
+    return __
+
+
+def cut(subst):  # TODO: make it work
+    yield subst
+
+
+def resolve(goal):
+    return (subst.proxy for subst in goal(Subst()))
