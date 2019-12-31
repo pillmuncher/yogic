@@ -31,7 +31,36 @@ class Subst(ChainMap):
         def __init__(self, subst):
             self._subst = subst
         def __getitem__(self, var):
-            return chase(var, self._subst)
+            return bindings(var, self._subst)
+
+
+def resolve(goal):
+    return (subst.proxy for subst in goal(Subst()))
+
+
+@multimethod
+def bindings(v: Variable, subst: Subst):
+    if v in subst:
+        return bindings(subst[v], subst)
+    else:
+        return v
+
+@multimethod
+def bindings(o: (list, tuple), subst: Subst):
+    return type(o)(map(bindings, o, repeat(subst)))
+
+@multimethod
+def bindings(o: object, subst: Subst):
+    return o
+
+
+def recursive(g):
+    @wraps(g)
+    def __(*args):
+        def _(subst):
+            return (each for each in g(*args)(subst))
+        return _
+    return __
 
 
 @multimethod
@@ -40,10 +69,6 @@ def chase(v: Variable, subst: Subst):
         return chase(subst[v], subst)
     else:
         return v
-
-@multimethod
-def chase(o: (list, tuple), subst: Subst):
-    return type(o)(map(chase, o, repeat(subst)))
 
 @multimethod
 def chase(o: object, subst: Subst):
@@ -91,18 +116,5 @@ def unify(this: object, that: object):
         return nothing
 
 
-def recursive(g):
-    @wraps(g)
-    def __(*args):
-        def _(subst):
-            return (each for each in g(*args)(subst))
-        return _
-    return __
-
-
 def cut(subst):  # TODO: make it work
     yield subst
-
-
-def resolve(goal):
-    return (subst.proxy for subst in goal(Subst()))
