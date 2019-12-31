@@ -53,13 +53,11 @@ def chase(o: object, subst: Subst):
 @multimethod
 def _unify(this: Variable, that: Variable):
     def _(subst):
-        if this < that:
-            yield subst.new_child({this: that})
-        elif this > that:
-            yield subst.new_child({that: this})
-        else:
+        if this == that:
             v = var()
             yield subst.new_child({this: v, that: v})
+        else:
+            yield subst.new_child({this: that})
     return _
 
 @multimethod
@@ -69,12 +67,33 @@ def _unify(this: Variable, that: object):
     return _
 
 @multimethod
-def _unify(this: object, that: Variable):
-    return _unify(that, this)
+def _unify(this: list, that: list):
+    if len(this) == len(that):
+        return and_then(*starmap(unify, zip(this, that)))
+    else:
+        return nothing
+
+@multimethod
+def _unify(this: tuple, that: tuple):
+    if len(this) == len(that):
+        return and_then(*starmap(unify, zip(this, that)))
+    else:
+        return nothing
+
+@multimethod
+def _unify(this: (list, tuple), that: object):
+    return nothing
+
+@multimethod
+def _unify(this: object, that: (list, tuple)):
+    return nothing
 
 @multimethod
 def _unify(this: object, that: object):
-    return unify(this, that)
+    if this == that:
+        return unit
+    else:
+        return nothing
 
 
 @multimethod
@@ -87,29 +106,11 @@ def unify(this: Variable, that: object):
 
 @multimethod
 def unify(this: object, that: Variable):
-    return lambda s: _unify(this, chase(that, s))(s)
-
-@multimethod
-def unify(this: (list, tuple), that: (list, tuple)):
-    if len(this) == len(that):
-        return and_then(*starmap(unify, zip(this, that)))
-    else:
-        return nothing
-
-@multimethod
-def unify(this: (list, tuple), that: object):
-    return nothing
-
-@multimethod
-def unify(this: object, that: (list, tuple)):
-    return nothing
+    return lambda s: _unify(chase(that, s), this)(s)
 
 @multimethod
 def unify(this: object, that: object):
-    if this == that:
-        return unit
-    else:
-        return nothing
+    return _unify(this, that)
 
 
 def recursive(g):
