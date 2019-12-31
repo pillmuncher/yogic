@@ -55,7 +55,7 @@ def _unify(this: Variable, that: Variable):
     def _(subst):
         if this == that:
             v = var()
-            yield subst.new_child({this: v, that: v})
+            yield subst.new_child({this: v})
         else:
             yield subst.new_child({this: that})
     return _
