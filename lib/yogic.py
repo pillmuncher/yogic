@@ -19,12 +19,10 @@ from .monad import and_then, bind, either, nothing, unit
 
 Variable = namedtuple('Variable', 'name')
 
-class MetaVar(type):
-    def __getattr__(cls, name, counter=count()):
-        return Variable(name + str(next(counter)))
+def var():
+    return Variable('v' + str(next(var._counter)))
 
-class Var(metaclass=MetaVar):
-    pass
+var._counter = count()
 
 
 class Subst(ChainMap):

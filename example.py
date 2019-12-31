@@ -11,7 +11,7 @@ __license__ = 'MIT'
 import time
 
 from lib.yogic import (and_then, bind, either, nothing, recursive, resolve,
-                       unify, unit, Var)
+                       unify, unit, var)
 
 
 def human(a):
@@ -34,11 +34,11 @@ def child(a, b):
 
 @recursive
 def descendant(a, c):
-    b = Var.b
+    b = var()
     return and_then(child(a, b), either(unify(b, c), descendant(b, c)))
 
 def mortal(a):
-    b = Var.b
+    b = var()
     return either(
         human(a),
         dog(a),
@@ -49,53 +49,53 @@ def mortal(a):
 # ----8<---------8<---------8<---------8<---------8<---------8<---------8<-----
 
 
-x = Var.x
-y = Var.y
-z = Var.z
-# for each in resolve(and_then(dog(y), child(x, y))):
-    # print(each[x], each[y])
-    # print('yes.')
-    # break
-# else:
-    # print('no.')
-# for each in resolve(and_then(dog(y), descendant(x, y))):
-    # print('yes.')
-    # print(each[x], each[y])
-    # break
-# else:
-    # print('no.')
-# for each in resolve(and_then(child(x, y), descendant(y, z))):
-    # print('yes.')
-    # print(each[x], each[y], each[z])
-# else:
-    # print('no.')
+x = var()
+y = var()
+z = var()
+for each in resolve(and_then(dog(y), child(x, y))):
+    print(each[x], each[y])
+    print('yes.')
+    break
+else:
+    print('no.')
+for each in resolve(and_then(dog(y), descendant(x, y))):
+    print('yes.')
+    print(each[x], each[y])
+    break
+else:
+    print('no.')
+for each in resolve(and_then(child(x, y), descendant(y, z))):
+    print('yes.')
+    print(each[x], each[y], each[z])
+else:
+    print('no.')
 for each in resolve(mortal(x)):
     print(each[x])
 print()
-# for each in resolve(mortal('archimedes')):
-    # print('yes.')
-# print()
-# for each in resolve(mortal('joe')):
-    # print('yes.')
-# else:
-    # print('no.')
-# print()
-# for each in resolve(unify([x, y, 'huhu'], [y, z, x])):
-    # print('yes.')
-    # print(each[x])
-    # print(each[y])
-    # print(each[z])
-# else:
-    # print('no.')
+for each in resolve(mortal('archimedes')):
+    print('yes.')
+print()
+for each in resolve(mortal('joe')):
+    print('yes.')
+else:
+    print('no.')
+print()
+for each in resolve(unify([x, y, 'huhu'], [y, z, x])):
+    print('yes.')
+    print(each[x])
+    print(each[y])
+    print(each[z])
+else:
+    print('no.')
 
-# for each in resolve(bind(dog(x), unit)):
-    # print(each[x])
+for each in resolve(bind(dog(x), unit)):
+    print(each[x])
 
-# for each in resolve(bind(unit, dog(x))):
-    # print(each[x])
+for each in resolve(bind(unit, dog(x))):
+    print(each[x])
 
-# for each in resolve(bind(bind(mortal(x), dog(y)), child(x, y))):
-    # print(each[x])
+for each in resolve(bind(bind(mortal(x), dog(y)), child(x, y))):
+    print(each[x])
 
-# for each in resolve(bind(mortal(x), bind(dog(y), child(x, y)))):
-    # print(each[x])
+for each in resolve(bind(mortal(x), bind(dog(y), child(x, y)))):
+    print(each[x])
