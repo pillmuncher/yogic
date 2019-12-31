@@ -11,12 +11,12 @@ __license__ = 'MIT'
 import time
 
 from lib.yogic import (
-    and_then, bind, either, never, nothing, recursive, resolve, unify, unit, var,
+    alt, bind, never, nothing, recursive, resolve, seq, unify, unit, var,
 )
 
 
 def human(a):
-    return either(
+    return alt(
         unify(a, 'socrates'),
         unify(a, 'plato'),
         unify(a, 'bob'),
@@ -30,7 +30,7 @@ def not_dog(a):
 
 
 def child(a, b):
-    return either(
+    return alt(
         unify([a, b], ['archimedes', 'bob']),
         unify([a, b], ['fluffy', 'fifi']),
         unify([a, b], ['daisy', 'fluffy']),
@@ -40,24 +40,24 @@ def child(a, b):
 @recursive
 def descendant(a, c):
     b = var()
-    return either(
+    return alt(
         child(a, c),
-        and_then(child(a, b), descendant(b, c)),
+        seq(child(a, b), descendant(b, c)),
     )
 
 def mortal(a):
     b = var()
-    return either(
+    return alt(
         human(a),
         dog(a),
-        and_then(descendant(a, b), either(human(b), dog(b))),
+        seq(descendant(a, b), alt(human(b), dog(b))),
     )
 
 def append(a, b, c):
     x = var()
     y = var()
     z = var()
-    return and_then(
+    return seq(
         unify([x, y], a),
         unify([y, z], b),
         unify([x, z], c),
@@ -75,11 +75,11 @@ for each in resolve(append([[1, 2, 3, x], x], [[4, 5, 6, y], y], [z, []])):
     print(each[x], each[y], each[z])
 print()
 
-for each in resolve(and_then(child(x, y), descendant(y, z))):
+for each in resolve(seq(child(x, y), descendant(y, z))):
     print(each[x], each[y], each[z])
 print()
 
-for each in resolve(and_then(mortal(x), not_dog(x))):
+for each in resolve(seq(mortal(x), not_dog(x))):
     print('>>>', each[x])
 print()
 

@@ -14,7 +14,7 @@ from functools import wraps
 from itertools import count, starmap, repeat
 
 from .util import multimethod
-from .monad import and_then, bind, either, never, nothing, unit
+from .monad import seq, bind, alt, never, nothing, unit
 
 
 Variable = namedtuple('Variable', 'id')
@@ -92,7 +92,7 @@ def unify(this: object, that: Variable):
 @multimethod
 def unify(this: (list, tuple), that: (list, tuple)):
     if type(this) == type(that) and len(this) == len(that):
-        return and_then(*starmap(unify, zip(this, that)))
+        return seq(*starmap(unify, zip(this, that)))
     else:
         return nothing
 

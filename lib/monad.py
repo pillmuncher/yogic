@@ -19,10 +19,10 @@ def unit(v):
 def bind(m, gen):
     return lambda v: (u for w in m(v) for u in gen(w))
 
-def either(*gens):
+def alt(*gens):
     return lambda v: (u for gen in gens for u in gen(v))
 
-def and_then(*gens):
+def seq(*gens):
     return foldr(bind, gens, unit)
 
 def nothing(_):
