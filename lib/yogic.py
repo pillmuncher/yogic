@@ -54,15 +54,6 @@ def bindings(o: object, subst: Subst):
     return o
 
 
-def recursive(g):
-    @wraps(g)
-    def __(*args):
-        def _(subst):
-            return (each for each in g(*args)(subst))
-        return _
-    return __
-
-
 @multimethod
 def chase(v: Variable, subst: Subst):
     if v in subst:
@@ -73,6 +64,15 @@ def chase(v: Variable, subst: Subst):
 @multimethod
 def chase(o: object, subst: Subst):
     return o
+
+
+def recursive(g):
+    @wraps(g)
+    def __(*args):
+        def _(subst):
+            return (each for each in g(*args)(subst))
+        return _
+    return __
 
 
 @multimethod
