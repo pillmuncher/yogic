@@ -31,7 +31,7 @@ class Subst(ChainMap):
         def __init__(self, subst):
             self._subst = subst
         def __getitem__(self, var):
-            return bindings(var, self._subst)
+            return compact(var, self._subst)
 
 
 def resolve(goal):
@@ -39,18 +39,18 @@ def resolve(goal):
 
 
 @multimethod
-def bindings(v: Variable, subst: Subst):
+def compact(v: Variable, subst: Subst):
     if v in subst:
-        return bindings(subst[v], subst)
+        return compact(subst[v], subst)
     else:
         return v
 
 @multimethod
-def bindings(o: (list, tuple), subst: Subst):
-    return type(o)(map(bindings, o, repeat(subst)))
+def compact(o: (list, tuple), subst: Subst):
+    return type(o)(map(compact, o, repeat(subst)))
 
 @multimethod
-def bindings(o: object, subst: Subst):
+def compact(o: object, subst: Subst):
     return o
 
 
