@@ -22,7 +22,6 @@ __all__ = (
 )
 
 from collections import namedtuple, ChainMap
-from functools import wraps
 from itertools import count, starmap, repeat
 
 from .util import multimethod
