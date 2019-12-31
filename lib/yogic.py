@@ -31,27 +31,11 @@ class Subst(ChainMap):
         def __init__(self, subst):
             self._subst = subst
         def __getitem__(self, var):
-            return compact(var, self._subst)
+            return chase(var, self._subst)
 
 
 def resolve(goal):
     return (subst.proxy for subst in goal(Subst()))
-
-
-@multimethod
-def compact(v: Variable, subst: Subst):
-    if v in subst:
-        return compact(subst[v], subst)
-    else:
-        return v
-
-@multimethod
-def compact(o: (list, tuple), subst: Subst):
-    return type(o)(map(compact, o, repeat(subst)))
-
-@multimethod
-def compact(o: object, subst: Subst):
-    return o
 
 
 @multimethod
@@ -60,6 +44,10 @@ def chase(v: Variable, subst: Subst):
         return chase(subst[v], subst)
     else:
         return v
+
+@multimethod
+def chase(o: (list, tuple), subst: Subst):
+    return type(o)(map(chase, o, repeat(subst)))
 
 @multimethod
 def chase(o: object, subst: Subst):
