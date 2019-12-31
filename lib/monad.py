@@ -14,6 +14,7 @@ __all__ = (
     'cut',
     'never',
     'nothing',
+    'recursive',
     'seq',
     'unit',
 )
@@ -46,3 +47,11 @@ def never(gen):
 
 def cut(v):  # TODO: make it work
     yield v
+
+def recursive(genfunc):
+    @wraps(genfunc)
+    def __(*args):
+        def _(v):
+            return (u for u in genfunc(*args)(v))
+        return _
+    return __
