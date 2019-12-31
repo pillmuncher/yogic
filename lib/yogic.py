@@ -84,7 +84,7 @@ def unify(this: object, that: Variable):
 
 @multimethod
 def unify(this: (list, tuple), that: (list, tuple)):
-    if len(this) == len(that):
+    if type(this) == type(that) abd len(this) == len(that):
         return and_then(*starmap(unify, zip(this, that)))
     else:
         return nothing
