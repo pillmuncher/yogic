@@ -67,19 +67,11 @@ def _unify(this: Variable, that: object):
     return _
 
 @multimethod
-def _unify(this: (list, tuple), that: (list, tuple):
+def _unify(this: (list, tuple), that: (list, tuple)):
     if type(this) == type(that) and len(this) == len(that):
         return and_then(*starmap(unify, zip(this, that)))
     else:
         return nothing
-
-@multimethod
-def _unify(this: (list, tuple), that: object):
-    return nothing
-
-@multimethod
-def _unify(this: object, that: (list, tuple)):
-    return nothing
 
 @multimethod
 def _unify(this: object, that: object):
