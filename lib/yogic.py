@@ -17,10 +17,10 @@ from .util import multimethod
 from .monad import and_then, bind, either, never, nothing, unit
 
 
-Variable = namedtuple('Variable', 'name')
+Variable = namedtuple('Variable', 'id')
 
 def var():
-    return Variable('v' + str(next(var._counter)))
+    return Variable(next(var._counter))
 
 var._counter = count()
 

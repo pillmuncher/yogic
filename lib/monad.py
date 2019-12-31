@@ -34,5 +34,3 @@ def never(gen):
             return nothing(v)
         return unit(v)
     return _
-
-
