@@ -51,18 +51,12 @@ def chase(o: object, subst: Subst):
 
 
 @multimethod
-def _unify(this: Variable, that: Variable):
+def _unify(this: Variable, that: object):
     def _(subst):
         if this == that:
             yield subst
         else:
             yield subst.new_child({this: that})
-    return _
-
-@multimethod
-def _unify(this: Variable, that: object):
-    def _(subst):
-        yield subst.new_child({this: that})
     return _
 
 @multimethod

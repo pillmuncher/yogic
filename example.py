@@ -53,9 +53,9 @@ def append(a, b, c):
     y = var()
     z = var()
     return and_then(
-        unify((x, y), a),
-        unify((y, z), b),
-        unify((x, z), c),
+        unify([x, y], a),
+        unify([y, z], b),
+        unify([x, z], c),
     )
 
 # ----8<---------8<---------8<---------8<---------8<---------8<---------8<-----
@@ -78,50 +78,50 @@ else:
     print('no.')
 
 
-# for each in resolve(and_then(dog(y), child(x, y))):
-    # print(each[x], each[y])
-    # print('yes.')
-    # break
-# else:
-    # print('no.')
-# for each in resolve(and_then(dog(y), descendant(x, y))):
-    # print('yes.')
-    # print(each[x], each[y])
-    # break
-# else:
-    # print('no.')
-# for each in resolve(and_then(child(x, y), descendant(y, z))):
-    # print('yes.')
-    # print(each[x], each[y], each[z])
-# else:
-    # print('no.')
-# for each in resolve(mortal(x)):
-    # print(each[x])
-# print()
-# for each in resolve(mortal('archimedes')):
-    # print('yes.')
-# print()
-# for each in resolve(mortal('joe')):
-    # print('yes.')
-# else:
-    # print('no.')
-# print()
-# for each in resolve(unify([x, y, 'huhu'], [y, z, x])):
-    # print('yes.')
-    # print(each[x])
-    # print(each[y])
-    # print(each[z])
-# else:
-    # print('no.')
+for each in resolve(and_then(dog(y), child(x, y))):
+    print(each[x], each[y])
+    print('yes.')
+    break
+else:
+    print('no.')
+for each in resolve(and_then(dog(y), descendant(x, y))):
+    print('yes.')
+    print(each[x], each[y])
+    break
+else:
+    print('no.')
+for each in resolve(and_then(child(x, y), descendant(y, z))):
+    print('yes.')
+    print(each[x], each[y], each[z])
+else:
+    print('no.')
+for each in resolve(mortal(x)):
+    print(each[x])
+print()
+for each in resolve(mortal('archimedes')):
+    print('yes.')
+print()
+for each in resolve(mortal('joe')):
+    print('yes.')
+else:
+    print('no.')
+print()
+for each in resolve(unify([x, y, 'huhu'], [y, z, x])):
+    print('yes.')
+    print(each[x])
+    print(each[y])
+    print(each[z])
+else:
+    print('no.')
 
-# for each in resolve(bind(dog(x), unit)):
-    # print(each[x])
+for each in resolve(bind(dog(x), unit)):
+    print(each[x])
 
-# for each in resolve(bind(unit, dog(x))):
-    # print(each[x])
+for each in resolve(bind(unit, dog(x))):
+    print(each[x])
 
-# for each in resolve(bind(bind(mortal(x), dog(y)), child(x, y))):
-    # print(each[x])
+for each in resolve(bind(bind(mortal(x), dog(y)), child(x, y))):
+    print(each[x])
 
-# for each in resolve(bind(mortal(x), bind(dog(y), child(x, y)))):
-    # print(each[x])
+for each in resolve(bind(mortal(x), bind(dog(y), child(x, y)))):
+    print(each[x])
