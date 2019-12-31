@@ -54,8 +54,7 @@ def chase(o: object, subst: Subst):
 def _unify(this: Variable, that: Variable):
     def _(subst):
         if this == that:
-            v = var()
-            yield subst.new_child({this: v})
+            yield subst
         else:
             yield subst.new_child({this: that})
     return _
