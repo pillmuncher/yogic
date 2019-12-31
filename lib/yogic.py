@@ -11,7 +11,7 @@ __license__ = 'MIT'
 
 from collections import namedtuple, ChainMap
 from functools import singledispatch, wraps
-from itertools import count, starmap
+from itertools import count, starmap, repeat
 
 from .util import multimethod
 from .monad import and_then, bind, either, nothing, unit
@@ -34,10 +34,20 @@ class Subst(ChainMap):
             return chase(var, self._subst)
 
 
-def chase(var, subst):
-    while var in subst:
-        var = subst[var]
-    return var
+@multimethod
+def chase(v: Variable, subst: Subst):
+    if v in subst:
+        return chase(subst[v], subst)
+    else:
+        return v
+
+@multimethod
+def chase(o: (list, tuple), subst: Subst):
+    return type(o)(map(chase, o, repeat(subst)))
+
+@multimethod
+def chase(o: object, subst: Subst):
+    return o
 
 
 def resolve(goal):
@@ -56,6 +66,18 @@ def recursive(g):
 def cut(subst):
     yield subst
 
+
+@multimethod
+def _unify(this: Variable, that: Variable):
+    def _(subst):
+        if this < that:
+            yield subst.new_child({this: that})
+        elif this > that:
+            yield subst.new_child({that: this})
+        else:
+            v = var()
+            yield subst.new_child({this: v, that: v})
+    return _
 
 @multimethod
 def _unify(this: Variable, that: object):
@@ -84,18 +106,18 @@ def unify(this: object, that: Variable):
     return lambda s: _unify(this, chase(that, s))(s)
 
 @multimethod
-def unify(this: list, that: list):
+def unify(this: (list, tuple), that: (list, tuple)):
     if len(this) == len(that):
         return and_then(*starmap(unify, zip(this, that)))
     else:
         return nothing
 
 @multimethod
-def unify(this: list, that: object):
+def unify(this: (list, tuple), that: object):
     return nothing
 
 @multimethod
-def unify(this: object, that: list):
+def unify(this: object, that: (list, tuple)):
     return nothing
 
 @multimethod
