@@ -66,7 +66,11 @@ def chase(o: object, subst: Subst):
 
 
 def _link(this, that):
+<<<<<<< HEAD
     return lambda s: repeat(s.new_child({this: that}), 1)
+=======
+    return lambda s: [s.new_child({this: that})]
+>>>>>>> 1916b0818a1280cee619c9e05c2dbdea329b7ff2
 
 
 @multimethod
