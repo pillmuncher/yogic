@@ -75,32 +75,23 @@ def _unify(this: Variable, that: object):
     return _
 
 @multimethod
-def _unify(this: object, that: object):
-    return unify(this, that)
-
-
-@multimethod
-def unify(this: Variable, that: Variable):
-    return lambda s: _unify(chase(this, s), chase(that, s))(s)
+def _unify(this: object, that: Variable):
+    return _unify(that, this)
 
 @multimethod
-def unify(this: Variable, that: object):
-    return lambda s: _unify(chase(this, s), that)(s)
-
-@multimethod
-def unify(this: object, that: Variable):
-    return lambda s: _unify(chase(that, s), this)(s)
-
-@multimethod
-def unify(this: (list, tuple), that: (list, tuple)):
+def _unify(this: (list, tuple), that: (list, tuple)):
     if type(this) == type(that) and len(this) == len(that):
         return seq(*starmap(unify, zip(this, that)))
     else:
         return nothing
 
 @multimethod
-def unify(this: object, that: object):
+def _unify(this: object, that: object):
     if this == that:
         return unit
     else:
         return nothing
+
+
+def unify(this, that):
+    return lambda s: _unify(chase(this, s), chase(that, s))(s)
