@@ -65,18 +65,20 @@ def chase(o: object, subst: Subst):
     return o
 
 
+def _link(this, that):
+    return lambda s: repeat(s.new_child({this: that}), 1)
+
+
 @multimethod
 def _unify(this: Variable, that: object):
-    def _(subst):
-        if this == that:
-            yield subst
-        else:
-            yield subst.new_child({this: that})
-    return _
+    if this == that:
+        return unit
+    else:
+        return _link(this, that)
 
 @multimethod
 def _unify(this: object, that: Variable):
-    return _unify(that, this)
+    return _link(that, this)
 
 @multimethod
 def _unify(this: (list, tuple), that: (list, tuple)):
