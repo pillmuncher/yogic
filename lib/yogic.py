@@ -92,6 +92,5 @@ def _unify(this: object, that: object):
     else:
         return nothing
 
-
 def unify(this, that):
     return lambda s: _unify(chase(this, s), chase(that, s))(s)
