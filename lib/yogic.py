@@ -42,7 +42,7 @@ class Subst(ChainMap):
         def __init__(self, subst):
             self._subst = subst
         def __getitem__(self, var):
-            return chase(var, self._subst, False)
+            return chase(var, self._subst, True)
 
 
 def resolve(goal):
