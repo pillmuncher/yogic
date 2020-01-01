@@ -3,7 +3,7 @@
 .ropeproject
 __pycache__
 build
-hornet.egg-info
+*.egg-info
 setuptools-*
 dist
 *.pyc
