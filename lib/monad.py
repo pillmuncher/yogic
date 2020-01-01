@@ -43,7 +43,8 @@ def never(gen):
     def _(v):
         for each in gen(v):
             return nothing(v)
-        return unit(v)
+        else:
+            return unit(v)
     return _
 
 def cut(v):  # TODO: make it work
