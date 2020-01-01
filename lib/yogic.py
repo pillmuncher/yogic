@@ -42,7 +42,7 @@ class Subst(ChainMap):
         def __init__(self, subst):
             self._subst = subst
         def __getitem__(self, var):
-            return chase(var, self._subst)
+            return chase(var, self._subst, True)
 
 
 def resolve(goal):
@@ -50,18 +50,21 @@ def resolve(goal):
 
 
 @multimethod
-def chase(v: Variable, subst: Subst):
+def chase(v: Variable, subst: Subst, deep):
     if v in subst:
-        return chase(subst[v], subst)
+        return chase(subst[v], subst, deep)
     else:
         return v
 
 @multimethod
-def chase(o: (list, tuple), subst: Subst):
-    return type(o)(map(chase, o, repeat(subst)))
+def chase(o: (list, tuple), subst: Subst, deep):
+    if deep:
+        return type(o)(map(lambda x: chase(x, subst, deep), o))
+    else:
+        return o
 
 @multimethod
-def chase(o: object, subst: Subst):
+def chase(o: object, subst: Subst, deep):
     return o
 
 
@@ -96,4 +99,4 @@ def _unify(this: object, that: object):
 
 
 def unify(this, that):
-    return lambda s: _unify(chase(this, s), chase(that, s))(s)
+    return lambda s: _unify(chase(this, s, False), chase(that, s, False))(s)
