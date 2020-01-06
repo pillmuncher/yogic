@@ -82,7 +82,10 @@ def callcc(cc):
     return lambda c: cc(lambda s: lambda _: c(s))(c)
 
 def cont(f):
-    return wraps(f)(lambda *args, **kwargs: f(*args, **kwargs))
+    @wraps(f)
+    def _(*args, **kwargs):
+        return f(*args, **kwargs)
+    return _
 
 
 # ---8<--------8<--------8<--------8<--------8<--------8<--------8<--------8<---
@@ -103,7 +106,7 @@ def bind(ma, mf):
 
 unit = comp(gunit, cunit)
 zero = mflip(comp(gzero, cunit))
-nothing = unit(gnothing)
+nothing = cunit(gnothing)
 
 @mflip
 def once(s):
@@ -130,10 +133,6 @@ def no(ma):
 
 def run(actions, s, c=identity):
     return bind(unit([s]), actions)(c)
-
-
-# ---8<--------8<--------8<--------8<--------8<--------8<--------8<--------8<---
-
 
 def cut(s):  # TODO: make it work
     yield s
