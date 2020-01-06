@@ -105,4 +105,3 @@ def unify(this, that):
     return lambda c: lambda s: _unify(
             chase(this, s, False),
             chase(that, s, False))(c)(s)
-    return lambda s: _unify(chase(this, s, False), chase(that, s, False))(s)
