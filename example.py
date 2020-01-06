@@ -22,7 +22,7 @@ def dog(a):
     return unify(a, 'fifi')
 
 def not_dog(a):
-    return never(dog(a))
+    return no(dog(a))
 
 
 def child(a, b):

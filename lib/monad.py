@@ -12,7 +12,7 @@ __all__ = (
     'alt',
     'bind',
     'cut',
-    'never',
+    'no',
     'zero',
     'recursive',
     'seq',
@@ -118,7 +118,7 @@ def seq(*gens):
 def alt(*gens):
     return foldr(plus, gens, start=zero)
 
-def never(ma):
+def no(ma):
     def __(c):
         def _(s):
             for each in ma(c)(s):

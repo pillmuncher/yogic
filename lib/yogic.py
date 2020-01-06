@@ -14,7 +14,7 @@ __all__ = (
     'bind',
     'cont',
     'cut',
-    'never',
+    'no',
     'once',
     'recursive',
     'seq',
@@ -31,7 +31,7 @@ from itertools import count, starmap, repeat
 
 from . import multimethod
 from .monad import (
-    alt, bind, cont, cut, never, once, recursive, run, seq, unit, zero,
+    alt, bind, cont, cut, no, once, recursive, run, seq, unit, zero,
 )
 
 
