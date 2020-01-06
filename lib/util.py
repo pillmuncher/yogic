@@ -9,22 +9,44 @@ __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 __all__ = (
+    'comp',
+    'const',
+    'flatmap',
     'flip',
     'foldr',
+    'identity',
     'multimethod',
 )
 
 from functools import wraps, reduce
-from itertools import starmap
+from itertools import starmap, chain
 from inspect import signature, Signature
 
+
+SENTINEL = object()
+
+def foldr(f, xs, *, start=SENTINEL):
+    if start is SENTINEL:
+        return reduce(flip(f), reversed(xs))
+    else:
+        return reduce(flip(f), reversed(xs), start)
+
+def flatmap(f, i):
+    return chain.from_iterable(map(f, i))
+
+def identity(x):
+    "The I combinator"
+    return x
+
+def const(x):
+    "The K combinator"
+    return lambda _: x
 
 def flip(f):
     return lambda x, y: f(y, x)
 
-
-def foldr(f, xs, x):
-    return reduce(flip(f), reversed(xs), x)
+def comp(f, g):
+    return lambda x: g(f(x))
 
 
 def multimethod(function):

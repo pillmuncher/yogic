@@ -9,15 +9,20 @@ __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 __all__ = (
+    # re-export from monad.py:
     'alt',
     'bind',
+    'cont',
+    'cut',
     'never',
-    'nothing',
+    'once',
     'recursive',
-    'resolve',
     'seq',
-    'unify',
     'unit',
+    'zero',
+    # export from here:
+    'resolve',
+    'unify',
     'var',
 )
 
@@ -25,7 +30,9 @@ from collections import namedtuple, ChainMap
 from itertools import count, starmap, repeat
 
 from .util import multimethod
-from .monad import alt, bind, cut, never, nothing, recursive, seq, unit
+from .monad import (
+    alt, bind, cont, cut, never, once, recursive, run, seq, unit, zero,
+)
 
 
 Variable = namedtuple('Variable', 'id')
@@ -46,7 +53,7 @@ class Subst(ChainMap):
 
 
 def resolve(goal):
-    return (subst.proxy for subst in goal(Subst()))
+    return (subst.proxy for subst in run(goal, Subst()))
 
 
 @multimethod
@@ -71,28 +78,31 @@ def chase(o: object, subst: Subst, deep):
 @multimethod
 def _unify(this: Variable, that: object):
     if this == that:
-        return unit
+        return once
     else:
-        return lambda s: repeat(s.new_child({this: that}), 1)
+        return lambda c: lambda s: unit(repeat(s.new_child({this: that}), 1))(c)
 
 @multimethod
 def _unify(this: object, that: Variable):
-    return lambda s: repeat(s.new_child({that: this}), 1)
+    return lambda c: lambda s: unit(repeat(s.new_child({that: this}), 1))(c)
 
 @multimethod
 def _unify(this: (list, tuple), that: (list, tuple)):
     if type(this) == type(that) and len(this) == len(that):
         return seq(*starmap(unify, zip(this, that)))
     else:
-        return nothing
+        return zero
 
 @multimethod
 def _unify(this: object, that: object):
     if this == that:
-        return unit
+        return once
     else:
-        return nothing
+        return zero
 
 
 def unify(this, that):
+    return lambda c: lambda s: _unify(
+            chase(this, s, False),
+            chase(that, s, False))(c)(s)
     return lambda s: _unify(chase(this, s, False), chase(that, s, False))(s)

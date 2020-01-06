@@ -8,9 +8,7 @@ __date__ = '2020-01-01'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
-from lib.yogic import (
-    alt, bind, never, nothing, recursive, resolve, seq, unify, unit, var,
-)
+from lib.yogic import *
 
 
 def human(a):
@@ -73,12 +71,16 @@ for each in resolve(append([[1, 2, 3, x], x], [[4, 5, 6, y], y], [z, []])):
     print(each[x], each[y], each[z])
 print()
 
+for each in resolve(descendant(x, y)):
+    print(each[x], each[y])
+print()
+
 for each in resolve(seq(child(x, y), descendant(y, z))):
     print(each[x], each[y], each[z])
 print()
 
 for each in resolve(seq(mortal(x), not_dog(x))):
-    print('>>>', each[x])
+    print(each[x])
 print()
 
 for each in resolve(mortal('archimedes')):
@@ -97,11 +99,11 @@ for each in resolve(unify([x, y, 'huhu'], [y, z, x])):
     print(each[x], each[y], each[z])
 print()
 
-for each in resolve(bind(dog(x), unit)):
+for each in resolve(bind(dog(x), once)):
     print(each[x])
 print()
 
-for each in resolve(bind(unit, dog(x))):
+for each in resolve(bind(once, dog(x))):
     print(each[x])
 print()
 
