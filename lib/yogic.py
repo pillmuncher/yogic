@@ -30,7 +30,7 @@ from collections import namedtuple, ChainMap
 from itertools import count, starmap, repeat
 
 from . import multimethod
-from .monad import (
+from .monad.resolver import (
     alt, bind, cont, cut, no, once, recursive, run, seq, unit, zero,
 )
 
