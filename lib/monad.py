@@ -19,29 +19,7 @@ __all__ = (
     'unit',
 )
 
-from functools import partial
-
 from . import flip, flatmap, const, comp, identity, foldr
-
-def trampoline(bouncing, *args, **kwargs):
-    while bouncing:
-        bouncing, result, args, kwargs = bouncing(*args, **kwargs)
-        yield from result
-
-def abort(*args, **kwargs):
-    return None, (), args, kwargs
-
-def emit(cont, *args, _=None, **kwargs):
-    return cont, [_], args, kwargs
-
-def bounce(cont, *args, **kwargs):
-    return cont, (), args, kwargs
-
-def tailcall(function):
-    return partial(bounce, function)
-
-
-# ---8<--------8<--------8<--------8<--------8<--------8<--------8<--------8<---
 
 
 # Generator Monad:
@@ -55,9 +33,6 @@ gunit = iter
 gnothing = iter(())
 gzero = const(gnothing)
 gplus = chain
-
-
-# ---8<--------8<--------8<--------8<--------8<--------8<--------8<--------8<---
 
 
 # Continuation Monad:
@@ -88,13 +63,7 @@ def cont(f):
     return _
 
 
-# ---8<--------8<--------8<--------8<--------8<--------8<--------8<--------8<---
-
-
 # Resolver Monad:
-
-
-from collections import ChainMap
 
 
 def mflip(f):
