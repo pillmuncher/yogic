@@ -9,32 +9,75 @@ __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 __all__ = (
-    # re-export from monad.py:
     'alt',
     'bind',
-    'cont',
     'cut',
     'no',
     'once',
     'recursive',
-    'seq',
-    'unit',
-    'zero',
-    # export from here:
     'resolve',
+    'seq',
     'unify',
+    'unit',
     'var',
+    'zero',
+    # re-export drom lib.monad.continuation:
+    'cont',
 )
 
 from collections import namedtuple, ChainMap
 from itertools import count, starmap, repeat
 
-from . import multimethod
-from .monad.resolver import (
-    alt, bind, cont, cut, no, once, recursive, run, seq, unit, zero,
-)
+from . import comp, foldr, identity, multimethod
+from .monad import generator as gen
+from .monad import continuation as con
+from .monad.continuation import cont
 
 
+def mflip(f):
+    return lambda x: lambda y: f(y)(x)
+
+# Look, Ma! It's a monad!
+def bind(ma, mf):
+    return con.bind(ma, lambda g: lambda c: gen.bind(g, mf(c)))
+
+unit = comp(gen.unit, con.unit)
+zero = mflip(comp(gen.zero, con.unit))
+nothing = con.unit(gen.nothing)
+
+@mflip
+def once(s):
+    return unit(iter([s]))
+
+def plus(ma, mb):
+    return lambda c: lambda s: gen.plus(ma(c)(s), mb(c)(s))
+
+def seq(*mfs):
+    return foldr(bind, mfs, start=once)
+
+def alt(*mfs):
+    return foldr(plus, mfs, start=zero)
+
+def no(ma):
+    def __(c):
+        def _(s):
+            for each in ma(c)(s):
+                return nothing(c)
+            else:
+                return once(c)(s)
+        return _
+    return __
+
+def run(actions, s, c=identity):
+    return bind(unit([s]), actions)(c)
+
+def cut(s):  # TODO: make it work
+    yield s
+
+def recursive(genfunc):
+    def _(*args):
+        return lambda c: lambda s: genfunc(*args)(c)(s)
+    return _
 Variable = namedtuple('Variable', 'id')
 Variable._counter = count()
 
