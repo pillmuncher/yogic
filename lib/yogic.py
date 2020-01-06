@@ -36,11 +36,10 @@ from .monad import (
 
 
 Variable = namedtuple('Variable', 'id')
-
+Variable._counter = count()
 def var():
-    return Variable(next(var._counter))
+    return Variable(next(Variable._counter))
 
-var._counter = count()
 
 
 class Subst(ChainMap):
