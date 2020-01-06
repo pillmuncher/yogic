@@ -21,7 +21,7 @@ __all__ = (
 
 from functools import partial
 
-from .util import flip, flatmap, const, comp, identity, foldr
+from . import flip, flatmap, const, comp, identity, foldr
 
 def trampoline(bouncing, *args, **kwargs):
     while bouncing:

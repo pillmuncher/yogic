@@ -29,7 +29,7 @@ __all__ = (
 from collections import namedtuple, ChainMap
 from itertools import count, starmap, repeat
 
-from .util import multimethod
+from . import multimethod
 from .monad import (
     alt, bind, cont, cut, never, once, recursive, run, seq, unit, zero,
 )
@@ -37,9 +37,9 @@ from .monad import (
 
 Variable = namedtuple('Variable', 'id')
 Variable._counter = count()
+
 def var():
     return Variable(next(Variable._counter))
-
 
 
 class Subst(ChainMap):
