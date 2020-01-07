@@ -19,7 +19,7 @@ __all__ = (
     'seq',
     'unit',
     'zero',
-)
+
 
 from itertools import chain
 from functools import wraps, partial
