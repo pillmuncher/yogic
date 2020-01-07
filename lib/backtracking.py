@@ -47,7 +47,8 @@ def plus(ma, mb):
     return lambda v: lambda c: chain(ma(v)(c), mb(v)(c))
 
 
-once = lambda v: lambda c: c(repeat(v, 1))
+amb = lambda *vs: unit(iter)(vs)
+once = lambda v: amb(v)
 never = zero(None)
 nothing = never(None)
 
