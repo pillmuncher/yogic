@@ -23,7 +23,7 @@ __all__ = (
     'zero',
 )
 
-from itertools import chain
+from itertools import chain, repeat
 from functools import wraps, partial
 
 from . import flatmap, foldr, identity
@@ -40,16 +40,16 @@ def bind(ma, mf):
 
 
 def zero(g):
-    return lambda v: lambda c: iter(())
+    return lambda v: lambda c: c(iter(()))
 
 
 def plus(ma, mb):
     return lambda v: lambda c: chain(ma(v)(c), mb(v)(c))
 
 
-nothing = lambda c: c(iter(()))
-never = lambda v: nothing
-once = lambda v: unit(iter)([v])
+once = lambda v: lambda c: c(repeat(v, 1))
+never = zero(None)
+nothing = never(None)
 
 
 def seq(*mfs):

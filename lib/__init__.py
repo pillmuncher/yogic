@@ -10,6 +10,7 @@ __license__ = 'MIT'
 
 __all__ = (
     'flatmap',
+    'flip',
     'foldr',
     'identity',
     'multimethod',
