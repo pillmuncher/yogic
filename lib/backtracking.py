@@ -10,6 +10,7 @@ __license__ = 'MIT'
 
 __all__ = (
     'alt',
+    'amb',
     'bind',
     'never',
     'no',
@@ -71,6 +72,9 @@ def no(ma):
         return _
     return __
 
+
+def callcc(cc):
+    return lambda c: cc(lambda v: lambda _: c(v))(c)
 
 def recursive(genfunc):
     @wraps(genfunc)
