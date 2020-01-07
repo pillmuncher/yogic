@@ -83,6 +83,20 @@ for each in resolve(seq(mortal(x), not_dog(x))):
     print(each[x])
 print()
 
+for each in resolve(seq()):
+    print('yes.')
+    break
+else:
+    print('no.')
+print()
+
+for each in resolve(alt()):
+    print('yes.')
+    break
+else:
+    print('no.')
+print()
+
 for each in resolve(mortal('archimedes')):
     break
 else:
@@ -93,6 +107,10 @@ for each in resolve(mortal('joe')):
     break
 else:
     print('no.')
+print()
+
+for each in resolve(seq(unify(x, 'huhu'), unify(y, 'hihi'))):
+    print(each[x], each[y])
 print()
 
 for each in resolve(unify([x, y, 'huhu'], [y, z, x])):

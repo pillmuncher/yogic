@@ -21,63 +21,58 @@ __all__ = (
     'unit',
     'var',
     'zero',
-    # re-export drom lib.monad.continuation:
-    'cont',
 )
 
 from collections import namedtuple, ChainMap
-from itertools import count, starmap, repeat
+from itertools import chain, count, starmap, repeat
+from functools import wraps, partial
 
-from . import comp, foldr, identity, multimethod
-from .monad import generator as gen
-from .monad import continuation as con
-from .monad.continuation import cont
+from . import flatmap, foldr, identity, multimethod
 
 
-def mflip(f):
-    return lambda x: lambda y: f(y)(x)
-
-# Look, Ma! It's a monad!
 def bind(ma, mf):
-    return con.bind(ma, lambda g: lambda c: gen.bind(g, mf(c)))
+    return lambda s: lambda c: ma(s)(partial(flatmap, lambda u: mf(u)(c)))
 
-unit = comp(gen.unit, con.unit)
-zero = mflip(comp(gen.zero, con.unit))
-nothing = con.unit(gen.nothing)
+def unit(g):
+    return lambda s: lambda c: c(g(s))
 
-@mflip
-def once(s):
-    return unit(iter([s]))
+def zero(g):
+    return lambda s: lambda c: iter(())
 
 def plus(ma, mb):
-    return lambda c: lambda s: gen.plus(ma(c)(s), mb(c)(s))
+    return lambda s: lambda c: chain(ma(s)(c), mb(s)(c))
+
+once = lambda s: lambda c: c(repeat(s, 1))
+never = lambda s: lambda c: c(iter(()))
 
 def seq(*mfs):
     return foldr(bind, mfs, start=once)
 
 def alt(*mfs):
-    return foldr(plus, mfs, start=zero)
+    return foldr(plus, mfs, start=never)
+
+nothing = lambda c: c(iter(()))
 
 def no(ma):
-    def __(c):
-        def _(s):
-            for each in ma(c)(s):
+    def __(s):
+        def _(c):
+            for each in ma(s)(c):
                 return nothing(c)
             else:
-                return once(c)(s)
+                return once(s)(c)
         return _
     return __
 
 def run(actions, s, c=identity):
-    return bind(unit([s]), actions)(c)
-
-def cut(s):  # TODO: make it work
-    yield s
+    return actions(s)(c)
 
 def recursive(genfunc):
+    @wraps(genfunc)
     def _(*args):
-        return lambda c: lambda s: genfunc(*args)(c)(s)
+        return lambda s: lambda c: genfunc(*args)(s)(c)
     return _
+
+
 Variable = namedtuple('Variable', 'id')
 Variable._counter = count()
 
@@ -99,11 +94,11 @@ def resolve(goal):
 
 
 @multimethod
-def chase(v: Variable, subst: Subst, deep):
-    if v in subst:
-        return chase(subst[v], subst, deep)
+def chase(s: Variable, subst: Subst, deep):
+    if s in subst:
+        return chase(subst[s], subst, deep)
     else:
-        return v
+        return s
 
 @multimethod
 def chase(o: (list, tuple), subst: Subst, deep):
@@ -122,28 +117,38 @@ def _unify(this: Variable, that: object):
     if this == that:
         return once
     else:
-        return lambda c: lambda s: unit(repeat(s.new_child({this: that}), 1))(c)
+        return lambda s: once(s.new_child({this: that}))
 
 @multimethod
 def _unify(this: object, that: Variable):
-    return lambda c: lambda s: unit(repeat(s.new_child({that: this}), 1))(c)
+    return _unify(that, this)
 
 @multimethod
 def _unify(this: (list, tuple), that: (list, tuple)):
     if type(this) == type(that) and len(this) == len(that):
         return seq(*starmap(unify, zip(this, that)))
     else:
-        return zero
+        return never
 
 @multimethod
 def _unify(this: object, that: object):
     if this == that:
         return once
     else:
-        return zero
+        return never
 
 
 def unify(this, that):
-    return lambda c: lambda s: _unify(
-            chase(this, s, False),
-            chase(that, s, False))(c)(s)
+    return lambda s: _unify(chase(this, s, False), chase(that, s, False))(s)
+
+
+
+
+
+def mflip(f):
+    return lambda x: lambda y: f(y)(x)
+
+def cut(s):  # TODO: make it work
+    yield s
+
+
