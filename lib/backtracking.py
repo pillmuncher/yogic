@@ -29,7 +29,7 @@ from functools import wraps, partial
 from . import flatmap, foldr, identity
 
 
-# Look, Ma! It'v a Monad!
+# Look, Ma! It's a Monad!
 
 def unit(g):
     return lambda v: lambda c: c(g(v))
