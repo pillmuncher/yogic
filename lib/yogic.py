@@ -9,68 +9,28 @@ __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 __all__ = (
+    # export from here
+    'resolve',
+    'unify',
+    'var',
+    # re-export from lib.monad.backtracking
     'alt',
     'bind',
-    'cut',
     'no',
     'once',
     'recursive',
-    'resolve',
     'seq',
-    'unify',
     'unit',
-    'var',
     'zero',
 )
 
 from collections import namedtuple, ChainMap
-from itertools import chain, count, starmap, repeat
-from functools import wraps, partial
+from itertools import count, starmap
 
-from . import flatmap, foldr, identity, multimethod
-
-
-def bind(ma, mf):
-    return lambda s: lambda c: ma(s)(partial(flatmap, lambda u: mf(u)(c)))
-
-def unit(g):
-    return lambda s: lambda c: c(g(s))
-
-def zero(g):
-    return lambda s: lambda c: iter(())
-
-def plus(ma, mb):
-    return lambda s: lambda c: chain(ma(s)(c), mb(s)(c))
-
-once = lambda s: lambda c: c(repeat(s, 1))
-never = lambda s: lambda c: c(iter(()))
-
-def seq(*mfs):
-    return foldr(bind, mfs, start=once)
-
-def alt(*mfs):
-    return foldr(plus, mfs, start=never)
-
-nothing = lambda c: c(iter(()))
-
-def no(ma):
-    def __(s):
-        def _(c):
-            for each in ma(s)(c):
-                return nothing(c)
-            else:
-                return once(s)(c)
-        return _
-    return __
-
-def run(actions, s, c=identity):
-    return actions(s)(c)
-
-def recursive(genfunc):
-    @wraps(genfunc)
-    def _(*args):
-        return lambda s: lambda c: genfunc(*args)(s)(c)
-    return _
+from . import multimethod
+from .backtracking import (
+    alt, bind, never, no, once, run, recursive, seq, unit, zero
+)
 
 
 Variable = namedtuple('Variable', 'id')
@@ -140,15 +100,3 @@ def _unify(this: object, that: object):
 
 def unify(this, that):
     return lambda s: _unify(chase(this, s, False), chase(that, s, False))(s)
-
-
-
-
-
-def mflip(f):
-    return lambda x: lambda y: f(y)(x)
-
-def cut(s):  # TODO: make it work
-    yield s
-
-
