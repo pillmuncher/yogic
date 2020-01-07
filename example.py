@@ -24,7 +24,6 @@ def dog(a):
 def not_dog(a):
     return no(dog(a))
 
-
 def child(a, b):
     return alt(
         unify([a, b], ['archimedes', 'bob']),

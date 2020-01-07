@@ -58,11 +58,11 @@ def resolve(goal):
 
 
 @multimethod
-def chase(s: Variable, subst: Subst, deep):
-    if s in subst:
-        return chase(subst[s], subst, deep)
+def chase(v: Variable, subst: Subst, deep):
+    if v in subst:
+        return chase(subst[v], subst, deep)
     else:
-        return s
+        return v
 
 @multimethod
 def chase(o: (list, tuple), subst: Subst, deep):

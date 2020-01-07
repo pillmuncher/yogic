@@ -29,25 +29,27 @@ from functools import wraps, partial
 from . import flatmap, foldr, identity
 
 
+# Look, Ma! It'v a Monad!
+
 def unit(g):
-    return lambda s: lambda c: c(g(s))
+    return lambda v: lambda c: c(g(v))
 
 
 def bind(ma, mf):
-    return lambda s: lambda c: ma(s)(partial(flatmap, lambda t: mf(t)(c)))
+    return lambda v: lambda c: ma(v)(partial(flatmap, lambda t: mf(t)(c)))
 
 
 def zero(g):
-    return lambda s: lambda c: iter(())
+    return lambda v: lambda c: iter(())
 
 
 def plus(ma, mb):
-    return lambda s: lambda c: chain(ma(s)(c), mb(s)(c))
+    return lambda v: lambda c: chain(ma(v)(c), mb(v)(c))
 
 
 nothing = lambda c: c(iter(()))
-never = lambda s: nothing
-once = lambda s: unit(iter)([s])
+never = lambda v: nothing
+once = lambda v: unit(iter)([v])
 
 
 def seq(*mfs):
@@ -59,12 +61,12 @@ def alt(*mfs):
 
 
 def no(ma):
-    def __(s):
+    def __(v):
         def _(c):
-            for each in ma(s)(c):
+            for each in ma(v)(c):
                 return nothing(c)
             else:
-                return once(s)(c)
+                return once(v)(c)
         return _
     return __
 
@@ -72,9 +74,9 @@ def no(ma):
 def recursive(genfunc):
     @wraps(genfunc)
     def _(*args):
-        return lambda s: lambda c: genfunc(*args)(s)(c)
+        return lambda v: lambda c: genfunc(*args)(v)(c)
     return _
 
 
-def run(actions, s, c=identity):
-    return actions(s)(c)
+def run(actions, v, c=identity):
+    return actions(v)(c)
