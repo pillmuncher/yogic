@@ -16,9 +16,13 @@ __all__ = (
     # re-export from lib.monad.backtracking
     'alt',
     'bind',
+    'never',
     'no',
+    'nothing',
     'once',
+    'plus',
     'recursive',
+    'run',
     'seq',
     'unit',
     'zero',
@@ -29,7 +33,7 @@ from itertools import count, starmap
 
 from . import multimethod
 from .backtracking import (
-    alt, bind, never, no, once, run, recursive, seq, unit, zero
+    alt, bind, never, no, nothing, once, plus, recursive, run, seq, unit, zero
 )
 
 

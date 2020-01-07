@@ -13,13 +13,15 @@ __all__ = (
     'bind',
     'never',
     'no',
+    'nothing',
     'once',
+    'plus',
     'recursive',
     'run',
     'seq',
     'unit',
     'zero',
-    )
+)
 
 from itertools import chain
 from functools import wraps, partial
@@ -30,24 +32,31 @@ from . import flatmap, foldr, identity
 def unit(g):
     return lambda s: lambda c: c(g(s))
 
+
 def bind(ma, mf):
     return lambda s: lambda c: ma(s)(partial(flatmap, lambda t: mf(t)(c)))
+
 
 def zero(g):
     return lambda s: lambda c: iter(())
 
+
 def plus(ma, mb):
     return lambda s: lambda c: chain(ma(s)(c), mb(s)(c))
+
 
 nothing = lambda c: c(iter(()))
 never = lambda s: nothing
 once = lambda s: unit(iter)([s])
 
+
 def seq(*mfs):
     return foldr(bind, mfs, start=once)
 
+
 def alt(*mfs):
     return foldr(plus, mfs, start=never)
+
 
 def no(ma):
     def __(s):
