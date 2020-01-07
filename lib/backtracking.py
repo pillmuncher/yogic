@@ -36,7 +36,7 @@ def unit(g):
 
 
 def bind(ma, mf):
-    return lambda v: lambda c: ma(v)(partial(flatmap, lambda t: mf(t)(c)))
+    return lambda v: lambda c: ma(v)(partial(flatmap, lambda u: mf(u)(c)))
 
 
 def zero(g):
