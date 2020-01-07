@@ -28,6 +28,10 @@ def flatmap(f, i):
     return chain.from_iterable(map(f, i))
 
 
+def flip(f):
+    return lambda x, y: f(y, x)
+
+
 SENTINEL = object()
 
 def foldr(f, xs, *, start=SENTINEL):
