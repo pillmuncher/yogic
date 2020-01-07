@@ -13,7 +13,7 @@ __all__ = (
     'resolve',
     'unify',
     'var',
-    # re-export from lib.monad.backtracking
+    # re-export from lib.backtracking
     'alt',
     'bind',
     'never',
