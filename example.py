@@ -47,7 +47,7 @@ def mortal(a):
     yield human(a)
     yield dog(a)
     b = var()
-    yield seq(descendant(a, b), alt(human(b), dog(b)))
+    yield seq(descendant(a, b), mortal(b))
 
 def append(a, b, c):
     x = var()
