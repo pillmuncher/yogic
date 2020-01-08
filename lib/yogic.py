@@ -84,7 +84,7 @@ def _unify(this: Variable, that: object):
     else:
         return lambda subst: unit(subst.new_child({this: that}))
 
-# Same as above, but with swapped parameters:
+# Same as above, but with swapped arguments:
 @multimethod
 def _unify(this: object, that: Variable):
     return _unify(that, this)
