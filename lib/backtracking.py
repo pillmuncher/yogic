@@ -30,17 +30,17 @@ from functools import wraps, partial, reduce
 
 
 def amb(*vs):
-    'Take the sequence vs of values into the monad.'
+    'Takes the sequence vs of values into the monad.'
     return iter(vs)
 
 
 def unit(v):
-    'Take the single value v into the monad. Represents success.'
+    'Takes the single value v into the monad. Represents success.'
     return amb(v)
 
 
 def zero(v):
-    'Ignore value v and return an "empty" monad. Represents failure.'
+    'Ignores value v and returns an "empty" monad. Represents failure.'
     return amb()
 
 
@@ -50,22 +50,22 @@ def bind(mf, mg):
 
 
 def plus(mf, mg):
-    'The monadic plus operation. Return the results of both mf(v) and mg(v).'
+    'The monadic plus operation. Returns the results of both mf(v) and mg(v).'
     return lambda v: chain(mf(v), mg(v))
 
 
 def seq(*mfs):
-    'Generalize bind to operate on any number of monadic functions.'
+    'Generalizes bind to operate on any number of monadic functions.'
     return reduce(bind, mfs, unit)
 
 
 def alt(*mfs):
-    'Generalize plus to operate on any number of monadic functions.'
+    'Generalizes plus to operate on any number of monadic functions.'
     return reduce(plus, mfs, zero)
 
 
 def no(mf):
-    'Reverse the result of a monadic computation, AKA negation as failure.'
+    'Reverses the result of a monadic computation, AKA negation as failure.'
     def _(v):
         for each in mf(v):
             return zero(v)
