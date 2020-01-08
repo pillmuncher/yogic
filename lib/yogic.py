@@ -110,7 +110,7 @@ def _unify(this: object, that: object):
 def unify(this, that):
     '''Unify "this" and "that".
     If at least one is an unbound Variable, bind it to the other object.
-    If both are lists or tuples, unify them recursively if that is possible.
+    If both are either lists or tuples, try to unify them recursively.
     If both are other objects, unify them if they are equal.'''
     return lambda subst: _unify(chase(this, subst), chase(that, subst))(subst)
 
