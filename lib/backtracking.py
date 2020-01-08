@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 #
-# Copyright  2020 Mick Krippendorf <m.krippendorf@freenet.de>
+# Copyright (C) 2020 Mick Krippendorf <m.krippendorf@freenet.de>
 
 __version__ = '0.9a'
 __date__ = '2020-01-01'
