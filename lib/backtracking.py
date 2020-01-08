@@ -45,12 +45,12 @@ def zero(v):
 
 
 def bind(mf, mg):
-    'The monadic bind operation. Flatmaps mg over mf(v).'
+    'Returns the result of flatmapping mg over mf(v).'
     return lambda v: (u for w in mf(v) for u in mg(w))
 
 
 def plus(mf, mg):
-    'The monadic plus operation. Returns the results of both mf(v) and mg(v).'
+    'Returns the results of both mf(v) and mg(v).'
     return lambda v: chain(mf(v), mg(v))
 
 
