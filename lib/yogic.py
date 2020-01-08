@@ -80,7 +80,7 @@ def _unify(this: Variable, that: object):
     if this == that:
         return unit
     else:
-        return lambda s: unit(s.new_child({this: that}))
+        return lambda subst: unit(subst.new_child({this: that}))
 
 # Same as above, but with swapped parameters:
 @multimethod
@@ -110,4 +110,4 @@ def unify(this, that):
     If at least one is an unbound Variable, bind it to the other object.
     If both are lists or tuples, unify them recursively if that is possible.
     If both are other objects, unify them if they are equal.'''
-    return lambda s: _unify(chase(this, s), chase(that, s))(s)
+    return lambda subst: _unify(chase(this, subst), chase(that, subst))(subst)
