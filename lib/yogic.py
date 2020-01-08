@@ -31,7 +31,7 @@ from itertools import count
 from functools import wraps
 
 from . import multimethod
-from .backtracking import *
+from .backtracking import alt, amb, bind, no, plus, recursive, seq, unit, zero
 
 
 # Variable objects to be bound to values in a monadic computation:
