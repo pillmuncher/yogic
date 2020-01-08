@@ -67,7 +67,7 @@ def chase(v: Variable, subst: Subst):
 
 @multimethod
 def chase(o: (list, tuple), subst: Subst):
-    return type(o)(map(lambda x: chase(x, subst), o))
+    return type(o)(chase(v, subst) for v in o)
 
 @multimethod
 def chase(o: object, subst: Subst):
