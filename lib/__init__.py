@@ -9,19 +9,13 @@ __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 __all__ = (
-    'flatmap',
     'identity',
     'multimethod',
 )
 
 from functools import wraps
-from itertools import starmap, chain
+from itertools import starmap
 from inspect import signature, Signature
-
-
-def flatmap(f, s):
-    '''Apply function f to sequence s and flatten the result by one level.'''
-    return chain.from_iterable(map(f, s))
 
 
 def identity(x):

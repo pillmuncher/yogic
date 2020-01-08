@@ -24,8 +24,6 @@ __all__ = (
 from itertools import chain
 from functools import wraps, partial, reduce
 
-from . import flatmap, identity
-
 
 # Look, Ma! It's a Monad!
 #
@@ -52,7 +50,7 @@ def zero(v):
 def bind(mf, mg):
     '''The monadic bind operation, AKA monadic multiplication.
     Filter the results of mf through mg.'''
-    return lambda v: flatmap(mg, mf(v))
+    return lambda v: (u for w in mf(v) for u in mg(w))
 
 
 def plus(mf, mg):
