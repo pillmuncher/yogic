@@ -71,12 +71,12 @@ def alt(*mfs):
 
 def no(mf):
     '''Reverse the result of a monadic computation, AKA negation as failure.'''
-    def __(v):
-            for each in mf(v):
-                return zero(v)
-            else:
-                return unit(v)
-    return __
+    def _(v):
+        for each in mf(v):
+            return zero(v)
+        else:
+            return unit(v)
+    return _
 
 
 def recursive(genfunc):
