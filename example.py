@@ -49,11 +49,12 @@ def mortal(a):
     b = var()
     yield seq(descendant(a, b), mortal(b))
 
+@predicate
 def append(a, b, c):
     x = var()
     y = var()
     z = var()
-    return seq(
+    yield seq(
         unify([x, y], a),
         unify([y, z], b),
         unify([x, z], c),
