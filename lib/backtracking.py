@@ -30,7 +30,9 @@ from . import flatmap, identity
 # Look, Ma! It's a Monad!
 #
 # In essence, it's the Continuation Monad, but applied to Generators and
-# Iterators. Therefor the bind operator flatmaps over the computation results.
+# Iterators. Therefor the bind operator flatmaps over the computation results,
+# thus providing a mechanism for exhaustive search through solutions spaces with
+# backtracking. Hence it's called the Backtracking Monad.
 #
 # I know, it looks a bit like printer vomit, but I promise, it's not all too
 # difficult to understand. The abbreviations are these:
