@@ -25,12 +25,13 @@ def dog(a):
 def not_dog(a):
     return no(dog(a))
 
-@predicate
 def child(a, b):
-    yield unify([a, b], ['archimedes', 'bob'])
-    yield unify([a, b], ['fluffy', 'fifi'])
-    yield unify([a, b], ['daisy', 'fluffy'])
-    yield unify([a, b], ['athene', 'zeus'])
+    return alt(
+        unify([a, b], ['archimedes', 'bob']),
+        unify([a, b], ['fluffy', 'fifi']),
+        unify([a, b], ['daisy', 'fluffy']),
+        unify([a, b], ['athene', 'zeus']),
+    )
 
 @recursive
 def descendant(a, c):
@@ -40,13 +41,13 @@ def descendant(a, c):
         seq(child(a, b), descendant(b, c)),
     )
 
+@recursive
+@predicate
 def mortal(a):
+    yield human(a)
+    yield dog(a)
     b = var()
-    return alt(
-        human(a),
-        dog(a),
-        seq(descendant(a, b), alt(human(b), dog(b))),
-    )
+    yield seq(descendant(a, b), alt(human(b), dog(b)))
 
 def append(a, b, c):
     x = var()
