@@ -59,7 +59,7 @@ def resolve(goal):
     return (subst.proxy for subst in goal(Subst()))
 
 
-# All chase() functions do "pointer" chasing for bindings in an environment.
+# A polymorphic function that chases "pointers" to bindings in an environment.
 @multimethod
 def chase(v: Variable, subst: Subst):
     if v in subst:
