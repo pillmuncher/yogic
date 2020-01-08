@@ -71,6 +71,7 @@ def no(mf):
             # If at least one solution is found, fail immediately:
             return zero(v)
         else:
+            # If no solution is found, succeed.
             return unit(v)
     return _
 
