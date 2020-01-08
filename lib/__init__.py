@@ -10,39 +10,28 @@ __license__ = 'MIT'
 
 __all__ = (
     'flatmap',
-    'flip',
-    'foldr',
     'identity',
     'multimethod',
 )
 
-from functools import wraps, reduce
+from functools import wraps
 from itertools import starmap, chain
 from inspect import signature, Signature
 
 
+def flatmap(f, s):
+    '''Apply function f to sequence s and flatten the result by one level.'''
+    return chain.from_iterable(map(f, s))
+
+
 def identity(x):
+    '''Return the argument unchanged. The I combinator from SKI Calculus.'''
     return x
 
 
-def flatmap(f, i):
-    return chain.from_iterable(map(f, i))
-
-
-def flip(f):
-    return lambda x, y: f(y, x)
-
-
-SENTINEL = object()
-
-def foldr(f, xs, *, start=SENTINEL):
-    if start is SENTINEL:
-        return reduce(flip(f), reversed(xs))
-    else:
-        return reduce(flip(f), reversed(xs), start)
-
-
 def multimethod(function):
+    '''Provide multimethods to Python, similar to:
+    https://www.artima.com/weblogs/viewpost.jsp?thread=101605'''
     typemap = multimethod._registry.setdefault(function.__name__, [])
     typemap.append((
         function,

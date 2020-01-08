@@ -15,11 +15,9 @@ __all__ = (
     'var',
     # re-export from lib.backtracking
     'alt',
+    'amb',
     'bind',
-    'never',
     'no',
-    'nothing',
-    'once',
     'plus',
     'recursive',
     'run',
@@ -32,75 +30,85 @@ from collections import namedtuple, ChainMap
 from itertools import count, starmap
 
 from . import multimethod
-from .backtracking import (
-    alt, bind, never, no, nothing, once, plus, recursive, run, seq, unit, zero
-)
+from .backtracking import *
 
 
+# Variable objects to be bound to values in a monadic computation:
 Variable = namedtuple('Variable', 'id')
 Variable._counter = count()
 
 def var():
+    '''Helper function to create Variables:'''
     return Variable(next(Variable._counter))
 
 
+# An environment mapping Variables to the values they are bound to during a
+# monadic computation:
 class Subst(ChainMap):
     @property
     class proxy:
         def __init__(self, subst):
             self._subst = subst
         def __getitem__(self, var):
-            return chase(var, self._subst, True)
+            return chase(var, self._subst)
 
 
 def resolve(goal):
+    '''Start the logical resolution of "goal". Return all solutions.'''
     return (subst.proxy for subst in run(goal, Subst()))
 
 
+# All chase() functions do "pointer" chasing for bindings in an environment.
 @multimethod
-def chase(v: Variable, subst: Subst, deep):
+def chase(v: Variable, subst: Subst):
     if v in subst:
-        return chase(subst[v], subst, deep)
+        return chase(subst[v], subst)
     else:
         return v
 
 @multimethod
-def chase(o: (list, tuple), subst: Subst, deep):
-    if deep:
-        return type(o)(map(lambda x: chase(x, subst, True), o))
-    else:
-        return o
+def chase(o: (list, tuple), subst: Subst):
+    return type(o)(map(lambda x: chase(x, subst), o))
 
 @multimethod
-def chase(o: object, subst: Subst, deep):
+def chase(o: object, subst: Subst):
     return o
 
 
+# Bind Variables to values in an environment:
 @multimethod
 def _unify(this: Variable, that: object):
     if this == that:
-        return once
+        return unit
     else:
-        return lambda s: once(s.new_child({this: that}))
+        return lambda s: unit(s.new_child({this: that}))
 
+# Same as above, but with swapped parameters:
 @multimethod
 def _unify(this: object, that: Variable):
     return _unify(that, this)
 
+# Recursively unify two lists ot tuples:
 @multimethod
 def _unify(this: (list, tuple), that: (list, tuple)):
     if type(this) == type(that) and len(this) == len(that):
         return seq(*starmap(unify, zip(this, that)))
     else:
-        return never
+        return zero
 
+# Unify other objects only if they're equal:
 @multimethod
 def _unify(this: object, that: object):
     if this == that:
-        return once
+        return unit
     else:
-        return never
+        return zero
 
 
+# Public interface to _unify:
 def unify(this, that):
-    return lambda s: _unify(chase(this, s, False), chase(that, s, False))(s)
+    '''Unify "this" and "that".
+    If at least one is an unbound Variable, bind it to the other object.
+    If both are lists or tuples, unify them recursively if that is possible.
+    If both are other objects, unify them if they are equal.'''
+    return lambda s: _unify(chase(this, s), chase(that, s))(s)

@@ -8,6 +8,7 @@ __date__ = '2020-01-01'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
+from lib import identity
 from lib.yogic import *
 
 
@@ -108,19 +109,19 @@ else:
     print('no.')
 print()
 
-for each in resolve(seq(unify(x, 'huhu'), unify(y, 'hihi'))):
+for each in resolve(seq(unify(x, 1), unify(y, 2))):
     print(each[x], each[y])
 print()
 
-for each in resolve(unify([x, y, 'huhu'], [y, z, x])):
+for each in resolve(unify([x, y, 'test'], [y, z, x])):
     print(each[x], each[y], each[z])
 print()
 
-for each in resolve(bind(dog(x), once)):
+for each in resolve(bind(dog(x), unit)):
     print(each[x])
 print()
 
-for each in resolve(bind(once, dog(x))):
+for each in resolve(bind(unit, dog(x))):
     print(each[x])
 print()
 

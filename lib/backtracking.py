@@ -12,10 +12,7 @@ __all__ = (
     'alt',
     'amb',
     'bind',
-    'never',
     'no',
-    'nothing',
-    'once',
     'plus',
     'recursive',
     'run',
@@ -24,64 +21,85 @@ __all__ = (
     'zero',
 )
 
-from itertools import chain, repeat
-from functools import wraps, partial
+from itertools import chain
+from functools import wraps, partial, reduce
 
-from . import flatmap, foldr, identity
+from . import flatmap, identity
 
 
 # Look, Ma! It's a Monad!
-
-def unit(g):
-    return lambda v: lambda c: c(g(v))
-
-
-def bind(ma, mf):
-    return lambda v: lambda c: ma(v)(partial(flatmap, lambda u: mf(u)(c)))
-
-
-def zero(g):
-    return lambda v: lambda c: c(iter(()))
-
-
-def plus(ma, mb):
-    return lambda v: lambda c: chain(ma(v)(c), mb(v)(c))
+#
+# In essence, it's the Continuation Monad, but applied to Generators and
+# Iterators. Therefor the bind operator flatmaps over the computation results.
+#
+# I know, it looks a bit like printer vomit, but I promise, it's not all too
+# difficult to understand. The abbreviations are these:
+#
+# v : a value that will be provided as argument to monadic functions.
+# c : a continuation that recieves the result of monadic computations.
+# mx: a monadic function, taking a value and a continuation into the monad.
 
 
-amb = lambda *vs: unit(iter)(vs)
-once = lambda v: amb(v)
-never = zero(None)
-nothing = never(None)
+def amb(*vs):
+    '''Take the sequence vs of values into the monad.'''
+    return lambda c: c(iter(vs))
+
+
+def unit(v):
+    '''Take the single value v into the monad. Monadic 1.
+    Represents success.'''
+    return amb(v)
+
+
+def zero(v):
+    '''Ignore value v and return an "empty" monad. Monadic 0.
+    Represents failure.'''
+    return amb()
+
+
+def bind(mf, mg):
+    '''The monadic bind operation, AKA monadic multiplication.
+    Filter the results of mf through mg.'''
+    return lambda v: lambda c: mf(v)(partial(flatmap, lambda u: mg(u)(c)))
+
+
+def plus(mf, mg):
+    '''The monadic plus operation, AKA monadic addition.
+     Generate a sequence from the results of both mf and mg.'''
+    return lambda v: lambda c: chain(mf(v)(c), mg(v)(c))
 
 
 def seq(*mfs):
-    return foldr(bind, mfs, start=once)
+    '''Generalize bind to operate on any number of monadic functions.'''
+    return reduce(bind, mfs, unit)
 
 
 def alt(*mfs):
-    return foldr(plus, mfs, start=never)
+    '''Generalize plus to operate on any number of monadic functions.'''
+    return reduce(plus, mfs, zero)
 
 
-def no(ma):
+def no(mf):
+    '''Reverse the result of a monadic computation, AKA negation as failure.'''
     def __(v):
         def _(c):
-            for each in ma(v)(c):
-                return nothing(c)
+            for each in mf(v)(c):
+                return zero(v)(c)
             else:
-                return once(v)(c)
+                return unit(v)(c)
         return _
     return __
 
 
-def callcc(cc):
-    return lambda c: cc(lambda v: lambda _: c(v))(c)
-
 def recursive(genfunc):
+    '''Helper decorator for recursive generator functions.'''
     @wraps(genfunc)
     def _(*args):
         return lambda v: lambda c: genfunc(*args)(v)(c)
     return _
 
 
-def run(actions, v, c=identity):
-    return actions(v)(c)
+def run(actions, v):
+    '''Start a monadic computation.
+     Returns all transformations of value v as defined by "actions".'''
+    return actions(v)(identity)
