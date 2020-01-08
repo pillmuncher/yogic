@@ -25,13 +25,12 @@ def dog(a):
 def not_dog(a):
     return no(dog(a))
 
+@predicate
 def child(a, b):
-    return alt(
-        unify([a, b], ['archimedes', 'bob']),
-        unify([a, b], ['fluffy', 'fifi']),
-        unify([a, b], ['daisy', 'fluffy']),
-        unify([a, b], ['athene', 'zeus']),
-    )
+    yield unify([a, b], ['archimedes', 'bob'])
+    yield unify([a, b], ['fluffy', 'fifi'])
+    yield unify([a, b], ['daisy', 'fluffy'])
+    yield unify([a, b], ['athene', 'zeus'])
 
 @recursive
 def descendant(a, c):

@@ -19,6 +19,7 @@ __all__ = (
     'bind',
     'no',
     'plus',
+    'predicate',
     'recursive',
     'seq',
     'unit',
@@ -27,6 +28,7 @@ __all__ = (
 
 from collections import namedtuple, ChainMap
 from itertools import count
+from functools import wraps
 
 from . import multimethod
 from .backtracking import *
@@ -111,3 +113,11 @@ def unify(this, that):
     If both are lists or tuples, unify them recursively if that is possible.
     If both are other objects, unify them if they are equal.'''
     return lambda subst: _unify(chase(this, subst), chase(that, subst))(subst)
+
+
+def predicate(g):
+    'Helper decorator for generator functions.'
+    @wraps(g)
+    def _(*args, **kwargs):
+        return alt(*g(*args, **kwargs))
+    return _
