@@ -88,7 +88,7 @@ def _unify(this: Variable, that: object):
 def _unify(this: object, that: Variable):
     return _unify(that, this)
 
-# Recursively unify two lists ot tuples:
+# Recursively unify two lists or tuples:
 @multimethod
 def _unify(this: (list, tuple), that: (list, tuple)):
     if type(this) == type(that) and len(this) == len(that):
