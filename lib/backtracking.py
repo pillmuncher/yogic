@@ -94,7 +94,7 @@ def no(mf):
 
 
 def recursive(genfunc):
-    '''Helper decorator for recursive generator functions.'''
+    '''Helper decorator for recursive predicate functions.'''
     @wraps(genfunc)
     def _(*args):
         return lambda v: lambda c: genfunc(*args)(v)(c)
