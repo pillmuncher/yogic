@@ -14,7 +14,6 @@ __all__ = (
 )
 
 from functools import wraps
-from itertools import starmap
 from inspect import signature, Signature
 
 
@@ -36,7 +35,7 @@ def multimethod(function):
     def call(*args):
         for function, types in typemap:
             if len(args) == len(types):
-                if all(starmap(isinstance, zip(args, types))):
+                if all(map(isinstance, args, types)):
                     return function(*args)
         raise TypeError("multimethod couldn't find matching function!")
     return call

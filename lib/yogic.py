@@ -26,7 +26,7 @@ __all__ = (
 )
 
 from collections import namedtuple, ChainMap
-from itertools import count, starmap
+from itertools import count
 
 from . import multimethod
 from .backtracking import *
@@ -91,7 +91,7 @@ def _unify(this: object, that: Variable):
 @multimethod
 def _unify(this: (list, tuple), that: (list, tuple)):
     if type(this) == type(that) and len(this) == len(that):
-        return seq(*starmap(unify, zip(this, that)))
+        return seq(*map(unify, this, that))
     else:
         return zero
 
