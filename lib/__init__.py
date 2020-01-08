@@ -9,17 +9,11 @@ __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 __all__ = (
-    'identity',
     'multimethod',
 )
 
 from functools import wraps
 from inspect import signature, Signature
-
-
-def identity(x):
-    'Return the argument unchanged. The I combinator from SKI Calculus.'
-    return x
 
 
 def multimethod(function):

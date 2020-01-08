@@ -8,7 +8,6 @@ __date__ = '2020-01-01'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
-from lib import identity
 from lib.yogic import *
 
 
