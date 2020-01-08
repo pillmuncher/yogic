@@ -21,7 +21,7 @@ __all__ = (
 )
 
 from itertools import chain
-from functools import wraps, partial, reduce
+from functools import wraps, reduce
 
 
 # Look, Ma! It's a Monad!
