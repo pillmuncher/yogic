@@ -45,7 +45,7 @@ def zero(v):
 
 
 def bind(mf, mg):
-    'The monadic bind operation. Filters the results of mf(v) through mg.'
+    'The monadic bind operation. Flatmaps mg over mf(v).'
     return lambda v: (u for w in mf(v) for u in mg(w))
 
 
