@@ -20,7 +20,6 @@ __all__ = (
     'no',
     'plus',
     'recursive',
-    'run',
     'seq',
     'unit',
     'zero',
@@ -38,7 +37,7 @@ Variable = namedtuple('Variable', 'id')
 Variable._counter = count()
 
 def var():
-    '''Helper function to create Variables:'''
+    'Helper function to create Variables:'
     return Variable(next(Variable._counter))
 
 
@@ -54,8 +53,8 @@ class Subst(ChainMap):
 
 
 def resolve(goal):
-    '''Start the logical resolution of "goal". Return all solutions.'''
-    return (subst.proxy for subst in run(goal, Subst()))
+    'Start the logical resolution of "goal". Return all solutions.'
+    return (subst.proxy for subst in goal(Subst()))
 
 
 # All chase() functions do "pointer" chasing for bindings in an environment.

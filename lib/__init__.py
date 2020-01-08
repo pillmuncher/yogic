@@ -19,13 +19,13 @@ from inspect import signature, Signature
 
 
 def identity(x):
-    '''Return the argument unchanged. The I combinator from SKI Calculus.'''
+    'Return the argument unchanged. The I combinator from SKI Calculus.'
     return x
 
 
 def multimethod(function):
-    '''Provide multimethods to Python, similar to:
-    https://www.artima.com/weblogs/viewpost.jsp?thread=101605'''
+    'Provide multimethods to Python, similar to:
+    https://www.artima.com/weblogs/viewpost.jsp?thread=101605'
     typemap = multimethod._registry.setdefault(function.__name__, [])
     typemap.append((
         function,

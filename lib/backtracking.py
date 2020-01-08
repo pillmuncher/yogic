@@ -15,7 +15,6 @@ __all__ = (
     'no',
     'plus',
     'recursive',
-    'run',
     'seq',
     'unit',
     'zero',
@@ -31,46 +30,42 @@ from functools import wraps, partial, reduce
 
 
 def amb(*vs):
-    '''Take the sequence vs of values into the monad.'''
+    'Take the sequence vs of values into the monad.'
     return iter(vs)
 
 
 def unit(v):
-    '''Take the single value v into the monad. Monadic 1.
-    Represents success.'''
+    'Take the single value v into the monad. Represents success.'
     return amb(v)
 
 
 def zero(v):
-    '''Ignore value v and return an "empty" monad. Monadic 0.
-    Represents failure.'''
+    'Ignore value v and return an "empty" monad. Represents failure.'
     return amb()
 
 
 def bind(mf, mg):
-    '''The monadic bind operation, AKA monadic multiplication.
-    Filter the results of mf through mg.'''
+    'The monadic bind operation. Filters the results of mf(v) through mg.'
     return lambda v: (u for w in mf(v) for u in mg(w))
 
 
 def plus(mf, mg):
-    '''The monadic plus operation, AKA monadic addition.
-     Generate a sequence from the results of both mf and mg.'''
+    'The monadic plus operation. Return the results of both mf(v) and mg(v).'
     return lambda v: chain(mf(v), mg(v))
 
 
 def seq(*mfs):
-    '''Generalize bind to operate on any number of monadic functions.'''
+    'Generalize bind to operate on any number of monadic functions.'
     return reduce(bind, mfs, unit)
 
 
 def alt(*mfs):
-    '''Generalize plus to operate on any number of monadic functions.'''
+    'Generalize plus to operate on any number of monadic functions.'
     return reduce(plus, mfs, zero)
 
 
 def no(mf):
-    '''Reverse the result of a monadic computation, AKA negation as failure.'''
+    'Reverse the result of a monadic computation, AKA negation as failure.'
     def _(v):
         for each in mf(v):
             return zero(v)
@@ -80,14 +75,8 @@ def no(mf):
 
 
 def recursive(genfunc):
-    '''Helper decorator for recursive predicate functions.'''
+    'Helper decorator for recursive predicate functions.'
     @wraps(genfunc)
     def _(*args):
         return lambda v: genfunc(*args)(v)
     return _
-
-
-def run(actions, v):
-    '''Start a monadic computation.
-     Returns all transformations of value v as defined by "actions".'''
-    return actions(v)
