@@ -3,7 +3,7 @@
 #
 # Copyright  2020 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.8a'
+__version__ = '0.9a'
 __date__ = '2020-01-01'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
