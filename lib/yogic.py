@@ -10,6 +10,7 @@ __license__ = 'MIT'
 
 __all__ = (
     # export from here
+    'predicate',
     'resolve',
     'unify',
     'var',
@@ -19,7 +20,6 @@ __all__ = (
     'bind',
     'no',
     'plus',
-    'predicate',
     'recursive',
     'seq',
     'unit',
