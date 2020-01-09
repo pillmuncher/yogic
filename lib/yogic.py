@@ -82,7 +82,7 @@ def chase(o: object, subst: Subst):
 @multimethod
 def _unify(this: Variable, that: object):
     if this == that:
-        # a Variable is always bound to itself:
+        # a Variable, already bound or not, is always bound to itself:
         return unit
     else:
         # bind this to that while creating a new choice point:
