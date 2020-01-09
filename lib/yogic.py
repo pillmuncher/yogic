@@ -76,12 +76,16 @@ def chase(o: object, subst: Subst):
     return o
 
 
-# Bind Variables to values in an environment:
+# A polimorphic function that attempts to unify two objects in a Subst():
+#
+# Bind Variables to values:
 @multimethod
 def _unify(this: Variable, that: object):
     if this == that:
+        # a Variable is always bound to itself:
         return unit
     else:
+        # bind this to that while creating a new choice point:
         return lambda subst: unit(subst.new_child({this: that}))
 
 # Same as above, but with swapped arguments:
@@ -111,7 +115,7 @@ def unify(this, that):
     '''Unify "this" and "that".
     If at least one is an unbound Variable, bind it to the other object.
     If both are either lists or tuples, try to unify them recursively.
-    If both are other objects, unify them if they are equal.'''
+    Otherwise, unify them if they are equal.'''
     return lambda subst: _unify(chase(this, subst), chase(that, subst))(subst)
 
 
