@@ -76,7 +76,7 @@ def chase(o: object, subst: Subst):
     return o
 
 
-# A polimorphic function that attempts to unify two objects in a Subst():
+# A polymorphic function that attempts to unify two objects in a Subst():
 #
 # Bind Variables to values:
 @multimethod
