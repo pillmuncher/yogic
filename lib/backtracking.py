@@ -66,7 +66,7 @@ def alt(*mfs):
 
 
 def no(mf):
-    'Reverses the result of a monadic computation, AKA negation as failure.'
+    'Inverts the result of a monadic computation, AKA negation as failure.'
     def _(v):
         for each in mf(v):
             # If at least one solution is found, fail immediately:
