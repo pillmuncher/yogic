@@ -77,7 +77,6 @@ def no(mf):
     return _
 
 
-
 def recursive(genfunc):
     'Helper decorator for recursive monadic generator functions.'
     @wraps(genfunc)
