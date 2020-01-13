@@ -27,6 +27,7 @@ from functools import wraps, reduce
 # Look, Ma! It's a Monad!
 #
 # A monad for backtracking. Hence it's called the Backtracking Monad.
+# (Actually, it's just the List Monad. Don't tell anyone. Mum's the word.)
 
 
 def amb(*vs):
