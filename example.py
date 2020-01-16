@@ -116,19 +116,3 @@ print()
 for each in resolve(unify([x, y, 'test'], [y, z, x])):
     print(each[x], each[y], each[z])
 print()
-
-for each in resolve(bind(dog(x), unit)):
-    print(each[x])
-print()
-
-for each in resolve(bind(unit, dog(x))):
-    print(each[x])
-print()
-
-for each in resolve(bind(bind(mortal(x), dog(y)), child(x, y))):
-    print(each[x])
-print()
-
-for each in resolve(bind(mortal(x), bind(dog(y), child(x, y)))):
-    print(each[x])
-print()

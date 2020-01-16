@@ -13,11 +13,11 @@ __all__ = (
     'amb',
     'bind',
     'no',
-    'plus',
+    'both',
     'recursive',
     'seq',
     'unit',
-    'zero',
+    'fail',
 )
 
 from itertools import chain
@@ -30,6 +30,10 @@ from functools import wraps, reduce
 # (Actually, it's just the List Monad. Don't tell anyone. Mum's the word.)
 
 
+def flatmap(f, seq):
+    return chain.from_iterable(map(f, seq))
+
+
 def amb(*vs):
     'Takes the sequence vs of values into the monad.'
     return iter(vs)
@@ -40,29 +44,29 @@ def unit(v):
     return amb(v)
 
 
-def zero(v):
+def fail(v):
     'Ignores value v and returns an "empty" monad. Represents failure.'
     return amb()
 
 
-def bind(mf, mg):
+def bind(ma, mf):
     'Returns the result of flatmapping mg over mf(v).'
-    return lambda v: (u for w in mf(v) for u in mg(w))
+    return flatmap(mf, ma)
 
 
-def plus(mf, mg):
+def both(ma, mb):
     'Returns the results of both mf(v) and mg(v).'
-    return lambda v: chain(mf(v), mg(v))
+    return chain(ma, mb)
 
 
 def seq(*mfs):
     'Generalizes bind to operate on any number of monadic functions.'
-    return reduce(bind, mfs, unit)
+    return lambda v: reduce(bind, mfs, unit(v))
 
 
 def alt(*mfs):
-    'Generalizes plus to operate on any number of monadic functions.'
-    return reduce(plus, mfs, zero)
+    'Generalizes both to operate on any number of monadic functions.'
+    return lambda v: flatmap(lambda mf: mf(v), mfs)
 
 
 def no(mf):
@@ -70,7 +74,7 @@ def no(mf):
     def _(v):
         for each in mf(v):
             # If at least one solution is found, fail immediately:
-            return zero(v)
+            return fail(v)
         else:
             # If no solution is found, succeed:
             return unit(v)

@@ -19,11 +19,11 @@ __all__ = (
     'amb',
     'bind',
     'no',
-    'plus',
+    'both',
     'recursive',
     'seq',
     'unit',
-    'zero',
+    'fail',
 )
 
 from collections import namedtuple, ChainMap
@@ -31,7 +31,7 @@ from itertools import count
 from functools import wraps
 
 from . import multimethod
-from .backtracking import alt, amb, bind, no, plus, recursive, seq, unit, zero
+from .backtracking import alt, amb, bind, no, both, recursive, seq, unit, fail
 
 
 # Variable objects to be bound to values in a monadic computation:
@@ -56,7 +56,7 @@ class Subst(ChainMap):
 
 def resolve(goal):
     'Start the logical resolution of "goal". Return all solutions.'
-    return (subst.proxy for subst in goal(Subst()))
+    return (subst.proxy for subst in bind(unit(Subst()), goal))
 
 
 # A polymorphic function that chases "pointers" to bindings in an environment.
@@ -99,7 +99,7 @@ def _unify(this: (list, tuple), that: (list, tuple)):
     if type(this) == type(that) and len(this) == len(that):
         return seq(*map(unify, this, that))
     else:
-        return zero
+        return fail
 
 # Unify other objects only if they're equal:
 @multimethod
@@ -107,7 +107,7 @@ def _unify(this: object, that: object):
     if this == that:
         return unit
     else:
-        return zero
+        return fail
 
 
 # Public interface to _unify:
