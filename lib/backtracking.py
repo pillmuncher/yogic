@@ -44,29 +44,37 @@ def unit(v):
     return amb(v)
 
 
+zero = amb()
+
+
 def fail(v):
     'Ignores value v and returns an "empty" monad. Represents failure.'
-    return amb()
+    return zero
 
 
 def bind(ma, mf):
-    'Returns the result of flatmapping mg over mf(v).'
+    'Returns the result of flatmapping mg over ma.'
     return flatmap(mf, ma)
 
 
-def both(ma, mb):
-    'Returns the results of both mf(v) and mg(v).'
+def plus(ma, mb):
+    'Returns the values of both ma and mb.'
     return chain(ma, mb)
 
 
+def both(mf, mg):
+    'Returns a function of a value v that applies both mf and mg to that value.'
+    return lambda v: plus(mf(v), mg(v))
+
+
 def seq(*mfs):
-    'Generalizes bind to operate on any number of monadic functions.'
+    'Generalizes "bind" to operate on any number of monadic functions.'
     return lambda v: reduce(bind, mfs, unit(v))
 
 
 def alt(*mfs):
-    'Generalizes both to operate on any number of monadic functions.'
-    return lambda v: flatmap(lambda mf: mf(v), mfs)
+    'Generalizes "both" to operate on any number of monadic functions.'
+    return lambda v: reduce(both, mfs, fail)(v)
 
 
 def no(mf):
