@@ -27,11 +27,11 @@ __all__ = (
 )
 
 from collections import namedtuple, ChainMap
-from itertools import count
-from functools import wraps
+from itertools import count, repeat
+from functools import wraps, partial
 
 from . import multimethod
-from .backtracking import alt, amb, bind, no, both, recursive, seq, unit, fail
+from .backtracking import alt, amb, bind, fail, no, both, recursive, seq, unit
 
 
 # Variable objects to be bound to values in a monadic computation:
@@ -56,24 +56,24 @@ class Subst(ChainMap):
 
 def resolve(goal):
     'Start the logical resolution of "goal". Return all solutions.'
-    return (subst.proxy for subst in bind(unit(Subst()), goal))
+    return (subst.proxy for subst in goal(Subst())(partial(repeat, times=1)))
 
 
 # A polymorphic function that chases "pointers" to bindings in an environment.
 @multimethod
-def chase(v: Variable, subst: Subst):
-    if v in subst:
-        return chase(subst[v], subst)
+def chase(var: Variable, subst: Subst):
+    if var in subst:
+        return chase(subst[var], subst)
     else:
-        return v
+        return var
 
 @multimethod
-def chase(o: (list, tuple), subst: Subst):
-    return type(o)(chase(e, subst) for e in o)
+def chase(seq: (list, tuple), subst: Subst):
+    return type(seq)(chase(each, subst) for each in seq)
 
 @multimethod
-def chase(o: object, subst: Subst):
-    return o
+def chase(obj: object, subst: Subst):
+    return obj
 
 
 # A polymorphic function that attempts to unify two objects in a Subst():
@@ -119,9 +119,9 @@ def unify(this, that):
     return lambda subst: _unify(chase(this, subst), chase(that, subst))(subst)
 
 
-def predicate(g):
+def predicate(genfunc):
     'Helper decorator for generator functions.'
-    @wraps(g)
+    @wraps(genfunc)
     def _(*args, **kwargs):
-        return alt(*g(*args, **kwargs))
+        return alt(*genfunc(*args, **kwargs))
     return _

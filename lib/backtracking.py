@@ -27,23 +27,21 @@ from functools import wraps, reduce
 # Look, Ma! It's a Monad!
 #
 # A monad for backtracking. Hence it's called the Backtracking Monad.
-# (Actually, it's just the List Monad. Don't tell anyone. Mum's the word.)
+# (Actually, it's just the List Monad wrapped in the Continuation Monad.
+# Don't tell anyone. Mum's the word.)
 
 
 def flatmap(f, seq):
+    'Standard flatmap operation for sequences.'
     return chain.from_iterable(map(f, seq))
 
 
 def amb(*vs):
     'Takes the sequence vs of values into the monad.'
-    return iter(vs)
+    return lambda c: flatmap(c, vs)
 
 
-def unit(v):
-    'Takes the single value v into the monad. Represents success.'
-    return amb(v)
-
-
+# The monadic zero of the Backtracking Monad.
 zero = amb()
 
 
@@ -52,14 +50,19 @@ def fail(v):
     return zero
 
 
+def unit(v):
+    'Takes the single value v into the monad. Represents success.'
+    return amb(v)
+
+
 def bind(ma, mf):
-    'Returns the result of flatmapping mg over ma.'
-    return flatmap(mf, ma)
+    'Returns the result of flatmapping mf over ma.'
+    return lambda c: ma(lambda v: mf(v)(c))
 
 
 def plus(ma, mb):
     'Returns the values of both ma and mb.'
-    return chain(ma, mb)
+    return lambda c: chain(ma(c), mb(c))
 
 
 def both(mf, mg):
@@ -74,18 +77,20 @@ def seq(*mfs):
 
 def alt(*mfs):
     'Generalizes "both" to operate on any number of monadic functions.'
-    return lambda v: reduce(both, mfs, fail)(v)
+    return reduce(both, mfs, fail)
 
 
 def no(mf):
     'Inverts the result of a monadic computation, AKA negation as failure.'
     def _(v):
-        for each in mf(v):
-            # If at least one solution is found, fail immediately:
-            return fail(v)
-        else:
-            # If no solution is found, succeed:
-            return unit(v)
+        def __(c):
+            for each in mf(v)(c):
+                # If at least one solution is found, fail immediately:
+                return fail(v)(c)
+            else:
+                # If no solution is found, succeed:
+                return unit(v)(c)
+        return __
     return _
 
 
