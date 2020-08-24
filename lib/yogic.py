@@ -16,11 +16,11 @@ __all__ = (
     'var',
     # re-export from lib.backtracking
     'alt',
-    'amb',
     'bind',
     'no',
     'both',
     'recursive',
+    'run',
     'seq',
     'unit',
     'fail',
@@ -31,7 +31,7 @@ from itertools import count, repeat
 from functools import wraps, partial
 
 from . import multimethod
-from .backtracking import alt, amb, bind, fail, no, both, recursive, seq, unit
+from .backtracking import alt, bind, fail, no, both, recursive, run, seq, unit
 
 
 # Variable objects to be bound to values in a monadic computation:
@@ -56,7 +56,7 @@ class Subst(ChainMap):
 
 def resolve(goal):
     'Start the logical resolution of "goal". Return all solutions.'
-    return (subst.proxy for subst in goal(Subst())(partial(repeat, times=1)))
+    return (subst.proxy for subst in run(goal(Subst())))
 
 
 # A polymorphic function that chases "pointers" to bindings in an environment.
