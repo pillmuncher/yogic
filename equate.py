@@ -23,14 +23,19 @@ c = var()
 d = var()
 e = var()
 f = var()
+g = var()
 h = var()
 i = var()
 j = var()
+k = var()
+l = var()
 
 equation = seq(
-        equate([b, f, i], [6, 10, 3]),
-        equate([a, c, d, e, h], [2, 1, 9, 8, 4]),
-        equate([d, e, h, i, j], [6, 4, 2, 5, 9]),
+        equate([a, d, e, f, j, k, l], [2, 8, 6, 9, 1, 7, 4]),
+        equate([a, b, c, e, h, i, j], [11, 1, 12, 8, 4, 5, 10]),
+        equate([b, c, d, e, f, g, h], [5, 2, 9, 8, 11, 3, 10]),
+        equate([a, d, f, g, i, j, k], [4, 6, 12, 1, 2, 9, 3]),
+        equate([b, c, g, h, j, l], [3, 4, 7, 11, 5, 10]),
 )
 
 for n, each in enumerate(resolve(equation)):
@@ -41,8 +46,11 @@ for n, each in enumerate(resolve(equation)):
     print('d', each[d])
     print('e', each[e])
     print('f', each[f])
+    print('g', each[g])
     print('h', each[h])
     print('i', each[i])
     print('j', each[j])
+    print('k', each[k])
+    print('l', each[l])
     print()
 print()
