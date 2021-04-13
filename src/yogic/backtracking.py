@@ -22,7 +22,7 @@ __all__ = (
 from itertools import chain
 from functools import wraps
 
-from . import foldr
+from .utils import foldr
 
 
 # Look, Ma! It's a Monad!

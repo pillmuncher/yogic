@@ -9,27 +9,17 @@ __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 __all__ = (
-    # export from here
     'predicate',
     'resolve',
     'unify',
     'var',
-    # re-export from lib.backtracking
-    'bind',
-    'unit',
-    'fail',
-    'seq',
-    'alt',
-    'no',
-    'run',
-    'recursive',
 )
 
 from collections import namedtuple, ChainMap
 from itertools import count
 from functools import wraps
 
-from . import multimethod
+from .utils import multimethod
 from .backtracking import bind, unit, fail, seq, alt, no, run, recursive
 from .backtracking import alt_unstarred, seq_unstarred
 
