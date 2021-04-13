@@ -31,9 +31,9 @@ k = var()
 l = var()
 
 equation = seq(
-        equate([a, d, e, f, j, k, l], [2, 8, 6, 9, 1, 7, 4]),
-        equate([a, b, c, e, h, i, j], [11, 1, 12, 8, 4, 5, 10]),
-        equate([b, c, d, e, f, g, h], [5, 2, 9, 8, 11, 3, 10]),
+        # equate([a, d, e, f, j, k, l], [2, 8, 6, 9, 1, 7, 4]),
+        # equate([a, b, c, e, h, i, j], [11, 1, 12, 8, 4, 5, 10]),
+        # equate([b, c, d, e, f, g, h], [5, 2, 9, 8, 11, 3, 10]),
         equate([a, d, f, g, i, j, k], [4, 6, 12, 1, 2, 9, 3]),
         equate([b, c, g, h, j, l], [3, 4, 7, 11, 5, 10]),
 )

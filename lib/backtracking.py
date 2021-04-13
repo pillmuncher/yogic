@@ -33,22 +33,22 @@ from . import foldr
 
 
 def bind(ma, mf):
-    'Returns the result of flatmapping mf over ma.'
+    'Return the result of flatmapping mf over ma.'
     return lambda c: ma(lambda v: mf(v)(c))
 
 
 def unit(v):
-    'Takes the single value v into the monad. Represents success.'
+    'Take the single value v into the monad. Represents success.'
     return lambda c: c(v)
 
 
 def fail(v):
-    'Ignores value v and returns an "empty" monad. Represents failure.'
+    'Ignore the value v and returns an "empty" monad. Represents failure.'
     return lambda c: never()
 
 
 def seq(*mfs):
-    'Find every solution natching all mfs.'
+    'Find every solution matching all mfs.'
     return foldr(lambda mf, mg: lambda v: bind(mf(v), mg), mfs, start=unit)
 
 
