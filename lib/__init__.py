@@ -9,11 +9,39 @@ __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 __all__ = (
+    'take',
+    'flip',
+    'foldl',
+    'foldr',
     'multimethod',
 )
 
-from functools import wraps
+from functools import wraps, reduce
 from inspect import signature, Signature
+
+
+def flip(f):
+    @wraps(f)
+    def flipped(*xs):
+        return f(*reversed(xs))
+    return flipped
+
+
+SENTINEL = object()
+
+
+def foldl(f, xs, *, start=SENTINEL):
+    if start is SENTINEL:
+        return reduce(f, xs)
+    else:
+        return reduce(f, xs, start)
+
+
+def foldr(f, xs, *, start=SENTINEL):
+    if start is SENTINEL:
+        return reduce(flip(f), reversed(xs))
+    else:
+        return reduce(flip(f), reversed(xs), start)
 
 
 def multimethod(function):

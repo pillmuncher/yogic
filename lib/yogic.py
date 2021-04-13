@@ -15,23 +15,22 @@ __all__ = (
     'unify',
     'var',
     # re-export from lib.backtracking
-    'alt',
     'bind',
-    'no',
-    'both',
-    'recursive',
-    'run',
-    'seq',
     'unit',
     'fail',
+    'seq',
+    'alt',
+    'no',
+    'run',
+    'recursive',
 )
 
 from collections import namedtuple, ChainMap
-from itertools import count, repeat
-from functools import wraps, partial
+from itertools import count
+from functools import wraps
 
 from . import multimethod
-from .backtracking import alt, bind, fail, no, both, recursive, run, seq, unit
+from .backtracking import bind, unit, fail, seq, alt, no, run, recursive
 
 
 # Variable objects to be bound to values in a monadic computation:
@@ -114,7 +113,7 @@ def _unify(this: object, that: object):
 def unify(this, that):
     '''Unify "this" and "that".
     If at least one is an unbound Variable, bind it to the other object.
-    If both are either lists or tuples, try to unify them recursively.
+    If either are either lists or tuples, try to unify them recursively.
     Otherwise, unify them if they are equal.'''
     return lambda subst: _unify(chase(this, subst), chase(that, subst))(subst)
 

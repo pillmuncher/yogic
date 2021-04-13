@@ -19,7 +19,11 @@ def human(a):
     )
 
 def dog(a):
-    return unify(a, 'fifi')
+    return alt(
+        unify(a, 'fifi'),
+        unify(a, 'fluffy'),
+        unify(a, 'daisy'),
+    )
 
 def not_dog(a):
     return no(dog(a))
@@ -79,8 +83,10 @@ for each in resolve(seq(child(x, y), descendant(y, z))):
     print(each[x], each[y], each[z])
 print()
 
+print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 for each in resolve(seq(mortal(x), not_dog(x))):
     print(each[x])
+print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 print()
 
 for each in resolve(seq()):
