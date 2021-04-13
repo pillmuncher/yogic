@@ -20,8 +20,7 @@ from itertools import count
 from functools import wraps
 
 from .utils import multimethod
-from .backtracking import bind, unit, fail, seq, alt, no, run, recursive
-from .backtracking import alt_unstarred, seq_unstarred
+from .backtracking import unit, fail, run, alt_unstarred, seq_unstarred
 
 
 # Variable objects to be bound to values in a monadic computation:
@@ -58,8 +57,8 @@ def chase(var: Variable, subst: Subst):
         return var
 
 @multimethod
-def chase(seq: (list, tuple), subst: Subst):
-    return type(seq)(chase(each, subst) for each in seq)
+def chase(sequence: (list, tuple), subst: Subst):
+    return type(sequence)(chase(each, subst) for each in sequence)
 
 @multimethod
 def chase(obj: object, subst: Subst):

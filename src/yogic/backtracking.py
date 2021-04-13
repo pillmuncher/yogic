@@ -88,6 +88,6 @@ def run(ma):
 def recursive(genfunc):
     'Helper decorator for recursive monadic generator functions.'
     @wraps(genfunc)
-    def _(*args):
-        return lambda v: genfunc(*args)(v)
+    def _(*args, **kwargs):
+        return lambda v: genfunc(*args, **kwargs)(v)
     return _
