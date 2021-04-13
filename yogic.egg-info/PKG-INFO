@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: yogic
+Version: 0.16a0
+Summary: Yet another Prolog-like thingy for Python.
+Home-page: https://github.com/pillmuncher/yogic
+Author: 'Mick Krippendorf'
+Author-email: <m.krippendorf@freenet.de>
+License: UNKNOWN
+Project-URL: Bug Tracker, https://github.com/pypa/sampleproject/issues
+Description: Yet another Prolog-like thingy for Python. It's called yogic because logic programming is another step on the path to enlightenment.
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
