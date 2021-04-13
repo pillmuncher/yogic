@@ -3,8 +3,8 @@
 #
 # Copyright (C) 2020 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.16a'
-__date__ = '2020-01-01'
+__version__ = '0.18a'
+__date__ = '2020-04-13'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
@@ -31,6 +31,7 @@ from functools import wraps
 
 from . import multimethod
 from .backtracking import bind, unit, fail, seq, alt, no, run, recursive
+from .backtracking import alt_unstarred, seq_unstarred
 
 
 # Variable objects to be bound to values in a monadic computation:
@@ -96,7 +97,7 @@ def _unify(this: object, that: Variable):
 @multimethod
 def _unify(this: (list, tuple), that: (list, tuple)):
     if type(this) == type(that) and len(this) == len(that):
-        return seq(*map(unify, this, that))
+        return seq_unstarred(map(unify, this, that))
     else:
         return fail
 
@@ -113,7 +114,7 @@ def _unify(this: object, that: object):
 def unify(this, that):
     '''Unify "this" and "that".
     If at least one is an unbound Variable, bind it to the other object.
-    If either are either lists or tuples, try to unify them recursively.
+    If both are either lists or tuples, try to unify them recursively.
     Otherwise, unify them if they are equal.'''
     return lambda subst: _unify(chase(this, subst), chase(that, subst))(subst)
 
@@ -122,5 +123,5 @@ def predicate(genfunc):
     'Helper decorator for generator functions.'
     @wraps(genfunc)
     def _(*args, **kwargs):
-        return alt(*genfunc(*args, **kwargs))
+        return alt_unstarred(genfunc(*args, **kwargs))
     return _

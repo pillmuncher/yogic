@@ -3,12 +3,12 @@
 #
 # Copyright (C) 2020 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.16a'
-__date__ = '2020-01-01'
+__version__ = '0.18a'
+__date__ = '2020-04-13'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
-from lib.yogic import *
+from yogic import *
 
 
 def human(a):

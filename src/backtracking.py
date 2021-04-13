@@ -3,8 +3,8 @@
 #
 # Copyright (c) 2020 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.16a'
-__date__ = '2020-01-01'
+__version__ = '0.18a'
+__date__ = '2020-04-13'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
@@ -12,9 +12,9 @@ __all__ = (
     'bind',
     'unit',
     'fail',
-    'seq',
-    'alt',
     'no',
+    'alt',
+    'seq',
     'run',
     'recursive',
 )
@@ -28,7 +28,7 @@ from . import foldr
 # Look, Ma! It's a Monad!
 #
 # A monad for backtracking. Hence it's called the Backtracking Monad.
-# Actually, it's just the Continuation Monad wrapped aroun the List Monad.
+# Actually, it's just the Continuation Monad wrapped around the List Monad.
 # Don't tell anyone. Mum's the word.
 
 
@@ -44,24 +44,14 @@ def unit(v):
 
 def fail(v):
     'Ignore the value v and return an "empty" monad. Represents failure.'
-    return lambda c: never()
-
-
-def seq(*mfs):
-    'Find every solution matching all mfs.'
-    return foldr(lambda mf, mg: lambda v: bind(mf(v), mg), mfs, start=unit)
-
-
-def alt(*mfs):
-    'Find every solution matching any one of mfs.'
-    return lambda v: lambda c: chain(*(mf(v)(c) for mf in mfs))
+    return lambda c: ()
 
 
 def no(mf):
     'Invert the result of a monadic computation, AKA negation as failure.'
     def _(v):
         def __(c):
-            for each in mf(v)(c):
+            for result in mf(v)(c):
                 # If at least one solution is found, fail immediately:
                 return fail(v)(c)
             else:
@@ -71,17 +61,28 @@ def no(mf):
     return _
 
 
-def once(v):
-    yield v
+def alt_unstarred(mfs):
+    'Find solutions matching any one of mfs.'
+    return lambda v: lambda c: chain.from_iterable(mf(v)(c) for mf in mfs)
 
 
-def never():
-    yield from ()
+def alt(*mfs):
+    'Find solutions matching any one of mfs.'
+    return alt_unstarred(mfs)
+
+
+def seq_unstarred(mfs):
+    'Find solutions matching all mfs.'
+    return foldr(lambda mf, mg: lambda v: bind(mf(v), mg), mfs, start=unit)
+
+def seq(*mfs):
+    'Find solutions matching all mfs.'
+    return seq_unstarred(mfs)
 
 
 def run(ma):
     'Start the monadic computation of ma.'
-    return ma(once)
+    return ma(lambda v: (yield v))
 
 
 def recursive(genfunc):

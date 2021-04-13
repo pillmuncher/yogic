@@ -3,19 +3,19 @@
 #
 # Copyright (C) 2020 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.16a'
-__date__ = '2020-01-01'
+__version__ = '0.18a'
+__date__ = '2020-04-13'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 __all__ = (
-    'take',
     'flip',
     'foldl',
     'foldr',
     'multimethod',
 )
 
+from collections import defaultdict
 from functools import wraps, reduce
 from inspect import signature, Signature
 
@@ -31,6 +31,7 @@ SENTINEL = object()
 
 
 def foldl(f, xs, *, start=SENTINEL):
+    xs = tuple(xs)
     if start is SENTINEL:
         return reduce(f, xs)
     else:
@@ -38,28 +39,25 @@ def foldl(f, xs, *, start=SENTINEL):
 
 
 def foldr(f, xs, *, start=SENTINEL):
+    xs = tuple(xs)
     if start is SENTINEL:
         return reduce(flip(f), reversed(xs))
     else:
         return reduce(flip(f), reversed(xs), start)
 
 
-def multimethod(function):
+def multimethod(function, *, _registry=defaultdict(list)):
     '''Provide multimethods to Python, similar to:
     https://www.artima.com/weblogs/viewpost.jsp?thread=101605'''
-    typemap = multimethod._registry.setdefault(function.__name__, [])
-    typemap.append((
+    _registry[function.__name__].append((
         function,
-        tuple(
-            object if each.annotation is Signature.empty else each.annotation
-            for each in signature(function).parameters.values())))
+        tuple(object if sig.annotation is Signature.empty else sig.annotation
+              for sig in signature(function).parameters.values())))
     @wraps(function)
-    def call(*args):
-        for function, types in typemap:
+    def _(*args, **kwargs):
+        for func, types in _registry[function.__name__]:
             if len(args) == len(types):
                 if all(map(isinstance, args, types)):
-                    return function(*args)
+                    return func(*args, **kwargs)
         raise TypeError("multimethod couldn't find matching function!")
-    return call
-
-multimethod._registry = {}
+    return _
