@@ -43,7 +43,7 @@ def unit(v):
 
 
 def fail(v):
-    'Ignore the value v and returns an "empty" monad. Represents failure.'
+    'Ignore the value v and return an "empty" monad. Represents failure.'
     return lambda c: never()
 
 
