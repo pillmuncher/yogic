@@ -32,34 +32,28 @@ def var():
 # An environment mapping Variables to the values they are bound to during a
 # monadic computation:
 class Subst(ChainMap):
+
+    @multimethod
+    def chase(self, var: Variable):
+        if var in self:
+            return self.chase(self[var])
+        else:
+            return var
+
+    @multimethod
+    def chase(self, sequence: (list, tuple)):
+        return type(sequence)(self.chase(each) for each in sequence)
+
+    @multimethod
+    def chase(self, obj: object):
+        return obj
+
     @property
     class proxy:
         def __init__(self, subst):
             self._subst = subst
         def __getitem__(self, var):
-            return chase(var, self._subst)
-
-
-def resolve(goal):
-    'Start the logical resolution of "goal". Return all solutions.'
-    return (subst.proxy for subst in run(goal(Subst())))
-
-
-# A polymorphic function that chases "pointers" to bindings in an environment.
-@multimethod
-def chase(var: Variable, subst: Subst):
-    if var in subst:
-        return chase(subst[var], subst)
-    else:
-        return var
-
-@multimethod
-def chase(sequence: (list, tuple), subst: Subst):
-    return type(sequence)(chase(each, subst) for each in sequence)
-
-@multimethod
-def chase(obj: object, subst: Subst):
-    return obj
+            return self._subst.chase(var)
 
 
 # A polymorphic function that attempts to unify two objects in a Subst():
@@ -102,7 +96,7 @@ def unify(this, that):
     If at least one is an unbound Variable, bind it to the other object.
     If both are either lists or tuples, try to unify them recursively.
     Otherwise, unify them if they are equal.'''
-    return lambda subst: _unify(chase(this, subst), chase(that, subst))(subst)
+    return lambda subst: _unify(subst.chase(this), subst.chase(that))(subst)
 
 
 def predicate(genfunc):
@@ -111,3 +105,8 @@ def predicate(genfunc):
     def _(*args, **kwargs):
         return alt(*genfunc(*args, **kwargs))
     return _
+
+
+def resolve(goal):
+    'Start the logical resolution of "goal". Return all solutions.'
+    return (subst.proxy for subst in run(goal(Subst())))
