@@ -72,6 +72,7 @@ def seq_unstarred(mfs):
     'Find solutions matching all mfs.'
     return foldr(lambda mf, mg: lambda v: bind(mf(v), mg), mfs, start=unit)
 
+
 def seq(*mfs):
     'Find solutions matching all mfs.'
     return seq_unstarred(mfs)

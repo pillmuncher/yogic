@@ -80,10 +80,14 @@ for each in resolve(seq(child(x, y), descendant(y, z))):
     print(each[x], each[y], each[z])
 print()
 
-print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 for each in resolve(seq(mortal(x), not_dog(x))):
     print(each[x])
-print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+print()
+
+for each in resolve(seq(not_dog(x), mortal(x))):
+    print(each[x])
+else:
+    print('no.')
 print()
 
 for each in resolve(seq()):
@@ -101,6 +105,7 @@ else:
 print()
 
 for each in resolve(mortal('archimedes')):
+    print('yes.')
     break
 else:
     print('no.')

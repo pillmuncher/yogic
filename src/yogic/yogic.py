@@ -109,5 +109,5 @@ def predicate(genfunc):
     'Helper decorator for generator functions.'
     @wraps(genfunc)
     def _(*args, **kwargs):
-        return alt_unstarred(genfunc(*args, **kwargs))
+        return alt_unstarred(list(genfunc(*args, **kwargs)))
     return _
