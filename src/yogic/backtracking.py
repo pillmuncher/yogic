@@ -58,24 +58,14 @@ def no(mf):
     return _
 
 
-def alt_unstarred(mfs):
+def alt(*mfs):
     'Find solutions matching any one of mfs.'
     return lambda v: lambda c: chain.from_iterable(mf(v)(c) for mf in mfs)
 
 
-def alt(*mfs):
-    'Find solutions matching any one of mfs.'
-    return alt_unstarred(mfs)
-
-
-def seq_unstarred(mfs):
-    'Find solutions matching all mfs.'
-    return foldr(lambda mf, mg: lambda v: bind(mf(v), mg), mfs, start=unit)
-
-
 def seq(*mfs):
     'Find solutions matching all mfs.'
-    return seq_unstarred(mfs)
+    return foldr(lambda mf, mg: lambda v: bind(mf(v), mg), mfs, start=unit)
 
 
 def run(ma):

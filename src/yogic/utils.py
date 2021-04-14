@@ -28,7 +28,6 @@ SENTINEL = object()
 
 
 def foldl(f, xs, *, start=SENTINEL):
-    xs = tuple(xs)
     if start is SENTINEL:
         return reduce(f, xs)
     else:
@@ -36,7 +35,6 @@ def foldl(f, xs, *, start=SENTINEL):
 
 
 def foldr(f, xs, *, start=SENTINEL):
-    xs = tuple(xs)
     if start is SENTINEL:
         return reduce(flip(f), reversed(xs))
     else:

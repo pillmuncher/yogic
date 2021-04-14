@@ -17,7 +17,7 @@ from itertools import count
 from functools import wraps
 
 from .utils import multimethod
-from .backtracking import unit, zero, run, alt_unstarred, seq_unstarred
+from .backtracking import unit, zero, run, alt, seq
 
 
 # Variable objects to be bound to values in a monadic computation:
@@ -83,7 +83,7 @@ def _unify(this: object, that: Variable):
 @multimethod
 def _unify(this: (list, tuple), that: (list, tuple)):
     if type(this) == type(that) and len(this) == len(that):
-        return seq_unstarred(map(unify, this, that))
+        return seq(*map(unify, this, that))
     else:
         return zero
 
@@ -109,5 +109,5 @@ def predicate(genfunc):
     'Helper decorator for generator functions.'
     @wraps(genfunc)
     def _(*args, **kwargs):
-        return alt_unstarred(list(genfunc(*args, **kwargs)))
+        return alt(*genfunc(*args, **kwargs))
     return _
