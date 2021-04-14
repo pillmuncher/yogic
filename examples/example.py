@@ -42,19 +42,19 @@ def descendant(a, c):
     )
 
 @recursive
-@predicate
 def mortal(a):
-    yield human(a)
-    yield dog(a)
     b = var()
-    yield seq(descendant(a, b), mortal(b))
+    return alt(
+    human(a),
+    dog(a),
+    seq(descendant(a, b), mortal(b)),
+    )
 
-@predicate
 def append(a, b, c):
     x = var()
     y = var()
     z = var()
-    yield seq(
+    return seq(
         unify([x, y], a),
         unify([y, z], b),
         unify([x, z], c),
