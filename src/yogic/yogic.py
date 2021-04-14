@@ -6,6 +6,7 @@ __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 __all__ = (
+    'predicate',
     'resolve',
     'unify',
     'var',
@@ -102,3 +103,11 @@ def unify(this, that):
     If both are either lists or tuples, try to unify them recursively.
     Otherwise, unify them if they are equal.'''
     return lambda subst: _unify(chase(this, subst), chase(that, subst))(subst)
+
+
+def predicate(genfunc):
+    'Helper decorator for generator functions.'
+    @wraps(genfunc)
+    def _(*args, **kwargs):
+        return alt(*genfunc(*args, **kwargs))
+    return _
