@@ -8,7 +8,7 @@ __license__ = 'MIT'
 __all__ = (
     'bind',
     'unit',
-    'fail',
+    'zero',
     'no',
     'alt',
     'seq',
@@ -39,7 +39,7 @@ def unit(v):
     return lambda c: c(v)
 
 
-def fail(v):
+def zero(v):
     'Ignore the value v and return an "empty" monad. Represents failure.'
     return lambda c: ()
 
@@ -49,8 +49,8 @@ def no(mf):
     def _(v):
         def __(c):
             for result in mf(v)(c):
-                # If at least one solution is found, fail immediately:
-                return fail(v)(c)
+                # If at least one solution is found, zero immediately:
+                return zero(v)(c)
             else:
                 # If no solution is found, succeed:
                 return unit(v)(c)

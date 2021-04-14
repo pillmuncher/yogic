@@ -17,7 +17,7 @@ from itertools import count
 from functools import wraps
 
 from .utils import multimethod
-from .backtracking import unit, fail, run, alt_unstarred, seq_unstarred
+from .backtracking import unit, zero, run, alt_unstarred, seq_unstarred
 
 
 # Variable objects to be bound to values in a monadic computation:
@@ -85,7 +85,7 @@ def _unify(this: (list, tuple), that: (list, tuple)):
     if type(this) == type(that) and len(this) == len(that):
         return seq_unstarred(map(unify, this, that))
     else:
-        return fail
+        return zero
 
 # Unify other objects only if they're equal:
 @multimethod
@@ -93,7 +93,7 @@ def _unify(this: object, that: object):
     if this == that:
         return unit
     else:
-        return fail
+        return zero
 
 
 # Public interface to _unify:
