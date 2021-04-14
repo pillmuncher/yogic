@@ -9,7 +9,7 @@ __all__ = (
     # re-export from backtracking.py
     'bind',
     'unit',
-    'fail',
+    'zero',
     'seq',
     'alt',
     'no',
@@ -22,5 +22,5 @@ __all__ = (
     'var',
 )
 
-from .backtracking import bind, unit, fail, seq, alt, no, run, recursive
+from .backtracking import bind, unit, zero, seq, alt, no, run, recursive
 from .yogic import predicate, resolve, unify, var
