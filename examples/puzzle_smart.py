@@ -10,10 +10,8 @@ from itertools import starmap
 from yogic import *
 
 
-@predicate
 def equate(number, variables):
-    for variable in variables:
-        yield unify(variable, number)
+    return (unify(variable, number) for variable in variables)
 
 def simplify(puzzle):
     candidates = defaultdict(set)

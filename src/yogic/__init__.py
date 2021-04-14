@@ -16,11 +16,10 @@ __all__ = (
     'run',
     'recursive',
     # re-export from yogic.py
-    'predicate',
     'resolve',
     'unify',
     'var',
 )
 
 from .backtracking import bind, unit, zero, seq, alt, no, run, recursive
-from .yogic import predicate, resolve, unify, var
+from .yogic import resolve, unify, var
