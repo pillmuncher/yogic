@@ -45,9 +45,9 @@ def descendant(a, c):
 def mortal(a):
     b = var()
     return alt(
-    human(a),
-    dog(a),
-    seq(descendant(a, b), mortal(b)),
+        human(a),
+        dog(a),
+        seq(descendant(a, b), mortal(b)),
     )
 
 def append(a, b, c):

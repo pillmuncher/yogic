@@ -21,8 +21,12 @@ from .backtracking import unit, zero, run, alt, seq
 
 
 # Variable objects to be bound to values in a monadic computation:
-Variable = namedtuple('Variable', 'id')
-Variable._counter = count()
+class Variable(namedtuple('Variable', 'id')):
+    __slots__ = ()
+    _counter = count()
+    def __lt__(self, other):
+        return id(self) < id(other)
+
 
 def var():
     'Helper function to create Variables:'
@@ -58,15 +62,23 @@ class Subst(ChainMap):
 
 # A polymorphic function that attempts to unify two objects in a Subst():
 #
-# Bind Variables to values:
+# Bind a Variable to another:
 @multimethod
-def _unify(this: Variable, that: object):
-    if this == that:
+def _unify(this: Variable, that: Variable):
+    if this is that:
         # a Variable, already bound or not, is always bound to itself:
         return unit
     else:
+        # impose an absolute order on Variables to avoid circles:
+        this, that = sorted((this, that))
         # bind this to that while creating a new choice point:
         return lambda subst: unit(subst.new_child({this: that}))
+
+# Bind a Variable to a non-Variable:
+@multimethod
+def _unify(this: Variable, that: object):
+    # bind this to that while creating a new choice point:
+    return lambda subst: unit(subst.new_child({this: that}))
 
 # Same as above, but with swapped arguments:
 @multimethod
