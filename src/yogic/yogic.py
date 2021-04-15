@@ -12,6 +12,7 @@ __all__ = (
     'var',
 )
 
+from collections.abc import Mapping
 from collections import namedtuple, ChainMap
 from itertools import count
 from functools import wraps
@@ -34,6 +35,7 @@ def var():
 # monadic computation:
 class Subst(ChainMap):
 
+    # A polymorphic method that chases down Variable bindings:
     @multimethod
     def chase(self, var: Variable):
         if var in self:
@@ -49,12 +51,17 @@ class Subst(ChainMap):
     def chase(self, obj: object):
         return obj
 
+    # A proxy interface to Subst:
     @property
-    class proxy:
+    class proxy(Mapping):
         def __init__(self, subst):
             self._subst = subst
         def __getitem__(self, var):
             return self._subst.chase(var)
+        def __iter__(self):
+            return iter(self._subst)
+        def __len__(self):
+            return len(self._subst)
 
 
 # A polymorphic function that attempts to unify two objects in a Subst():
