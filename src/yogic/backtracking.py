@@ -1,25 +1,24 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.19a'
-__date__ = '2021-04-15'
+__version__ = '0.20a'
+__date__ = '2021-04-16'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 __all__ = (
+    'alt',
     'bind',
+    'no',
+    'run',
+    'seq',
+    'staralt',
+    'starseq',
     'unit',
     'zero',
-    'no',
-    'alt',
-    'seq',
-    'run',
-    'recursive',
 )
 
 from itertools import chain
-from functools import wraps
-
-from .utils import foldr
+from functools import reduce
 
 
 # Look, Ma! It's a Monad!
@@ -58,24 +57,26 @@ def no(mf):
     return _
 
 
-def alt(*mfs):
+def alt(mfs):
     'Find solutions matching any one of mfs.'
     return lambda v: lambda c: chain.from_iterable(mf(v)(c) for mf in mfs)
 
 
-def seq(*mfs):
+def staralt(*mfs):
+    'Find solutions matching any one of mfs.'
+    return alt(mfs)
+
+
+def seq(mfs):
     'Find solutions matching all mfs.'
-    return foldr(lambda mf, mg: lambda v: bind(mf(v), mg), mfs, start=unit)
+    return reduce(lambda mf, mg: lambda v: bind(mf(v), mg), mfs, unit)
+
+
+def starseq(*mfs):
+    'Find solutions matching all mfs.'
+    return seq(mfs)
 
 
 def run(ma):
     'Start the monadic computation of ma.'
     return ma(lambda v: (yield v))
-
-
-def recursive(genfunc):
-    'Helper decorator for recursive monadic generator functions.'
-    @wraps(genfunc)
-    def _(*args, **kwargs):
-        return lambda v: genfunc(*args, **kwargs)(v)
-    return _

@@ -1,7 +1,7 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.19a'
-__date__ = '2021-04-15'
+__version__ = '0.20a'
+__date__ = '2021-04-16'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
@@ -14,8 +14,8 @@ __all__ = (
 
 from collections.abc import Mapping
 from collections import namedtuple, ChainMap
-from itertools import count
 from functools import wraps
+from itertools import count
 
 from .utils import multimethod
 from .backtracking import unit, zero, run, alt, seq
@@ -85,7 +85,7 @@ def _unify(this: object, that: Variable):
 @multimethod
 def _unify(this: (list, tuple), that: (list, tuple)):
     if type(this) == type(that) and len(this) == len(that):
-        return seq(*map(unify, this, that))
+        return seq(map(unify, this, that))
     else:
         return zero
 
@@ -107,11 +107,11 @@ def unify(this, that):
     return lambda subst: _unify(subst.chase(this), subst.chase(that))(subst)
 
 
-def predicate(genfunc):
-    'Helper decorator for generator functions.'
-    @wraps(genfunc)
+def predicate(func):
+    'Helper decorator for yogic functions.'
+    @wraps(func)
     def _(*args, **kwargs):
-        return alt(*genfunc(*args, **kwargs))
+        return lambda v: func(*args, **kwargs)(v)
     return _
 
 

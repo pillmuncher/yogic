@@ -1,44 +1,17 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.19a'
-__date__ = '2021-04-15'
+__version__ = '0.20a'
+__date__ = '2021-04-16'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 __all__ = (
-    'flip',
-    'foldl',
-    'foldr',
     'multimethod',
 )
 
 from collections import defaultdict
-from functools import wraps, reduce
+from functools import wraps
 from inspect import signature, Signature
-
-
-def flip(f):
-    @wraps(f)
-    def flipped(*xs):
-        return f(*reversed(xs))
-    return flipped
-
-
-SENTINEL = object()
-
-
-def foldl(f, xs, *, start=SENTINEL):
-    if start is SENTINEL:
-        return reduce(f, xs)
-    else:
-        return reduce(f, xs, start)
-
-
-def foldr(f, xs, *, start=SENTINEL):
-    if start is SENTINEL:
-        return reduce(flip(f), reversed(xs))
-    else:
-        return reduce(flip(f), reversed(xs), start)
 
 
 def multimethod(function, *, _registry=defaultdict(list)):

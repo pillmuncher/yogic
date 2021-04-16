@@ -1,19 +1,19 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.19a'
-__date__ = '2021-04-15'
+__version__ = '0.20a'
+__date__ = '2021-04-16'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 from collections import defaultdict
 from itertools import starmap
+
 from yogic import *
 
 
 @predicate
 def equate(number, variables):
-    for variable in variables:
-        yield unify(variable, number)
+    return alt(unify(variable, number) for variable in variables)
 
 def simplify(puzzle):
     candidates = defaultdict(set)
@@ -37,7 +37,7 @@ puzzle = [
     ({b, c, g, h, j, l}, {3, 4, 7, 11, 5, 10}),
 ]
 
-for n, each in enumerate(resolve(seq(*starmap(equate, simplify(puzzle))))):
+for n, each in enumerate(resolve(seq(starmap(equate, simplify(puzzle))))):
     print('Ergebnis', n, '----------------------------------------------')
     print('a', each[a])
     print('b', each[b])

@@ -1,25 +1,28 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.18a'
+__version__ = '0.20a'
 __date__ = '2020-04-13'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 from itertools import permutations
+
 from yogic import *
 
+
+@predicate
 def equate(letters, numbers):
-    return alt(*[unify(letters, list(permutated_numbers))
-                for permutated_numbers in permutations(numbers)])
+    return alt(unify(letters, list(permutated_numbers))
+                for permutated_numbers in permutations(numbers))
 
 # -----8<---------8<---------8<---------8<---------8<---------8<---------8<-----
 
 a, b, c, d, e, f, g, h, i, j, k, l = (var() for _ in range(12))
 
-puzzle = seq(
-        equate([a, d, e, f, j, k, l], [2, 8, 6, 9, 1, 7, 4]),
-        equate([a, b, c, e, h, i, j], [11, 1, 12, 8, 4, 5, 10]),
-        equate([b, c, d, e, f, g, h], [5, 2, 9, 8, 11, 3, 10]),
+puzzle = starseq(
+        # equate([a, d, e, f, j, k, l], [2, 8, 6, 9, 1, 7, 4]),
+        # equate([a, b, c, e, h, i, j], [11, 1, 12, 8, 4, 5, 10]),
+        # equate([b, c, d, e, f, g, h], [5, 2, 9, 8, 11, 3, 10]),
         equate([a, d, f, g, i, j, k], [4, 6, 12, 1, 2, 9, 3]),
         equate([b, c, g, h, j, l], [3, 4, 7, 11, 5, 10]),
 )

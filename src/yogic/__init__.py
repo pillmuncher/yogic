@@ -1,20 +1,21 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.19a'
-__date__ = '2021-04-15'
+__version__ = '0.20a'
+__date__ = '2021-04-16'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 __all__ = (
     # re-export from backtracking.py
-    'bind',
-    'unit',
-    'zero',
-    'seq',
     'alt',
+    'bind',
     'no',
     'run',
-    'recursive',
+    'seq',
+    'staralt',
+    'starseq',
+    'unit',
+    'zero',
     # re-export from yogic.py
     'predicate',
     'resolve',
@@ -22,5 +23,5 @@ __all__ = (
     'var',
 )
 
-from .backtracking import bind, unit, zero, seq, alt, no, run, recursive
+from .backtracking import alt, bind, no, run, seq, staralt, starseq, unit, zero
 from .yogic import predicate, resolve, unify, var

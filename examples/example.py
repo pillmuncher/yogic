@@ -1,60 +1,65 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.19a'
-__date__ = '2021-04-15'
+__version__ = '0.20a'
+__date__ = '2021-04-16'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 from yogic import *
 
 
+@predicate
 def human(a):
-    return alt(
+    return staralt(
         unify(a, 'socrates'),
         unify(a, 'plato'),
         unify(a, 'bob'),
     )
 
+@predicate
 def dog(a):
-    return alt(
+    return staralt(
         unify(a, 'fifi'),
         unify(a, 'fluffy'),
         unify(a, 'daisy'),
     )
 
+@predicate
 def not_dog(a):
     return no(dog(a))
 
+@predicate
 def child(a, b):
-    return alt(
+    return staralt(
         unify([a, b], ['archimedes', 'bob']),
         unify([a, b], ['fluffy', 'fifi']),
         unify([a, b], ['daisy', 'fluffy']),
         unify([a, b], ['athene', 'zeus']),
     )
 
-@recursive
+@predicate
 def descendant(a, c):
     b = var()
-    return alt(
+    return staralt(
         child(a, c),
-        seq(child(a, b), descendant(b, c)),
+        starseq(child(a, b), descendant(b, c)),
     )
 
-@recursive
+@predicate
 def mortal(a):
     b = var()
-    return alt(
+    return staralt(
         human(a),
         dog(a),
-        seq(descendant(a, b), mortal(b)),
+        starseq(descendant(a, b), mortal(b)),
     )
 
+@predicate
 def append(a, b, c):
     x = var()
     y = var()
     z = var()
-    return seq(
+    return starseq(
         unify([x, y], a),
         unify([y, z], b),
         unify([x, z], c),
@@ -76,28 +81,28 @@ for each in resolve(descendant(x, y)):
     print(each[x], each[y])
 print()
 
-for each in resolve(seq(child(x, y), descendant(y, z))):
+for each in resolve(starseq(child(x, y), descendant(y, z))):
     print(each[x], each[y], each[z])
 print()
 
-for each in resolve(seq(mortal(x), not_dog(x))):
+for each in resolve(starseq(mortal(x), not_dog(x))):
     print(each[x])
 print()
 
-for each in resolve(seq(not_dog(x), mortal(x))):
+for each in resolve(starseq(not_dog(x), mortal(x))):
     print(each[x])
 else:
     print('no.')
 print()
 
-for each in resolve(seq()):
+for each in resolve(starseq()):
     print('yes.')
     break
 else:
     print('no.')
 print()
 
-for each in resolve(alt()):
+for each in resolve(staralt()):
     print('yes.')
     break
 else:
@@ -117,7 +122,7 @@ else:
     print('no.')
 print()
 
-for each in resolve(seq(unify(x, 1), unify(y, 2))):
+for each in resolve(starseq(unify(x, 1), unify(y, 2))):
     print(each[x], each[y])
 print()
 
