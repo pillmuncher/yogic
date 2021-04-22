@@ -1,7 +1,7 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.20a'
-__date__ = '2021-04-16'
+__version__ = '0.21a'
+__date__ = '2021-04-22'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
@@ -67,9 +67,13 @@ def staralt(*mfs):
     return alt(mfs)
 
 
+def then(mf, mg):
+    return lambda v: bind(mf(v), mg)
+
+
 def seq(mfs):
     'Find solutions matching all mfs.'
-    return reduce(lambda mf, mg: lambda v: bind(mf(v), mg), mfs, unit)
+    return reduce(then, mfs, unit)
 
 
 def starseq(*mfs):
