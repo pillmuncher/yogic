@@ -16,10 +16,9 @@ from collections.abc import Mapping
 from collections import namedtuple, ChainMap
 from functools import wraps
 from itertools import count
-from typing import Union
+from typing import Sequence
 
-from .utils import multimethod
-from .backtracking import unit, zero, run, alt, seq
+from .backtracking import unit, zero, run, seq
 
 
 # Variable objects to be bound to values in a monadic computation:
@@ -32,29 +31,26 @@ def var():
     return Variable(next(Variable._counter))
 
 
-# An environment mapping Variables to the values they are bound to during a
-# monadic computation:
 class Subst(ChainMap):
+    """An environment that maps Variables to the values they are bound to during
+    a monadic computation:"""
 
-    # A polymorphic method that chases down Variable bindings:
-    @multimethod
-    def chase(self, var: Variable):
-        if var in self:
-            return self.chase(self[var])
-        else:
-            return var
-
-    @multimethod
-    def chase(self, sequence: list|tuple):
-        return type(sequence)(self.chase(each) for each in sequence)
-
-    @multimethod
-    def chase(self, obj: object):
-        return obj
-
-    # A proxy interface to Subst:
+    def chase(self, obj):
+        "Chase down Variable bindings."
+        match obj:
+            case Variable() as var:
+                if var in self:
+                    return self.chase(self[var])
+                else:
+                    return var
+            case list() | tuple() as sequence:
+                return type(sequence)(self.chase(each) for each in sequence)
+            case _:
+                return obj
+#
     @property
     class proxy(Mapping):
+        "A proxy interface to Subst."
         def __init__(self, subst):
             self._subst = subst
         def __getitem__(self, var):
@@ -65,38 +61,32 @@ class Subst(ChainMap):
             return len(self._subst)
 
 
-# A polymorphic function that attempts to unify two objects in a Subst():
-#
-# Bind a Variable to another object:
-@multimethod
 def _unify(this: Variable, that: object):
-    if this is that:
-        # a Variable, already bound or not, is always bound to itself:
-        return unit
-    else:
-        # bind this to that while creating a new choice point:
-        return lambda subst: unit(subst.new_child({this: that}))
-
-# Same as above, but with swapped arguments:
-@multimethod
-def _unify(this: object, that: Variable):
-    return _unify(that, this)
-
-# Recursively unify two lists or tuples:
-@multimethod
-def _unify(this: (list, tuple), that: (list, tuple)):
-    if type(this) == type(that) and len(this) == len(that):
-        return seq(map(unify, this, that))
-    else:
-        return zero
-
-# Unify other objects only if they're equal:
-@multimethod
-def _unify(this: object, that: object):
-    if this == that:
-        return unit
-    else:
-        return zero
+    # Unify two objects in a Subst:
+    match this, that:
+        case Variable(), object():
+            # Bind a Variable to another object:
+            if this is that:
+                # a Variable, already bound or not, is always bound to itself:
+                return unit
+            else:
+                # bind this to that while creating a new choice point:
+                return lambda subst: unit(subst.new_child({this: that}))
+        case object(), Variable():
+            # Same as above, but with swapped arguments:
+            return _unify(that, this)
+        case list() | tuple(), list() | tuple():
+            # Recursively unify two lists or tuples:
+            if type(this) == type(that) and len(this) == len(that):
+                return seq(map(unify, this, that))
+            else:
+                return zero
+        case _:
+            # Unify other objects only if they're equal:
+            if this == that:
+                return unit
+            else:
+                return zero
 
 
 # Public interface to _unify:
