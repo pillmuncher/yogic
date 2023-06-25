@@ -47,7 +47,7 @@ class Subst(ChainMap):
                 return type(sequence)(self.chase(each) for each in sequence)
             case _:
                 return obj
-#
+
     @property
     class proxy(Mapping):
         "A proxy interface to Subst."
