@@ -29,7 +29,7 @@ from functools import reduce
 
 
 def bind(ma, mf):
-    'Return the result of flatmapping mf over ma.'
+    'Return the result of applying mf to ma.'
     return lambda c: ma(lambda v: mf(v)(c))
 
 
@@ -57,17 +57,9 @@ def no(mf):
     return _
 
 
-def alt(mfs):
-    'Find solutions matching any one of mfs.'
-    return lambda v: lambda c: chain.from_iterable(mf(v)(c) for mf in mfs)
-
-
-def staralt(*mfs):
-    'Find solutions matching any one of mfs.'
-    return alt(mfs)
-
-
 def then(mf, mg):
+    'Apply Run two monadic functions mf and mg in sequence.'
+    'Together with zero, this makes the monad also a monoid.'
     return lambda v: bind(mf(v), mg)
 
 
@@ -79,6 +71,16 @@ def seq(mfs):
 def starseq(*mfs):
     'Find solutions matching all mfs.'
     return seq(mfs)
+
+
+def alt(mfs):
+    'Find solutions matching any one of mfs.'
+    return lambda v: lambda c: chain.from_iterable(mf(v)(c) for mf in mfs)
+
+
+def staralt(*mfs):
+    'Find solutions matching any one of mfs.'
+    return alt(mfs)
 
 
 def run(ma):
