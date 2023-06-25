@@ -16,6 +16,7 @@ from collections.abc import Mapping
 from collections import namedtuple, ChainMap
 from functools import wraps
 from itertools import count
+from typing import Union
 
 from .utils import multimethod
 from .backtracking import unit, zero, run, alt, seq
@@ -44,7 +45,7 @@ class Subst(ChainMap):
             return var
 
     @multimethod
-    def chase(self, sequence: (list, tuple)):
+    def chase(self, sequence: list|tuple):
         return type(sequence)(self.chase(each) for each in sequence)
 
     @multimethod
