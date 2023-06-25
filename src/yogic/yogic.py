@@ -16,7 +16,6 @@ from collections.abc import Mapping
 from collections import namedtuple, ChainMap
 from functools import wraps
 from itertools import count
-from typing import Sequence
 
 from .backtracking import unit, zero, run, seq
 
