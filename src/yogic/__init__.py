@@ -25,3 +25,6 @@ __all__ = (
 
 from .backtracking import alt, bind, no, run, seq, staralt, starseq, unit, zero
 from .yogic import predicate, resolve, unify, var
+
+from . import _version
+__version__ = _version.get_versions()['version']

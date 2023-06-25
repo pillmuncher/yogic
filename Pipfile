@@ -5,6 +5,10 @@ name = "pypi"
 
 [packages]
 neovim = "*"
+setuptools = "*"
+setuptools-scm = "*"
+tomli = "*"
+versioneer = "*"
 
 [dev-packages]
 
