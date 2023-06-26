@@ -2,12 +2,13 @@
 
 __all__ = (
     'bind',
-    'no',
-    'run',
-    'alt',
-    'seq',
     'unit',
     'zero',
+    'no',
+    'then',
+    'alt',
+    'seq',
+    'run',
 )
 
 from itertools import chain
@@ -56,18 +57,6 @@ def then(mf, mg):
     return lambda v: bind(mf(v), mg)
 
 
-def _seq_from_iterable(mfs):
-    '''Find solutions matching all mfs.'''
-    return reduce(then, mfs, unit)
-
-
-def seq(*mfs):
-    '''Find solutions matching all mfs.'''
-    return _seq_from_iterable(mfs)
-
-seq.from_iterable = _seq_from_iterable
-
-
 def _alt_from_iterable(mfs):
     '''Find solutions matching any one of mfs.'''
     return lambda v: lambda c: chain.from_iterable(mf(v)(c) for mf in mfs)
@@ -78,6 +67,18 @@ def alt(*mfs):
     return _alt_from_iterable(mfs)
 
 alt.from_iterable = _alt_from_iterable
+
+
+def _seq_from_iterable(mfs):
+    '''Find solutions matching all mfs.'''
+    return reduce(then, mfs, unit)
+
+
+def seq(*mfs):
+    '''Find solutions matching all mfs.'''
+    return _seq_from_iterable(mfs)
+
+seq.from_iterable = _seq_from_iterable
 
 
 def run(ma):

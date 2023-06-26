@@ -7,8 +7,8 @@ __all__ = (
     'var',
 )
 
-from collections.abc import Mapping
 from collections import namedtuple, ChainMap
+from collections.abc import Mapping
 from functools import wraps
 from itertools import count
 
