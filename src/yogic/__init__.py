@@ -1,8 +1,8 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__date__ = '2023-06-26'''
-__author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'''
-__license__ = 'MIT'''
+__date__ = '2023-06-26'
+__author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
+__license__ = 'MIT'
 
 __all__ = (
     'bind',
@@ -110,7 +110,7 @@ class Subst(ChainMap):
     a monadic computation.'''
 
     def chase(self, obj):
-        'Chase down Variable bindings.'''
+        '''Chase down Variable bindings.'''
         match obj:
             case Variable() as variable:
                 if variable in self:
