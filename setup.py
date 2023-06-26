@@ -14,4 +14,4 @@ if __name__ == '__main__':
         package_dir={'':'src'},
         version=versioneer.get_version(),
         cmdclass=versioneer.get_cmdclass(),
-)
+    )
