@@ -53,7 +53,7 @@ def no(mf):
 
 
 def then(mf, mg):
-    'Apply Run two monadic functions mf and mg in sequence.'
+    'Apply two monadic functions mf and mg in sequence.'
     'Together with unit, this makes the monad also a monoid.'
     return lambda v: bind(mf(v), mg)
 
