@@ -23,6 +23,8 @@ from collections import namedtuple, ChainMap
 from collections.abc import Mapping
 from functools import wraps, reduce
 from itertools import count, chain
+from . import _version
+__version__ = _version.get_versions()['version']
 
 
 # A monad for backtracking. Hence it's called the Backtracking Monad.
@@ -181,7 +183,3 @@ def predicate(func):
 def resolve(goal):
     '''Start the logical resolution of 'goal'. Return all solutions.'''
     return (subst.proxy for subst in run(goal(Subst())))
-
-
-from . import _version
-__version__ = _version.get_versions()['version']
