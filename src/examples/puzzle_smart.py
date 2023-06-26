@@ -1,10 +1,5 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.21a'
-__date__ = '2021-04-22'
-__author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
-__license__ = 'MIT'
-
 from collections import defaultdict
 from itertools import starmap
 
