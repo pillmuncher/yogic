@@ -5,7 +5,7 @@ from yogic import *
 
 @predicate
 def human(a):
-    return staralt(
+    return alt(
         unify(a, 'socrates'),
         unify(a, 'plato'),
         unify(a, 'bob'),
@@ -13,7 +13,7 @@ def human(a):
 
 @predicate
 def dog(a):
-    return staralt(
+    return alt(
         unify(a, 'fifi'),
         unify(a, 'fluffy'),
         unify(a, 'daisy'),
@@ -25,7 +25,7 @@ def not_dog(a):
 
 @predicate
 def child(a, b):
-    return staralt(
+    return alt(
         unify([a, b], ['archimedes', 'bob']),
         unify([a, b], ['fluffy', 'fifi']),
         unify([a, b], ['daisy', 'fluffy']),
@@ -35,18 +35,18 @@ def child(a, b):
 @predicate
 def descendant(a, c):
     b = var()
-    return staralt(
+    return alt(
         child(a, c),
-        starseq(child(a, b), descendant(b, c)),
+        seq(child(a, b), descendant(b, c)),
     )
 
 @predicate
 def mortal(a):
     b = var()
-    return staralt(
+    return alt(
         human(a),
         dog(a),
-        starseq(descendant(a, b), mortal(b)),
+        seq(descendant(a, b), mortal(b)),
     )
 
 @predicate
@@ -54,7 +54,7 @@ def append(a, b, c):
     x = var()
     y = var()
     z = var()
-    return starseq(
+    return seq(
         unify([x, y], a),
         unify([y, z], b),
         unify([x, z], c),
@@ -76,28 +76,28 @@ for each in resolve(descendant(x, y)):
     print(each[x], each[y])
 print()
 
-for each in resolve(starseq(child(x, y), descendant(y, z))):
+for each in resolve(seq(child(x, y), descendant(y, z))):
     print(each[x], each[y], each[z])
 print()
 
-for each in resolve(starseq(mortal(x), not_dog(x))):
+for each in resolve(seq(mortal(x), not_dog(x))):
     print(each[x])
 print()
 
-for each in resolve(starseq(not_dog(x), mortal(x))):
+for each in resolve(seq(not_dog(x), mortal(x))):
     print(each[x])
 else:
     print('no.')
 print()
 
-for each in resolve(starseq()):
+for each in resolve(seq()):
     print('yes.')
     break
 else:
     print('no.')
 print()
 
-for each in resolve(staralt()):
+for each in resolve(alt()):
     print('yes.')
     break
 else:
@@ -117,7 +117,7 @@ else:
     print('no.')
 print()
 
-for each in resolve(starseq(unify(x, 1), unify(y, 2))):
+for each in resolve(seq(unify(x, 1), unify(y, 2))):
     print(each[x], each[y])
 print()
 

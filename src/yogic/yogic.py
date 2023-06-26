@@ -72,7 +72,7 @@ def _unify(this: Variable, that: object):
         case list() | tuple(), list() | tuple():
             # Recursively unify two lists or tuples:
             if type(this) == type(that) and len(this) == len(that):
-                return seq(map(unify, this, that))
+                return seq.from_iterable(map(unify, this, that))
             else:
                 return zero
         case _:

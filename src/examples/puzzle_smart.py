@@ -8,7 +8,7 @@ from yogic import *
 
 @predicate
 def equate(number, variables):
-    return alt(unify(variable, number) for variable in variables)
+    return alt.from_iterable(unify(variable, number) for variable in variables)
 
 def simplify(puzzle):
     candidates = defaultdict(set)
@@ -32,7 +32,7 @@ puzzle = [
     ({b, c, g, h, j, l}, {3, 4, 7, 11, 5, 10}),
 ]
 
-for n, each in enumerate(resolve(seq(starmap(equate, simplify(puzzle))))):
+for n, each in enumerate(resolve(seq.from_iterable(starmap(equate, simplify(puzzle))))):
     print('Ergebnis', n, '----------------------------------------------')
     print('a', each[a])
     print('b', each[b])

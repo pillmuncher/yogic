@@ -1,13 +1,13 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
 __all__ = (
-    'alt',
+    'alt_from_iterable',
     'bind',
     'no',
     'run',
+    'seq_from_iterable',
+    'alt',
     'seq',
-    'staralt',
-    'starseq',
     'unit',
     'zero',
 )
@@ -58,24 +58,28 @@ def then(mf, mg):
     return lambda v: bind(mf(v), mg)
 
 
-def seq(mfs):
+def _seq_from_iterable(mfs):
     'Find solutions matching all mfs.'
     return reduce(then, mfs, unit)
 
 
-def starseq(*mfs):
+def seq(*mfs):
     'Find solutions matching all mfs.'
-    return seq(mfs)
+    return _seq_from_iterable(mfs)
+
+seq.from_iterable = _seq_from_iterable
 
 
-def alt(mfs):
+def _alt_from_iterable(mfs):
     'Find solutions matching any one of mfs.'
     return lambda v: lambda c: chain.from_iterable(mf(v)(c) for mf in mfs)
 
 
-def staralt(*mfs):
+def alt(*mfs):
     'Find solutions matching any one of mfs.'
-    return alt(mfs)
+    return _alt_from_iterable(mfs)
+
+alt.from_iterable = _alt_from_iterable
 
 
 def run(ma):

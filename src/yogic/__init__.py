@@ -6,13 +6,11 @@ __license__ = 'MIT'
 
 __all__ = (
     # re-export from backtracking.py
-    'alt',
     'bind',
     'no',
     'run',
+    'alt',
     'seq',
-    'staralt',
-    'starseq',
     'unit',
     'zero',
     # re-export from yogic.py
@@ -22,7 +20,7 @@ __all__ = (
     'var',
 )
 
-from .backtracking import alt, bind, no, run, seq, staralt, starseq, unit, zero
+from .backtracking import bind, unit, zero, run, no, alt, seq
 from .yogic import predicate, resolve, unify, var
 
 from . import _version
