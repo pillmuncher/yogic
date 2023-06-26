@@ -26,11 +26,11 @@ def var():
 
 
 class Subst(ChainMap):
-    """An environment that maps Variables to the values they are bound to during
-    a monadic computation:"""
+    '''An environment that maps Variables to the values they are bound to during
+    a monadic computation:'''
 
     def chase(self, obj):
-        "Chase down Variable bindings."
+        'Chase down Variable bindings.'
         match obj:
             case Variable() as var:
                 if var in self:
@@ -44,7 +44,7 @@ class Subst(ChainMap):
 
     @property
     class proxy(Mapping):
-        "A proxy interface to Subst."
+        'A proxy interface to Subst.'
         def __init__(self, subst):
             self._subst = subst
         def __getitem__(self, var):
@@ -85,7 +85,7 @@ def _unify(this, that):
 
 # Public interface to _unify:
 def unify(this, that):
-    '''Unify "this" and "that".
+    '''Unify 'this' and 'that'.
     If at least one is an unbound Variable, bind it to the other object.
     If both are either lists or tuples, try to unify them recursively.
     Otherwise, unify them if they are equal.'''
