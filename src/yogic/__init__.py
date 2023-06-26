@@ -105,16 +105,16 @@ def var():
 
 class Subst(ChainMap):
     '''An environment that maps Variables to the values they are bound to during
-    a monadic computation:'''
+    a monadic computation.'''
 
     def chase(self, obj):
         'Chase down Variable bindings.'''
         match obj:
-            case Variable() as var:
-                if var in self:
-                    return self.chase(self[var])
+            case Variable() as variable:
+                if variable in self:
+                    return self.chase(self[variable])
                 else:
-                    return var
+                    return variable
             case list() | tuple() as sequence:
                 return type(sequence)(self.chase(each) for each in sequence)
             case _:
