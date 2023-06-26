@@ -135,7 +135,7 @@ class Subst(ChainMap):
             return len(self._subst)
 
 
-def _unify(this, that)
+def _unify(this, that):
     # Unify two objects in a Subst:
     match this, that:
         case Variable(), object():
