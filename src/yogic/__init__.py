@@ -99,7 +99,7 @@ Variable._counter = count()
 
 
 def var():
-    '''Helper function to create Variables:'''
+    '''Helper function to create Variables.'''
     return Variable(next(Variable._counter))
 
 
