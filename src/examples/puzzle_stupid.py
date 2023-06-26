@@ -1,6 +1,6 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__version__ = '0.2.2'
+__version__ = '0.2.3'
 __date__ = '2020-04-13'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
