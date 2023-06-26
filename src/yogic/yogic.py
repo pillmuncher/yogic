@@ -1,12 +1,5 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-__all__ = (
-    'predicate',
-    'resolve',
-    'unify',
-    'var',
-)
-
 from collections import namedtuple, ChainMap
 from collections.abc import Mapping
 from functools import wraps
