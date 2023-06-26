@@ -21,7 +21,7 @@ Variable._counter = count()
 
 
 def var():
-    'Helper function to create Variables:'
+    '''Helper function to create Variables:'''
     return Variable(next(Variable._counter))
 
 
@@ -30,7 +30,7 @@ class Subst(ChainMap):
     a monadic computation:'''
 
     def chase(self, obj):
-        'Chase down Variable bindings.'
+        'Chase down Variable bindings.'''
         match obj:
             case Variable() as var:
                 if var in self:
@@ -44,7 +44,7 @@ class Subst(ChainMap):
 
     @property
     class proxy(Mapping):
-        'A proxy interface to Subst.'
+        '''A proxy interface to Subst.'''
         def __init__(self, subst):
             self._subst = subst
         def __getitem__(self, var):
@@ -93,7 +93,7 @@ def unify(this, that):
 
 
 def predicate(func):
-    'Helper decorator for yogic functions.'
+    '''Helper decorator for yogic functions.'''
     @wraps(func)
     def _(*args, **kwargs):
         return lambda v: func(*args, **kwargs)(v)
@@ -101,5 +101,5 @@ def predicate(func):
 
 
 def resolve(goal):
-    'Start the logical resolution of "goal". Return all solutions.'
+    '''Start the logical resolution of 'goal'. Return all solutions.'''
     return (subst.proxy for subst in run(goal(Subst())))
