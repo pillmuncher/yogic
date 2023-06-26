@@ -4,13 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-neovim = "*"
-setuptools = "*"
-setuptools-scm = "*"
-tomli = "*"
-versioneer = "*"
 
 [dev-packages]
+neovim = "*"
+setuptools = "*"
+tomli = "*"
+versioneer = "*"
 
 [requires]
 python_version = "3.10"
