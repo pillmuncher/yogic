@@ -97,12 +97,12 @@ def run(ma):
 
 # Variable objects to be bound to values in a monadic computation:
 Variable = namedtuple('Variable', 'id')
-Variable._counter = count()
+_var_counter = count()
 
 
 def var():
     '''Helper function to create Variables.'''
-    return Variable(next(Variable._counter))
+    return Variable(next(_var_counter))
 
 
 class Subst(ChainMap):
@@ -135,7 +135,7 @@ class Subst(ChainMap):
             return len(self._subst)
 
 
-def _unify(this, that):
+def _unify(this, that)
     # Unify two objects in a Subst:
     match this, that:
         case Variable(), object():
