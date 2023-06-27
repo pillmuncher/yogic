@@ -176,7 +176,7 @@ def predicate(func):
     '''Helper decorator for yogic functions.'''
     @wraps(func)
     def _(*args, **kwargs):
-        return lambda v: func(*args, **kwargs)(v)
+        return lambda subst: func(*args, **kwargs)(subst)
     return _
 
 
