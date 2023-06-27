@@ -6,7 +6,9 @@ name = "pypi"
 [packages]
 
 [dev-packages]
+neotest = "*"
 neovim = "*"
+pytest = "*"
 setuptools = "*"
 tomli = "*"
 versioneer = "*"
