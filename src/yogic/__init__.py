@@ -21,7 +21,7 @@ __all__ = (
     'var',
 )
 
-from .backtracking import bind, unit, zero, no, then, alt, seq, run
+from .backtracking import bind, unit, zero, no, then, seq, alt, run
 from .yogic import predicate, resolve, unify, var
 
 from . import _version

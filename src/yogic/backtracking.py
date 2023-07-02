@@ -58,18 +58,6 @@ def then(mf: Mf, mg: Mf) -> Mf:
     return lambda v: bind(mf(v), mg)
 
 
-def _alt_from_iterable(mfs: Sequence[Mf]) -> Mf:
-    '''Find solutions matching any one of mfs.'''
-    return lambda v: lambda c: chain.from_iterable(mf(v)(c) for mf in mfs)
-
-
-def alt(*mfs: Mf) -> Mf:
-    '''Find solutions matching any one of mfs.'''
-    return _alt_from_iterable(mfs)
-
-alt.from_iterable = _alt_from_iterable  # type: ignore
-
-
 def _seq_from_iterable(mfs: Sequence[Mf]) -> Mf:
     '''Find solutions matching all mfs.'''
     return reduce(then, mfs, unit)  # type: ignore
@@ -82,6 +70,18 @@ def seq(*mfs: Mf) -> Mf:
 seq.from_iterable = _seq_from_iterable  # type: ignore
 
 
+def _alt_from_iterable(mfs: Sequence[Mf]) -> Mf:
+    '''Find solutions matching any one of mfs.'''
+    return lambda v: lambda c: chain.from_iterable(mf(v)(c) for mf in mfs)
+
+
+def alt(*mfs: Mf) -> Mf:
+    '''Find solutions matching any one of mfs.'''
+    return _alt_from_iterable(mfs)
+
+alt.from_iterable = _alt_from_iterable  # type: ignore
+
+
 def run(ma: Ma) -> Result:
     '''Start the monadic computation of ma.'''
-    return ma(lambda v: (yield v))  # type: ignore
+    return ma(lambda v: (yield v))

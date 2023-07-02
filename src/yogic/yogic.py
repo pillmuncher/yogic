@@ -48,32 +48,25 @@ class Subst(ChainMap):
             return len(self._subst)
 
 
-def _unify(this, that):  # pylint: disable=R0911
+def _unify(this, that):
     # Unify two objects in a Subst:
     match this, that:
-        case Variable(), object():
-            # Bind a Variable to another object:
-            if this is that:  # pylint: disable=R1705
-                # a Variable, already bound or not, is always bound to itself:
-                return unit
-            else:
-                # bind this to that while creating a new choice point:
-                return lambda subst: unit(subst.new_child({this: that}))
-        case object(), Variable():
+        case _ if this == that:  # pylint: disable=R1705
+            # Unify other objects only if they're equal:
+            return unit
+        case Variable(), _:
+            # bind this to that while creating a new choice point:
+            return lambda subst: unit(subst.new_child({this: that}))
+        case _, Variable():
             # Same as above, but with swapped arguments:
             return _unify(that, this)  # pylint: disable=W1114
-        case list() | tuple(), list() | tuple():
+        case list() | tuple(), list() | tuple() if (
+                type(this) == type(that) and len(this) == len(that)):  # pylint: disable=R1705,C0123
             # Recursively unify two lists or tuples:
-            if type(this) == type(that) and len(this) == len(that):  # pylint: disable=R1705,C0123
-                return seq.from_iterable(map(unify, this, that))
-            else:
-                return zero
+            return seq.from_iterable(map(unify, this, that))
         case _:
-            # Unify other objects only if they're equal:
-            if this == that:  # pylint: disable=R1705
-                return unit
-            else:
-                return zero
+            # Unification failed:
+            return zero
 
 
 # Public interface to _unify:
