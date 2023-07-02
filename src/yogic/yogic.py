@@ -48,7 +48,7 @@ class Subst(ChainMap):
             return len(self._subst)
 
 
-def equal_sequence(this, that):
+def compatible(this, that):
     return type(this) == type(that) and len(this) == len(that)  # pylint: disable=C0123
 
 
@@ -64,7 +64,7 @@ def _unify(this, that):
         case _, Variable():
             # Same as above, but with swapped arguments:
             return lambda subst: unit(subst.new_child({that: this}))
-        case list() | tuple(), list() | tuple() if equal_sequence(this, that):
+        case list() | tuple(), list() | tuple() if compatible(this, that):
             # Recursively unify two lists or tuples:
             return seq.from_iterable(map(unify, this, that))
         case _:
