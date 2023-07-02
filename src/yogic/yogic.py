@@ -25,13 +25,12 @@ class Subst(ChainMap):
     def chase(self, obj):
         '''Chase down Variable bindings.'''
         match obj:
-            case Variable() as variable:
-                if variable in self:  # pylint: disable=R1705
-                    return self.chase(self[variable])
-                else:
-                    return variable
+            case Variable() as variable if variable in self:  # pylint: disable=R1705
+                return self.chase(self[variable])
             case list() | tuple() as sequence:
                 return type(sequence)(self.chase(each) for each in sequence)
+            case Variable() as variable:
+                return variable
             case _:
                 return obj
 
