@@ -51,7 +51,7 @@ class Subst(ChainMap):
 def _unify(this, that):
     # Unify two objects in a Subst:
     match this, that:
-        case _ if this == that:  # pylint: disable=R1705
+        case _ if this == that:
             # Unify objects if they're equal:
             return unit
         case Variable(), _:
@@ -61,7 +61,7 @@ def _unify(this, that):
             # Same as above, but with swapped arguments:
             return _unify(that, this)  # pylint: disable=W1114
         case list() | tuple(), list() | tuple() if (
-                type(this) == type(that) and len(this) == len(that)):  # pylint: disable=R1705,C0123
+                type(this) == type(that) and len(this) == len(that)):  # pylint: disable=C0123
             # Recursively unify two lists or tuples:
             return seq.from_iterable(map(unify, this, that))
         case _:
