@@ -1,7 +1,7 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
 from collections import namedtuple, ChainMap
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from functools import wraps
 from itertools import count
 
@@ -48,6 +48,10 @@ class Subst(ChainMap):
             return len(self._subst)
 
 
+def equal_sequence(this, that):
+    return type(this) == type(that) and len(this) == len(that)  # pylint: disable=C0123
+
+
 def _unify(this, that):
     # Unify two objects in a Subst:
     match this, that:
@@ -59,9 +63,8 @@ def _unify(this, that):
             return lambda subst: unit(subst.new_child({this: that}))
         case _, Variable():
             # Same as above, but with swapped arguments:
-            return _unify(that, this)  # pylint: disable=W1114
-        case list() | tuple(), list() | tuple() if (
-                type(this) == type(that) and len(this) == len(that)):  # pylint: disable=C0123
+            return lambda subst: unit(subst.new_child({that: this}))
+        case list() | tuple(), list() | tuple() if equal_sequence(this, that):
             # Recursively unify two lists or tuples:
             return seq.from_iterable(map(unify, this, that))
         case _:
