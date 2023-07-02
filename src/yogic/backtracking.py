@@ -3,7 +3,7 @@
 from functools import reduce
 from itertools import chain
 from collections.abc import Iterable
-from typing import Callable, Generator, Sequence, TypeVar
+from typing import Callable, Sequence, TypeVar
 
 
 # A monad for backtracking. Hence it's called the Backtracking Monad.
