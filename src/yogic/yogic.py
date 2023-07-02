@@ -52,7 +52,7 @@ def _unify(this, that):
     # Unify two objects in a Subst:
     match this, that:
         case _ if this == that:  # pylint: disable=R1705
-            # Unify other objects only if they're equal:
+            # Unify objects if they're equal:
             return unit
         case Variable(), _:
             # bind this to that while creating a new choice point:
