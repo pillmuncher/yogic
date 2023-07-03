@@ -16,9 +16,9 @@ from typing import Callable, Sequence, TypeVar
 
 Value = TypeVar('Value')
 
-Result = Iterable[Value]
-Cont = Callable[[Value], Result]
-Ma = Callable[[Cont], Result]
+Solutions = Iterable[Value]
+Cont = Callable[[Value], Solutions]
+Ma = Callable[[Cont], Solutions]
 Mf = Callable[[Value], Ma]
 
 
@@ -91,6 +91,6 @@ def predicate(func:Callable[..., Mf]) -> Callable[..., Mf]:
     return _
 
 
-def run(ma:Ma) -> Result:
+def run(ma:Ma) -> Solutions:
     '''Start the monadic computation of ma.'''
     return ma(lambda v: (yield v))  # type: ignore

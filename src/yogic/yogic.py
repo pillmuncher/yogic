@@ -4,7 +4,7 @@ from collections import namedtuple, ChainMap
 from collections.abc import Mapping
 from itertools import count
 
-from .backtracking import Result, Mf, unit, zero, seq, run
+from .backtracking import Solutions, Mf, unit, zero, seq, run
 
 
 # Variable objects to be bound to values in a monadic computation:
@@ -71,6 +71,7 @@ def _unify(this, that) -> Mf:  # type: ignore
             # Unification failed:
             return zero
 
+
 # Public interface to _unify:
 def unify(this, that) -> Mf:
     '''Unify 'this' and 'that'.
@@ -81,6 +82,6 @@ def unify(this, that) -> Mf:
     return lambda subst: _unify(subst.chase(this), subst.chase(that))(subst)
 
 
-def resolve(goal:Mf) -> Result:
+def resolve(goal:Mf) -> Solutions:
     '''Start the logical resolution of 'goal'. Return all solutions.'''
     return (subst.proxy for subst in run(goal(Subst())))
