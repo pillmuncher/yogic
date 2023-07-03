@@ -18,7 +18,6 @@ class Variable:
 
 def var():
     '''Helper function to create Variables.'''
-    # return Variable(next(_var_counter))
     return Variable(next(Variable.counter))
 
 
