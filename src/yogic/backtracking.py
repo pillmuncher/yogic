@@ -1,6 +1,6 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-from functools import reduce
+from functools import reduce, wraps
 from itertools import chain
 from collections.abc import Iterable
 from typing import Callable, Sequence, TypeVar
@@ -80,6 +80,14 @@ def alt(*mfs:Mf) -> Mf:
     return _alt_from_iterable(mfs)
 
 alt.from_iterable = _alt_from_iterable  # type: ignore
+
+
+def predicate(func:Callable[..., Mf]) -> Callable[..., Mf]:
+    '''Helper decorator for backtrackable functions.'''
+    @wraps(func)
+    def _(*args, **kwargs):
+        return lambda v: func(*args, **kwargs)(v)  # pylint: disable=W0108
+    return _
 
 
 def run(ma:Ma) -> Result:
