@@ -26,10 +26,8 @@ class Subst(ChainMap):
     def chase(self, obj):
         '''Chase down Variable bindings.'''
         match obj:
-            case Variable() as variable if variable in self:
-                return self.chase(self[variable])
             case Variable() as variable:
-                return variable
+                return self.chase(self[variable]) if variable in self else variable
             case list() | tuple() as sequence:
                 return type(sequence)(self.chase(each) for each in sequence)
             case _:
