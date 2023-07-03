@@ -13,7 +13,6 @@ __all__ = (
     'then',
     'alt',
     'seq',
-    'run',
     # re-export from yogic.py
     'predicate',
     'resolve',
@@ -21,7 +20,7 @@ __all__ = (
     'var',
 )
 
-from .backtracking import bind, unit, zero, no, then, seq, alt, predicate, run
+from .backtracking import bind, unit, zero, no, then, seq, alt, predicate
 from .yogic import resolve, unify, var
 
 from . import _version
