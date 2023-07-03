@@ -25,7 +25,7 @@ class Subst(ChainMap):
     '''An environment that maps Variables to the values they are bound to during
     a monadic computation.'''
 
-    def chase(self, obj:Any):
+    def chase(self, obj:Any) -> Any:
         '''Chase down Variable bindings.'''
         match obj:
             case Variable() as variable if variable in self:
@@ -55,7 +55,7 @@ def compatible(this:Sequence, that:Sequence) -> bool:
     return type(this) == type(that) and len(this) == len(that)  # pylint: disable=C0123
 
 
-def _unify(this:Any, that:Any) -> Mf:
+def _unify(this:Any, that:Any) -> Mf:  # type: ignore
     # Unify two objects in a Subst:
     match this, that:
         case _ if this == that:
@@ -70,8 +70,9 @@ def _unify(this:Any, that:Any) -> Mf:
         case list() | tuple(), list() | tuple() if compatible(this, that):
             # Recursively unify two lists or tuples:
             return seq.from_iterable(map(unify, this, that))  # type: ignore
-    # Unification failed:
-    return zero
+        case _:
+            # Unification failed:
+            return zero
 
 # Public interface to _unify:
 def unify(this:Any, that:Any) -> Mf:
