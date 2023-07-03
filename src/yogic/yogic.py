@@ -27,10 +27,10 @@ class Subst(ChainMap):
         match obj:
             case Variable() as variable if variable in self:  # pylint: disable=R1705
                 return self.chase(self[variable])
-            case list() | tuple() as sequence:
-                return type(sequence)(self.chase(each) for each in sequence)
             case Variable() as variable:
                 return variable
+            case list() | tuple() as sequence:
+                return type(sequence)(self.chase(each) for each in sequence)
             case _:
                 return obj
 
