@@ -38,7 +38,7 @@ class Subst(ChainMap):
         '''A proxy interface to Subst.'''
         def __init__(self, subst):
             self._subst = subst
-        def __getitem__(self, variable):
+        def __getitem__(self, variable:Variable):
             return self._subst.chase(variable)
         def __iter__(self):
             return iter(self._subst)
