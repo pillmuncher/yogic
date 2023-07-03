@@ -1,7 +1,7 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
 from collections import namedtuple, ChainMap
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from functools import wraps
 from itertools import count
 
@@ -25,7 +25,7 @@ class Subst(ChainMap):
     def chase(self, obj):
         '''Chase down Variable bindings.'''
         match obj:
-            case Variable() as variable if variable in self:  # pylint: disable=R1705
+            case Variable() as variable if variable in self:
                 return self.chase(self[variable])
             case Variable() as variable:
                 return variable
@@ -48,6 +48,7 @@ class Subst(ChainMap):
 
 
 def compatible(this, that):
+    '''Only sequences of same type and length are compatible in unification.'''
     return type(this) == type(that) and len(this) == len(that)  # pylint: disable=C0123
 
 
