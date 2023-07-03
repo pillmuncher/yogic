@@ -34,7 +34,7 @@ def unit(v:Value) -> Ma:
 
 
 def zero(_:Value) -> Ma:
-    '''Ignore the value v and return an 'empty' monad. Represents failure.'''
+    '''Ignore the argument and return an 'empty' monad. Represents failure.'''
     return lambda _: ()
 
 
