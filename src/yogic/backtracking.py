@@ -1,8 +1,8 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
+from collections.abc import Iterable
 from functools import reduce, wraps
 from itertools import chain
-from collections.abc import Iterable
 from typing import Callable, Sequence, TypeVar
 
 
