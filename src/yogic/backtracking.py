@@ -84,6 +84,7 @@ alt.from_iterable = _alt_from_iterable  # type: ignore
 
 def predicate(func:Callable[..., Mf]) -> Callable[..., Mf]:
     '''Helper decorator for backtrackable functions.'''
+    # All this does is to create another level of indirection.
     @wraps(func)
     def _(*args, **kwargs):
         return lambda v: func(*args, **kwargs)(v)  # pylint: disable=W0108
