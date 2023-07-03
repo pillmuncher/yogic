@@ -33,16 +33,16 @@ def unit(v:Value) -> Ma:
     return lambda c: c(v)
 
 
-def zero(v:Value) -> Ma:  # pylint: disable=W0613
+def zero(_:Value) -> Ma:
     '''Ignore the value v and return an 'empty' monad. Represents failure.'''
-    return lambda c: ()
+    return lambda _: ()
 
 
 def no(mf:Mf) -> Mf:
     '''Invert the result of a monadic computation, AKA negation as failure.'''
     def _(v:Value):
         def __(c:Cont):
-            for result in mf(v)(c):  # pylint: disable=W0612
+            for _ in mf(v)(c):
                 # If at least one solution is found, fail immediately:
                 return zero(v)(c)
             else:  # pylint: disable=W0120
