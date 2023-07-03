@@ -1,7 +1,5 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-from __future__ import annotations
-
 from collections import namedtuple, ChainMap
 from collections.abc import Mapping
 from itertools import count
