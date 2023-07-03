@@ -1,20 +1,25 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-from collections import namedtuple, ChainMap
+from collections import ChainMap
 from collections.abc import Mapping
+from dataclasses import dataclass
 from itertools import count
+from typing import ClassVar
 
 from .backtracking import Solutions, Mf, unit, zero, seq
 
 
-# Variable objects to be bound to values in a monadic computation:
-Variable = namedtuple('Variable', 'id')
-_var_counter = count()
+@dataclass(frozen=True, slots=True)
+class Variable:
+    '''Variable objects are bound to values in a monadic computation.'''
+    id: int  # pylint: disable=C0103
+    counter:ClassVar = count()
 
 
 def var():
     '''Helper function to create Variables.'''
-    return Variable(next(_var_counter))
+    # return Variable(next(_var_counter))
+    return Variable(next(Variable.counter))
 
 
 class Subst(ChainMap):
