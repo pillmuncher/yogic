@@ -84,4 +84,5 @@ alt.from_iterable = _alt_from_iterable  # type: ignore
 
 def run(ma: Ma) -> Result:
     '''Start the monadic computation of ma.'''
-    return ma(lambda v: (yield v))
+    return ma(lambda v: (yield v))  # type: ignore
+
