@@ -25,9 +25,11 @@ class Subst(ChainMap):
 
     def chase(self, obj):
         '''Chase down Variable bindings.'''
+        while isinstance(obj, Variable) and obj in self:
+            obj = self[obj]
         match obj:
             case Variable() as variable:
-                return self.chase(self[variable]) if variable in self else variable
+                return variable
             case list() | tuple() as sequence:
                 return type(sequence)(self.chase(each) for each in sequence)
             case _:
@@ -48,7 +50,8 @@ class Subst(ChainMap):
 
 def compatible(this, that):
     '''Only sequences of same type and length are compatible in unification.'''
-    return type(this) == type(that) and len(this) == len(that)  # pylint: disable=C0123
+    # pylint: disable=C0123
+    return type(this) == type(that) and len(this) == len(that)
 
 
 def _unify(this, that) -> Mf:  # type: ignore
@@ -76,7 +79,8 @@ def unify(this, that) -> Mf:
     If at least one is an unbound Variable, bind it to the other object.
     If both are either lists or tuples, try to unify them recursively.
     Otherwise, unify them if they are equal.'''
-    return lambda subst: _unify(subst.chase(this), subst.chase(that))(subst)  # pylint: disable=E1102,W0108
+    # pylint: disable=E1102,W0108
+    return lambda subst: _unify(subst.chase(this), subst.chase(that))(subst)
 
 
 def resolve(goal:Mf) -> Result:
