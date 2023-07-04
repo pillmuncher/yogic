@@ -2,7 +2,7 @@
 
 '''A logic programming library.'''
 
-__date__ = '2023-06-26'
+__date__ = '2023-07-04'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
