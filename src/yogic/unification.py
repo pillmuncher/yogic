@@ -33,12 +33,15 @@ class Subst(ChainMap):
         '''Chase down Variable bindings.'''
         while isinstance(obj, Variable) and obj in self:
             obj = self[obj]
-        match obj:
-            case Variable() as variable:
-                return variable
+        return obj
+
+    def shrink(self, obj):
+        # TODO: this is a VERY bad command. make it better.
+        '''Shrink down the tree that obj represents in a environment.'''
+        match self.chase(obj):
             case list() | tuple() as sequence:
-                return type(sequence)(self.chase(each) for each in sequence)
-            case _:
+                return type(sequence)(self.shrink(each) for each in sequence)
+            case obj:
                 return obj
 
     @property
@@ -47,7 +50,7 @@ class Subst(ChainMap):
         def __init__(self, subst):
             self._subst = subst
         def __getitem__(self, variable:Variable):
-            return self._subst.chase(variable)
+            return self._subst.shrink(variable)
         def __iter__(self):
             return iter(self._subst)
         def __len__(self):
