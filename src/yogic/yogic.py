@@ -57,7 +57,6 @@ def compatible(this, that):
 
 
 def _unify(this, that) -> Mf:  # type: ignore
-    # Unify two objects in a Subst:
     match this, that:
         case _ if this == that:
             # Unify objects if they're equal:
