@@ -15,8 +15,8 @@ __all__ = (
     'then',
     'alt',
     'seq',
-    # re-export from unification.py
     'predicate',
+    # re-export from unification.py
     'resolve',
     'unify',
     'var',
