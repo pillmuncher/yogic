@@ -20,6 +20,8 @@ __all__ = (
     'var',
 )
 
+'''A logic programming library.'''
+
 from .backtracking import bind, unit, zero, no, then, seq, alt, predicate
 from .unification import resolve, unify, var
 
