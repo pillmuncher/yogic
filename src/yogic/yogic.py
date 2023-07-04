@@ -22,8 +22,9 @@ def var():
 
 
 class Subst(ChainMap):
-    '''An environment that maps Variables to the values they are bound to during
-    a monadic computation.'''
+    '''An environment that maps Variables to values. This is called a variable
+    binding. Variables are bound during monadic computations and unbound again
+    during backtracking.'''
 
     def chase(self, obj):
         '''Chase down Variable bindings.'''
