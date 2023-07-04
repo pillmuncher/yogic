@@ -1,5 +1,7 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
+'''A logic programming library.'''
+
 __date__ = '2023-06-26'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
@@ -13,14 +15,12 @@ __all__ = (
     'then',
     'alt',
     'seq',
-    # re-export from yogic.py
+    # re-export from unification.py
     'predicate',
     'resolve',
     'unify',
     'var',
 )
-
-'''A logic programming library.'''
 
 from .backtracking import bind, unit, zero, no, then, seq, alt, predicate
 from .unification import resolve, unify, var
