@@ -7,7 +7,7 @@ from typing import Callable, Sequence, TypeVar
 
 
 # A monad for backtracking. Hence it's called the Backtracking Monad.
-# Actually, it's just the Continuation Monad wrapped around the List Monad.
+# Actually, it's just the Continuation Monad grafted onto the List Monad.
 
 
 # The naming convention follows the mathematical notation. Therefor:
