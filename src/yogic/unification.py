@@ -1,6 +1,6 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-'''A unification mechanism where variable get bout to values.'''
+'''A unification mechanism where variables get bout to values.'''
 
 
 from collections import ChainMap
