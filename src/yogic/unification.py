@@ -36,7 +36,7 @@ class Subst(ChainMap):
         return obj
 
     def shrink(self, obj):
-        # TODO: this is a VERY bad command. make it better.
+        # TODO: this is a VERY BAD docstring. make it better.
         '''Shrink down the tree that obj represents in a environment.'''
         match self.chase(obj):
             case list() | tuple() as sequence:
@@ -63,7 +63,7 @@ def compatible(this, that):
     return type(this) == type(that) and len(this) == len(that)
 
 
-def _unify(this, that) -> Mf:  # type: ignore
+def _unify(this, that):
     match this, that:
         case _ if this == that:
             # Unify objects if they're equal:
