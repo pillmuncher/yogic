@@ -1,17 +1,17 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-from collections.abc import Iterable
-from functools import reduce, wraps
-from itertools import chain
-from typing import Callable, Sequence, TypeVar
-
-
-# A monad for backtracking. Hence it's called the Backtracking Monad.
-# Actually, it's just the Continuation Monad grafted onto the List Monad.
+'''A monad for backtracking. Hence it's called the Backtracking Monad.
+Actually, it's just the Continuation Monad grafted onto the List Monad.'''
 
 
 # The naming convention follows the mathematical notation. Therefor:
 # pylint: disable=C0103
+
+
+from collections.abc import Iterable
+from functools import reduce, wraps
+from itertools import chain
+from typing import Callable, Sequence, TypeVar
 
 
 Value = TypeVar('Value')

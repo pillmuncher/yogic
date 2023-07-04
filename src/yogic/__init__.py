@@ -21,7 +21,7 @@ __all__ = (
 )
 
 from .backtracking import bind, unit, zero, no, then, seq, alt, predicate
-from .yogic import resolve, unify, var
+from .unification import resolve, unify, var
 
 from . import _version
 __version__ = _version.get_versions()['version']
