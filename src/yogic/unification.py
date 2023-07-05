@@ -65,16 +65,16 @@ def compatible(this, that):
 def _unify(this, that):
     match this, that:
         case _ if this == that:
-            # Unify objects if they're equal:
+            # Equal things are already unified:
             return unit
         case Variable(), _:
-            # bind this to that while creating a new choice point:
+            # Binding a Variable to another thing creates a Choice Point:
             return lambda subst: unit(subst.new_child({this: that}))
         case _, Variable():
             # Same as above, but with swapped arguments:
             return lambda subst: unit(subst.new_child({that: this}))
         case list() | tuple(), list() | tuple() if compatible(this, that):
-            # Recursively unify two lists or tuples:
+            # Two lists or tuples are unified if their elements can be unified:
             return seq.from_iterable(map(unify, this, that))  # type: ignore
         case _:
             # Unification failed:
