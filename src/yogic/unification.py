@@ -36,8 +36,7 @@ class Subst(ChainMap):
         return obj
 
     def shrink(self, obj):
-        # TODO: this is a VERY BAD docstring. make it better.
-        '''Shrink down the tree that obj represents in a environment.'''
+        '''Recursively replace all variables with their bindings.'''
         match self.chase(obj):
             case list() | tuple() as sequence:
                 return type(sequence)(self.shrink(each) for each in sequence)
