@@ -35,11 +35,11 @@ class Subst(ChainMap):
             obj = self[obj]
         return obj
 
-    def shrink(self, obj):
+    def smooth(self, obj):
         '''Recursively replace all variables with their bindings.'''
         match self.chase(obj):
             case list() | tuple() as sequence:
-                return type(sequence)(self.shrink(each) for each in sequence)
+                return type(sequence)(self.smooth(each) for each in sequence)
             case obj:
                 return obj
 
@@ -49,7 +49,7 @@ class Subst(ChainMap):
         def __init__(self, subst):
             self._subst = subst
         def __getitem__(self, variable:Variable):
-            return self._subst.shrink(variable)
+            return self._subst.smooth(variable)
         def __iter__(self):
             return iter(self._subst)
         def __len__(self):
