@@ -37,16 +37,16 @@ def zero(_:Value) -> Ma:
 
 def no(mf:Mf) -> Mf:
     '''Invert the result of a monadic computation, AKA negation as failure.'''
-    def _(v:Value):
-        def __(c:Cont):
+    def inv_mf(v:Value) -> Ma:
+        def ma(c:Cont) -> Solutions:
             for _ in mf(v)(c):
                 # If at least one solution is found, fail immediately:
                 return zero(v)(c)
             else:  # pylint: disable=W0120
                 # If no solution is found, succeed:
                 return unit(v)(c)
-        return __
-    return _
+        return ma
+    return inv_mf
 
 
 def then(mf:Mf, mg:Mf) -> Mf:
@@ -57,7 +57,7 @@ def then(mf:Mf, mg:Mf) -> Mf:
 
 def _seq_from_iterable(mfs:Iterable[Mf]) -> Mf:
     '''Find solutions matching all mfs.'''
-    return reduce(then, mfs, unit)
+    return reduce(then, mfs, unit)  # type: ignore
 
 
 def seq(*mfs:Mf) -> Mf:
