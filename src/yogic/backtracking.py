@@ -4,10 +4,6 @@
 Actually, it's just the Continuation Monad grafted onto the List Monad.'''
 
 
-# The naming convention follows the mathematical notation. Therefor:
-# pylint: disable=C0103
-
-
 from collections.abc import Iterable
 from functools import reduce, wraps
 from itertools import chain
@@ -61,7 +57,7 @@ def then(mf:Mf, mg:Mf) -> Mf:
 
 def _seq_from_iterable(mfs:Iterable[Mf]) -> Mf:
     '''Find solutions matching all mfs.'''
-    return reduce(then, mfs, unit)  # type: ignore
+    return reduce(then, mfs, unit)
 
 
 def seq(*mfs:Mf) -> Mf:

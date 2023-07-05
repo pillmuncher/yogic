@@ -15,7 +15,7 @@ from .backtracking import Solutions, Mf, unit, zero, seq
 @dataclass(frozen=True, slots=True)
 class Variable:
     '''Variable objects are bound to values in a monadic computation.'''
-    id: int  # pylint: disable=C0103
+    id: int
     counter:ClassVar = count()
 
 
@@ -44,7 +44,7 @@ class Subst(ChainMap):
                 return obj
 
     @property
-    class proxy(Mapping):  # pylint: disable=C0103
+    class proxy(Mapping):
         '''A proxy interface to Subst.'''
         def __init__(self, subst):
             self._subst = subst
