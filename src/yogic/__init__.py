@@ -7,7 +7,7 @@ __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
 
 __all__ = (
-    # re-export from backtracking.py
+    # re-export from .backtracking
     'bind',
     'unit',
     'zero',
@@ -16,7 +16,7 @@ __all__ = (
     'alt',
     'seq',
     'predicate',
-    # re-export from unification.py
+    # re-export from .unification
     'resolve',
     'unify',
     'var',
