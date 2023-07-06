@@ -67,15 +67,15 @@ def _unify(this, that):
         case _ if this == that:
             # Equal things are already unified:
             return unit
+        case list() | tuple(), list() | tuple() if compatible(this, that):
+            # Two lists or tuples are unified only if their elements are also:
+            return seq.from_iterable(map(unify, this, that))  # type: ignore
         case Variable(), _:
             # Binding a Variable to another thing creates a Choice Point:
             return lambda subst: unit(subst.new_child({this: that}))
         case _, Variable():
             # Same as above, but with swapped arguments:
             return lambda subst: unit(subst.new_child({that: this}))
-        case list() | tuple(), list() | tuple() if compatible(this, that):
-            # Two lists or tuples are unified if their elements can be unified:
-            return seq.from_iterable(map(unify, this, that))  # type: ignore
         case _:
             # Unification failed:
             return zero
