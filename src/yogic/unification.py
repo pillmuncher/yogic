@@ -91,11 +91,6 @@ def unify(this, that) -> Mf:
     return lambda subst: _unify(subst.chase(this), subst.chase(that))(subst)
 
 
-def yield_proxy(subst):
-    '''Yield a proxy of the subst once.'''
-    yield subst.proxy
-
-
 def resolve(goal:Mf) -> Solutions:
     '''Start the logical resolution of 'goal'. Return all solutions.'''
-    return goal(Subst())(yield_proxy)
+    return goal(Subst())(lambda subst: (yield subst.proxy))  # type: ignore
