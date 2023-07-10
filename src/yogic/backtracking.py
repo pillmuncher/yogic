@@ -27,26 +27,12 @@ def bind(ma:Ma, mf:Mf) -> Ma:
 def unit(v:Value) -> Ma:
     '''Take the single value v into the monad. Represents success.
     Together with 'then', this makes the monad also a monoid.'''
-    return lambda c: c(v)
+    return lambda c: c(v)  # Finally call the continuation.
 
 
 def zero(_:Value) -> Ma:
-    '''Ignore the argument and return an 'empty' monad. Represents failure.'''
-    return lambda _: ()
-
-
-def no(mf:Mf) -> Mf:
-    '''Invert the result of a monadic computation, AKA negation as failure.'''
-    def inv_mf(v:Value) -> Ma:
-        def ma(c:Cont) -> Solutions:
-            for _ in mf(v)(c):
-                # If at least one solution is found, fail immediately:
-                return zero(v)(c)
-            else:  # pylint: disable=W0120
-                # If no solution is found, succeed:
-                return unit(v)(c)
-        return ma
-    return inv_mf
+    '''Ignore the argument and return an 'empty' value. Represents failure.'''
+    return lambda _: ()  # Skip the continuation.
 
 
 def then(mf:Mf, mg:Mf) -> Mf:
@@ -79,9 +65,39 @@ def alt(*mfs:Mf) -> Mf:
 alt.from_iterable = _alt_from_iterable  # type: ignore
 
 
+class Cut(Exception):
+    '''Exception to be caught at the nearest previous prune point.'''
+
+
+def cut(v:Value) -> Ma:
+    '''Jump to the nearest previous prune point.'''
+    def _ma(c:Cont) -> Solutions:
+        yield from unit(v)(c)
+        raise Cut()
+    return _ma
+
+
+def prune(mf:Mf) -> Mf:
+    '''Set point to which a cut jumps.'''
+    def _mf(v:Value) -> Ma:
+        def _ma(c:Cont) -> Solutions:
+            try:
+                yield from mf(v)(c)
+            except Cut:
+                yield from ()
+        return _ma
+    return _mf
+
+
+def no(mf:Mf) -> Mf:
+    '''Invert the result of a monadic computation, AKA negation as failure.'''
+    return prune(alt(seq(mf, cut, zero), unit))
+
+
 def predicate(func:Callable[..., Mf]) -> Callable[..., Mf]:
     '''Helper decorator for backtrackable functions.'''
-    # All this does is to create another level of indirection.
+    # All this does is to add another level of indirection.
+    # It is needed to delay the invocation of recursive functions.
     @wraps(func)
     def _(*args, **kwargs):
         return lambda v: func(*args, **kwargs)(v)  # pylint: disable=W0108

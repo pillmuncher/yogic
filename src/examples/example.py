@@ -60,6 +60,13 @@ def append(a, b, c):
         unify([x, z], c),
     )
 
+
+@predicate
+def structure_unification(a, b, c):
+    return seq(
+        unify(a, [b, 2]),
+        unify([1, c], a),
+    )
 # ----8<---------8<---------8<---------8<---------8<---------8<---------8<-----
 
 
@@ -67,6 +74,10 @@ x = var()
 y = var()
 z = var()
 
+
+for each in resolve(structure_unification(x, y, z)):
+    print(each[x], each[y], each[z])
+print()
 
 for each in resolve(append([[1, 2, 3, x], x], [[4, 5, 6, y], y], [z, []])):
     print(each[x], each[y], each[z])

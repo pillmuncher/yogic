@@ -1,6 +1,6 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-'''A logic programming library.'''
+'''A simple combinator library for logic programming.'''
 
 __date__ = '2023-07-04'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
