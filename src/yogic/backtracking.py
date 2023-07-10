@@ -84,7 +84,7 @@ def prune(mf:Mf) -> Mf:
             try:
                 yield from mf(v)(c)
             except Cut:
-                yield from ()
+                pass
         return _ma
     return _mf
 
