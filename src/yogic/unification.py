@@ -93,7 +93,4 @@ def unify(this, that) -> Mf:
 
 def resolve(goal:Mf) -> Solutions:
     '''Start the logical resolution of 'goal'. Return all solutions.'''
-    return goal(Subst())(
-        lambda subst: (yield subst.proxy),  # type: ignore
-        # lambda: (),
-    )
+    return goal(Subst())(lambda subst: (yield subst.proxy))  # type: ignore
