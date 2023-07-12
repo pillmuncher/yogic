@@ -35,20 +35,6 @@ def zero(_:Value) -> Ma:
     return lambda _: ()
 
 
-def no(mf:Mf) -> Mf:
-    '''Invert the result of a monadic computation, AKA negation as failure.'''
-    def inv_mf(v:Value) -> Ma:
-        def ma(c:Cont) -> Solutions:
-            for _ in mf(v)(c):
-                # If at least one solution is found, fail immediately:
-                return zero(v)(c)
-            else:  # pylint: disable=W0120
-                # If no solution is found, succeed:
-                return unit(v)(c)
-        return ma
-    return inv_mf
-
-
 def then(mf:Mf, mg:Mf) -> Mf:
     '''Apply two monadic functions mf and mg in sequence.
     Together with 'unit', this makes the monad also a monoid.'''
@@ -77,6 +63,20 @@ def alt(*mfs:Mf) -> Mf:
     return _alt_from_iterable(mfs)
 
 alt.from_iterable = _alt_from_iterable  # type: ignore
+
+
+def no(mf:Mf) -> Mf:
+    '''Invert the result of a monadic computation, AKA negation as failure.'''
+    def inv_mf(v:Value) -> Ma:
+        def ma(c:Cont) -> Solutions:
+            for _ in mf(v)(c):
+                # If at least one solution is found, fail immediately:
+                return zero(v)(c)
+            else:  # pylint: disable=W0120
+                # If no solution is found, succeed:
+                return unit(v)(c)
+        return ma
+    return inv_mf
 
 
 def predicate(func:Callable[..., Mf]) -> Callable[..., Mf]:
