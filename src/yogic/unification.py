@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from itertools import count
 from typing import ClassVar
 
-from .backtracking import Solutions, Mf, unit, zero, seq
+from .backtracking import Solutions, Mf, unit, fail, seq
 
 
 @dataclass(frozen=True, slots=True)
@@ -78,7 +78,7 @@ def _unify(this, that):
             return lambda subst: unit(subst.new_child({that: this}))
         case _:
             # Unification failed:
-            return zero
+            return fail
 
 
 # Public interface to _unify:

@@ -30,7 +30,7 @@ def unit(v:Value) -> Ma:
     return lambda c: c(v)
 
 
-def zero(_:Value) -> Ma:
+def fail(_:Value) -> Ma:
     '''Ignore the argument and return an 'empty' monad. Represents failure.'''
     return lambda _: ()
 
@@ -71,7 +71,7 @@ def no(mf:Mf) -> Mf:
         def ma(c:Cont) -> Solutions:
             for _ in mf(v)(c):
                 # If at least one solution is found, fail immediately:
-                return zero(v)(c)
+                return fail(v)(c)
             else:  # pylint: disable=W0120
                 # If no solution is found, succeed:
                 return unit(v)(c)

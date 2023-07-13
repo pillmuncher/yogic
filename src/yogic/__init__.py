@@ -10,7 +10,7 @@ __all__ = (
     # re-export from .backtracking
     'bind',
     'unit',
-    'zero',
+    'fail',
     'no',
     'then',
     'alt',
@@ -22,7 +22,7 @@ __all__ = (
     'var',
 )
 
-from .backtracking import bind, unit, zero, no, then, seq, alt, predicate
+from .backtracking import bind, unit, fail, no, then, seq, alt, predicate
 from .unification import resolve, unify, var
 
 from . import _version
