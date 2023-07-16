@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from itertools import count
 from typing import ClassVar
 
-from .backtracking import Solutions, Mf, unit, fail, seq
+from .backtracking import Solutions, Mf, unit, fail, seq, failure
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,7 +71,7 @@ def _unify(this, that):
             # Two lists or tuples are unified only if their elements are also:
             return seq.from_iterable(map(unify, this, that))  # type: ignore
         case Variable(), _:
-            # Binding a Variable to another thing creates a Choice Point:
+            # Bind a Variable to another thing:
             return lambda subst: unit(subst.new_child({this: that}))
         case _, Variable():
             # Same as above, but with swapped arguments:
@@ -93,4 +93,4 @@ def unify(this, that) -> Mf:
 
 def resolve(goal:Mf) -> Solutions:
     '''Start the logical resolution of 'goal'. Return all solutions.'''
-    return goal(Subst())(lambda subst: (yield subst.proxy))  # type: ignore
+    yield from goal(Subst())(lambda subst: (yield subst.proxy), failure, failure)  # type: ignore

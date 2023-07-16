@@ -4,18 +4,36 @@ from yogic import *
 
 
 @predicate
+def child(a, b):
+    return amb(
+        unify([a, b], ['bob', 'archimedes']),
+        unify([a, b], ['daisy', 'fluffy']),
+        seq(unify([a, b], ['fluffy', 'fifi']), cut),
+        unify([a, b], ['athene', 'zeus']),
+    )
+
+
+@predicate
+def descendant(a, c):
+    b = var()
+    return amb(
+        child(a, c),
+        seq(child(a, b), descendant(b, c)),
+    )
+
+@predicate
 def human(a):
-    return alt(
+    return amb(
         unify(a, 'socrates'),
         unify(a, 'plato'),
-        unify(a, 'bob'),
+        unify(a, 'archimedes'),
     )
 
 @predicate
 def dog(a):
-    return alt(
+    return amb(
         unify(a, 'fifi'),
-        unify(a, 'fluffy'),
+        seq(unify(a, 'fluffy'), cut),
         unify(a, 'daisy'),
     )
 
@@ -24,26 +42,9 @@ def not_dog(a):
     return no(dog(a))
 
 @predicate
-def child(a, b):
-    return alt(
-        unify([a, b], ['archimedes', 'bob']),
-        unify([a, b], ['fluffy', 'fifi']),
-        unify([a, b], ['daisy', 'fluffy']),
-        unify([a, b], ['athene', 'zeus']),
-    )
-
-@predicate
-def descendant(a, c):
-    b = var()
-    return alt(
-        child(a, c),
-        seq(child(a, b), descendant(b, c)),
-    )
-
-@predicate
 def mortal(a):
     b = var()
-    return alt(
+    return amb(
         human(a),
         dog(a),
         seq(descendant(a, b), mortal(b)),
@@ -67,6 +68,8 @@ def structure_unification(a, b, c):
         unify(a, [b, 2]),
         unify([1, c], a),
     )
+
+
 # ----8<---------8<---------8<---------8<---------8<---------8<---------8<-----
 
 
@@ -74,6 +77,10 @@ x = var()
 y = var()
 z = var()
 
+
+for each in resolve(seq(child(x, y), descendant(y, z))):
+    print(each[x], each[y], each[z])
+print()
 
 for each in resolve(structure_unification(x, y, z)):
     print(each[x], each[y], each[z])
@@ -87,15 +94,23 @@ for each in resolve(descendant(x, y)):
     print(each[x], each[y])
 print()
 
-for each in resolve(seq(child(x, y), descendant(y, z))):
-    print(each[x], each[y], each[z])
-print()
-
 for each in resolve(seq(mortal(x), not_dog(x))):
     print(each[x])
 print()
 
 for each in resolve(seq(not_dog(x), mortal(x))):
+    print(each[x])
+else:
+    print('no.')
+print()
+
+for each in resolve(dog(x)):
+    print(each[x])
+else:
+    print('no.')
+print()
+
+for each in resolve(no(dog(x))):
     print(each[x])
 else:
     print('no.')
@@ -108,7 +123,7 @@ else:
     print('no.')
 print()
 
-for each in resolve(alt()):
+for each in resolve(amb()):
     print('yes.')
     break
 else:

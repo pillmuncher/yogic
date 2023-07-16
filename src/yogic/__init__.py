@@ -13,16 +13,17 @@ __all__ = (
     'fail',
     'no',
     'then',
-    'alt',
+    'amb',
     'seq',
     'predicate',
+    'cut',
     # re-export from .unification
     'resolve',
     'unify',
     'var',
 )
 
-from .backtracking import bind, unit, fail, no, then, seq, alt, predicate
+from .backtracking import bind, unit, fail, no, then, seq, amb, predicate, cut
 from .unification import resolve, unify, var
 
 from . import _version
