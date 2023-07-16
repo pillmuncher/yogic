@@ -1,7 +1,8 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
 '''A monad for backtracking. Hence it's called the Backtracking Monad.
-Actually, it's just the Continuation Monad grafted onto the List Monad.'''
+Actually, it's just a triple-barrelled Continuation Monad grafted onto 
+the List Monad.'''
 
 
 # “The continuation that obeys only obvious stack semantics,
@@ -34,7 +35,7 @@ def bind(ma:Ma, mf:Mf) -> Ma:
     '''Return the result of applying mf to ma.'''
     def _ma(y:Success, n:Failure, e:Escape) -> Solutions:
         def _success(v:Value) -> Solutions:
-            # we inject new fail and escape continuation, so
+            # we inject new fail and escape continuations, so
             # that the received ones don't get called twice:
             yield from mf(v)(y, failure, failure)
         yield from ma(_success, n, e)
@@ -45,8 +46,8 @@ def unit(v:Value) -> Ma:
     '''Take the single value v into the monad. Represents success.
     Together with 'then', this makes the monad also a monoid.'''
     def _ma(y:Success, n:Failure, e:Escape) -> Solutions:
-        # after we generate all solutions, we invoke the
-        # fail continuation n() to kick off backtracking:
+        # after we return all solutions from the success continuation,
+        # we invoke the fail continuation n() to kick off backtracking:
         yield from y(v)
         yield from n()
     return _ma
@@ -60,11 +61,11 @@ def fail(_:Value) -> Ma:
 
 
 def cut(v:Value) -> Ma:
-    '''Commit to the first solution, thus pruning the search tree.'''
+    '''Commit to the first solution, thus pruning the 
+    search tree at the previous choice point.'''
     def _ma(y:Success, n:Failure, e:Escape) -> Solutions:
-        # we commit to the first solution and invoke the escape
-        # continuation as the backtracking path, thus pruning
-        # the search path at the previous choice point:
+        # we commit to the first solution (if it exists) and invoke 
+        # the escape continuation as the backtracking path:
         yield from islice(y(v), 1)
         yield from e()
     return _ma
