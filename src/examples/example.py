@@ -8,7 +8,7 @@ def child(a, b):
     return amb(
         unify([a, b], ['bob', 'archimedes']),
         unify([a, b], ['daisy', 'fluffy']),
-        seq(unify([a, b], ['fluffy', 'fifi']), cut),
+        unify([a, b], ['fluffy', 'fifi']),
         unify([a, b], ['athene', 'zeus']),
     )
 
@@ -33,7 +33,7 @@ def human(a):
 def dog(a):
     return amb(
         unify(a, 'fifi'),
-        seq(unify(a, 'fluffy'), cut),
+        unify(a, 'fluffy'),
         unify(a, 'daisy'),
     )
 

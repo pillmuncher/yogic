@@ -1,7 +1,7 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
 '''A monad for backtracking. Hence it's called the Backtracking Monad.
-Actually, it's just a triple-barrelled Continuation Monad grafted onto 
+Actually, it's just a triple-barrelled Continuation Monad grafted onto
 the List Monad.'''
 
 
@@ -35,9 +35,9 @@ def bind(ma:Ma, mf:Mf) -> Ma:
     '''Return the result of applying mf to ma.'''
     def _ma(y:Success, n:Failure, e:Escape) -> Solutions:
         def _success(v:Value) -> Solutions:
-            # we inject new fail and escape continuations, so
-            # that the received ones don't get called twice:
-            yield from mf(v)(y, failure, failure)
+            # we inject a new fail continuation, so that
+            # the received one doesn't get called twice:
+            yield from mf(v)(y, failure, e)
         yield from ma(_success, n, e)
     return _ma
 
@@ -56,15 +56,14 @@ def unit(v:Value) -> Ma:
 def fail(_:Value) -> Ma:
     '''Ignore the argument and return an 'empty' monad. Represents failure.'''
     def _ma(y:Success, n:Failure, e:Escape) -> Solutions:
-        yield from n()
+        return n()
     return _ma
 
 
 def cut(v:Value) -> Ma:
-    '''Commit to the first solution, thus pruning the 
-    search tree at the previous choice point.'''
+    '''Prune the search tree at the previous choice point.'''
     def _ma(y:Success, n:Failure, e:Escape) -> Solutions:
-        # we commit to the first solution (if it exists) and invoke 
+        # we commit to the first solution (if it exists) and invoke
         # the escape continuation as the backtracking path:
         yield from islice(y(v), 1)
         yield from e()
@@ -98,25 +97,25 @@ def choice(mf:Mf, mg:Mf) -> Mf:
             # we close over the current environment, so we can invoke
             # mf and mg at the same point in the computation:
             def _failure() -> Solutions:
-                yield from mg(v)(y, n, e)
-            yield from mf(v)(y, _failure, e)
+                return mg(v)(y, n, e)
+            return mf(v)(y, _failure, e)
         return _ma
     return _mf
 
 
 def _amb_from_iterable(mfs:Iterable[Mf]) -> Mf:
-    '''Find solutions matching any one of mfs.'''
+    '''Find solutions matching any one of mfs. This creates a choice point.'''
     def _mf(v:Value) -> Ma:
         def _ma(y:Success, n:Failure, e:Escape) -> Solutions:
             # we serialize the mfs and make the received fail continuation n()
             # our new escape continuation, so we can jump out of a computation:
-            yield from reduce(choice, mfs, fail)(v)(y, n, n)  # type: ignore
+            return reduce(choice, mfs, fail)(v)(y, n, n)  # type: ignore
         return _ma
     return _mf
 
 
 def amb(*mfs:Mf) -> Mf:
-    '''Find solutions matching any one of mfs.'''
+    '''Find solutions matching any one of mfs. This creates a choice point.'''
     return _amb_from_iterable(mfs)
 
 amb.from_iterable = _amb_from_iterable  # type: ignore
@@ -145,3 +144,7 @@ def no(mf:Mf) -> Mf:
                 return unit(v)(y, n, e)
         return _ma
     return _mf
+
+
+# def no(mf:Mf) -> Mf:
+#     return amb(seq(mf, cut, fail), unit)
