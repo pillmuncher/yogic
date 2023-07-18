@@ -128,6 +128,11 @@ def amb(*mfs:Mf) -> Mf:
 amb.from_iterable = _amb_from_iterable  # type: ignore
 
 
+def no(mf:Mf) -> Mf:
+    '''Invert the result of a monadic computation, AKA negation as failure.'''
+    return amb(seq(mf, cut, fail), unit)
+
+
 def predicate(p:Callable[..., Mf]) -> Callable[..., Mf]:
     '''Helper decorator for backtrackable functions.'''
     # All this does is to create another level of indirection.
@@ -139,6 +144,6 @@ def predicate(p:Callable[..., Mf]) -> Callable[..., Mf]:
     return _p
 
 
-def no(mf:Mf) -> Mf:
-    '''Invert the result of a monadic computation, AKA negation as failure.'''
-    return amb(seq(mf, cut, fail), unit)
+def run(mf:Mf, v:Value) -> Solutions:
+    '''Start the monadic computation represented by mf.'''
+    return mf(v)(success, failure, failure)

@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from itertools import count
 from typing import ClassVar
 
-from .backtracking import Solutions, Mf, unit, fail, seq, success, failure
+from .backtracking import Solutions, Mf, unit, fail, seq, run
 
 
 @dataclass(frozen=True, slots=True)
@@ -92,4 +92,4 @@ def unify(this, that) -> Mf:
 
 def resolve(goal:Mf) -> Solutions:
     '''Start the logical resolution of 'goal'. Return all solutions.'''
-    return (s.proxy for s in goal(Subst())(success, failure, failure))
+    return (s.proxy for s in run(goal, Subst()))
