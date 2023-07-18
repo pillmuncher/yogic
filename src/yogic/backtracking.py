@@ -35,15 +35,15 @@ def success(v:Value, n:Failure, e:Escape) -> Solutions:
 
 def failure() -> Solutions:
     '''Fail and start searching for Solutions.'''
-    yield from ()
+    return ()
 
 
 def bind(ma:Ma, mf:Mf) -> Ma:
     '''Return the result of applying mf to ma.'''
     def _ma(y:Success, n:Failure, e:Escape) -> Solutions:
         def _success(v:Value, m:Failure, _:Escape) -> Solutions:
-            yield from mf(v)(y, m, e)
-        yield from ma(_success, n, e)
+            return mf(v)(y, m, e)
+        return ma(_success, n, e)
     return _ma
 
 
@@ -52,7 +52,7 @@ def unit(v:Value) -> Ma:
     Together with 'then', this makes the monad also a monoid. Together
     with 'fail' and 'choice', this makes the monad also a lattice.'''
     def _ma(y:Success, n:Failure, e:Escape) -> Solutions:
-        yield from y(v, n, e)
+        return y(v, n, e)
     return _ma
 
 
