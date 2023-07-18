@@ -33,7 +33,7 @@ def human(a):
 def dog(a):
     return amb(
         unify(a, 'fifi'),
-        unify(a, 'fluffy'),
+        seq(unify(a, 'fluffy'), cut),
         unify(a, 'daisy'),
     )
 
