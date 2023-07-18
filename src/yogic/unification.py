@@ -18,7 +18,6 @@ class Variable:
     id: int
     counter:ClassVar = count()
 
-
 def var():
     '''Helper function to create Variables.'''
     return Variable(next(Variable.counter))
@@ -29,7 +28,7 @@ class Subst(ChainMap):
     a variable binding. Variables are bound during monadic computations and
     unbound again during backtracking.'''
 
-    def chase(self, obj):
+    def deref(self, obj):
         '''Chase down Variable bindings.'''
         while isinstance(obj, Variable) and obj in self:
             obj = self[obj]
@@ -37,7 +36,7 @@ class Subst(ChainMap):
 
     def smooth(self, obj):
         '''Recursively replace all variables with their bindings.'''
-        match self.chase(obj):
+        match self.deref(obj):
             case list() | tuple() as sequence:
                 return type(sequence)(self.smooth(each) for each in sequence)
             case obj:
@@ -88,7 +87,7 @@ def unify(this, that) -> Mf:
     If both are either lists or tuples, try to unify them recursively.
     Otherwise, unify them if they are equal.'''
     # pylint: disable=E1102,W0108
-    return lambda subst: _unify(subst.chase(this), subst.chase(that))(subst)
+    return lambda subst: _unify(subst.deref(this), subst.deref(that))(subst)
 
 
 def resolve(goal:Mf) -> Solutions:
