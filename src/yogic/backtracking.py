@@ -115,13 +115,13 @@ def choice(mf:Mf, mg:Mf) -> Mf:
 def _amb_from_iterable(mfs:Iterable[Mf]) -> Mf:
     '''Find solutsons for some mfs. This creates a choice point.'''
     joined = foldr(choice, mfs, fail)
-    def mh(v:Value) -> Ma:
+    def mf(v:Value) -> Ma:
         def ma(y:Success, n:Failure, e:Escape) -> Solutions:
             # we serialize the mfs and inject the
             # fail continuation as the escape path:
             return joined(v)(y, n, n)
         return ma
-    return mh
+    return mf
 
 
 def amb(*mfs:Mf) -> Mf:
