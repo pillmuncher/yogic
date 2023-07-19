@@ -43,9 +43,9 @@ def failure() -> Solutions:
 def bind(ma:Ma, mf:Mf) -> Ma:
     '''Return the result of applying mf to ma.'''
     def bound(y:Success, n:Failure, e:Escape) -> Solutions:
-        def yes(v:Value, m:Failure) -> Solutions:
+        def on_success(v:Value, m:Failure) -> Solutions:
             return mf(v)(y, m, e)
-        return ma(yes, n, e)
+        return ma(on_success, n, e)
     return bound
 
 
