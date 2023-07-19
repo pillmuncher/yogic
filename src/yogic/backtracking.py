@@ -111,8 +111,8 @@ def choice(mf:Mf, mg:Mf) -> Mf:
     with 'unit' and 'then', this makes the monad also a lattice.'''
     def mh(v:Value) -> Ma:
         def ma(y:Success, n:Failure, e:Escape) -> Solutions:
-            # we close over the current environment, so we can invoke
-            # mf and mg at the same point in the computation:
+            # we pass mf and mg the same success continuation, so we
+            # can invoke mf and mg at the same point in the computation:
             def on_fail() -> Solutions:
                 return mg(v)(y, n, e)
             return mf(v)(y, on_fail, e)
