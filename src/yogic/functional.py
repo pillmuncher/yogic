@@ -1,6 +1,6 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-'''xxx'''
+'''Some functional utility functions that should be in the language.'''
 
 from collections.abc import Iterable
 from functools import wraps, reduce as foldl
