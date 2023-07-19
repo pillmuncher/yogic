@@ -22,7 +22,7 @@ Solution = TypeVar('Solution')
 Solutions = Iterable[Solution]
 Escape = Callable[[], Solutions]
 Failure = Callable[[], Solutions]
-Success = Callable[[Value, Failure], Solutions]
+Success = Callable[[Value, Failure|Escape], Solutions]
 Ma = Callable[[Success, Failure, Escape], Solutions]
 Mf = Callable[[Value], Ma]
 
