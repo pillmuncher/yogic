@@ -92,7 +92,7 @@ def _seq_from_iterable(mfs:Iterable[Mf]) -> Mf:
 
 def seq(*mfs:Mf) -> Mf:
     '''Find solutions for all mfs'''
-    return _seq_from_iterable(mfs)  # type: ignore
+    return _seq_from_iterable(mfs)
 
 seq.from_iterable = _seq_from_iterable  # type: ignore
 
@@ -126,7 +126,7 @@ def _amb_from_iterable(mfs:Iterable[Mf]) -> Mf:
 
 def amb(*mfs:Mf) -> Mf:
     '''Find solutions for some mfs. This creates a choice point.'''
-    return _amb_from_iterable(mfs)  # type: ignore
+    return _amb_from_iterable(mfs)
 
 amb.from_iterable = _amb_from_iterable  # type: ignore
 
