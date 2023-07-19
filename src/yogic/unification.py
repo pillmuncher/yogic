@@ -92,4 +92,4 @@ def unify(this, that) -> Mf:
 
 def resolve(goal:Mf) -> Solutions:
     '''Start the logical resolution of 'goal'. Return all solutions.'''
-    return (s.proxy for s in run(goal, Subst()))
+    return (subst.proxy for subst in run(goal, Subst()))
