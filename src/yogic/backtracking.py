@@ -85,17 +85,9 @@ def then(mf:Mf, mg:Mf) -> Mf:
     return mh
 
 
-def _seq_from_iterable(mfs:tuple[Mf]) -> Mf:
+def _seq_from_iterable(mfs:Iterable[Mf]) -> Mf:
     '''Find solutions for all mfs'''
-    match mfs:
-        case ():
-            return unit
-        case mf,:
-            return mf
-        case mf, mg:
-            return then(mf, mg)
-        case _:
-            return foldr(then, mfs)
+    return foldr(then, mfs, unit)
 
 
 def seq(*mfs:Mf) -> Mf:
@@ -120,21 +112,13 @@ def choice(mf:Mf, mg:Mf) -> Mf:
     return mh
 
 
-def _amb_from_iterable(mfs:tuple[Mf]) -> Mf:
+def _amb_from_iterable(mfs:Iterable[Mf]) -> Mf:
     '''Find solutsons for some mfs. This creates a choice point.'''
-    match mfs:
-        case ():
-            joined = fail
-        case mf,:
-            joined = mf
-        case mf, mg:
-            joined = choice(mf, mg)
-        case _:
-            joined = foldr(choice, mfs)
+    joined = foldr(choice, mfs, fail)
     def mh(v:Value) -> Ma:
         def ma(y:Success, n:Failure, e:Escape) -> Solutions:
-            # we serialize the mfs and make the received fail continuation n()
-            # our new escape continuation, so we can jump out of a computation:
+            # we serialize the mfs and inject the
+            # fail continuation as the escape path:
             return joined(v)(y, n, n)
         return ma
     return mh

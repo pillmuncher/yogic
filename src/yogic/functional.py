@@ -20,5 +20,5 @@ def flip(f:Callable[..., Value]) -> Callable[..., Value]:
     return flipped
 
 
-def foldr(f:Join, elems:Iterable[Value]) -> Value:
-    return foldl(flip(f), reversed(tuple(elems)))
+def foldr(f:Join, elems:Iterable[Value], end:Value) -> Value:
+    return foldl(flip(f), reversed(tuple(elems)), end)
