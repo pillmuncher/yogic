@@ -27,7 +27,7 @@ Ma = Callable[[Success, Failure, Escape], Solutions]
 Mf = Callable[[Value], Ma]
 
 
-def success(v:Value, n:Failure) -> Solutions:
+def success(v:Value, n:Failure|Escape) -> Solutions:
     '''Return the Solution v and start searching for more Solutions.'''
     # after we return the solution we invoke the
     # fail continuation to kick off backtracking:
@@ -61,7 +61,7 @@ def unit(v:Value) -> Ma:
 def cut(v:Value) -> Ma:
     '''Prune the search tree at the previous choice point.'''
     def ma(y:Success, n:Failure, e:Escape) -> Solutions:
-        # we commit to current execution path by injecting the 
+        # we commit to current execution path by injecting the
         # escape continuation and making it our backtracking path:
         return y(v, e)
     return ma
@@ -131,13 +131,13 @@ def _amb_from_iterable(mfs:tuple[Mf]) -> Mf:
             joined = choice(mf, mg)
         case _:
             joined = foldr(choice, mfs)  # type: ignore
-    def mf(v:Value) -> Ma:
+    def mh(v:Value) -> Ma:
         def ma(y:Success, n:Failure, e:Escape) -> Solutions:
             # we serialize the mfs and make the received fail continuation n()
             # our new escape continuation, so we can jump out of a computation:
             return joined(v)(y, n, n)
         return ma
-    return mf
+    return mh
 
 
 def amb(*mfs:Mf) -> Mf:
