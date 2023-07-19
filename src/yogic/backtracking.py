@@ -58,6 +58,15 @@ def unit(v:Value) -> Ma:
     return ma
 
 
+def cut(v:Value) -> Ma:
+    '''Prune the search tree at the previous choice point.'''
+    def ma(y:Success, n:Failure, e:Escape) -> Solutions:
+        # we commit to the first solution (if it exists) by invoking
+        # the escape continuation and making it our backtracking path:
+        return y(v, e)
+    return ma
+
+
 def fail(v:Value) -> Ma:
     '''Ignore the argument and return an 'empty' monad. Represents failure.
     Together with 'coice', this makes the monad also a monoid. Together
@@ -109,15 +118,6 @@ def choice(mf:Mf, mg:Mf) -> Mf:
             return mf(v)(y, on_fail, e)
         return ma
     return mh
-
-
-def cut(v:Value) -> Ma:
-    '''Prune the search tree at the previous choice point.'''
-    def ma(y:Success, n:Failure, e:Escape) -> Solutions:
-        # we commit to the first solution (if it exists) by invoking
-        # the escape continuation and making it our backtracking path:
-        yield from y(v, e)
-    return ma
 
 
 def _amb_from_iterable(mfs:tuple[Mf]) -> Mf:
