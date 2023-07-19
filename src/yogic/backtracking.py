@@ -10,9 +10,10 @@ the List Monad.'''
 
 
 from collections.abc import Iterable
-from functools import wraps, reduce
+from functools import wraps
 from typing import Callable, TypeVar
 
+from .functional import foldr
 
 Value = TypeVar('Value')
 Solution = TypeVar('Solution')
@@ -41,9 +42,9 @@ def failure() -> Solutions:
 def bind(ma:Ma, mf:Mf) -> Ma:
     '''Return the result of applying mf to ma.'''
     def apply(y:Success, n:Failure, e:Escape) -> Solutions:
-        def yea(v:Value, m:Failure) -> Solutions:
+        def yes(v:Value, m:Failure) -> Solutions:
             return mf(v)(y, m, e)
-        return ma(yea, n, e)
+        return ma(yes, n, e)
     return apply
 
 
@@ -76,7 +77,15 @@ def then(mf:Mf, mg:Mf) -> Mf:
 
 def _seq_from_iterable(mfs:Iterable[Mf]) -> Mf:
     '''Find solutions for all mfs'''
-    return reduce(then, mfs, unit)  # type: ignore
+    match mfs:
+        case ():
+            return unit
+        case mf,:
+            return mf
+        case mf, mg:
+            return then(mf, mg)
+        case _:
+            return foldr(then, mfs)  # type: ignore
 
 
 def seq(*mfs:Mf) -> Mf:
@@ -94,9 +103,9 @@ def choice(mf:Mf, mg:Mf) -> Mf:
         def ma(y:Success, n:Failure, e:Escape) -> Solutions:
             # we close over the current environment, so we can invoke
             # mf and mg at the same point in the computation:
-            def nay() -> Solutions:
+            def on_fail() -> Solutions:
                 return mg(v)(y, n, e)
-            return mf(v)(y, nay, e)
+            return mf(v)(y, on_fail, e)
         return ma
     return mh
 
@@ -111,12 +120,22 @@ def cut(v:Value) -> Ma:
 
 
 def _amb_from_iterable(mfs:Iterable[Mf]) -> Mf:
-    '''Find solutions for some mfs. This creates a choice point.'''
+    '''Find solutsons for some mfs. This creates a choice point.'''
+    def join(mfs):
+        match mfs:
+            case ():
+                return fail
+            case mf,:
+                return mf
+            case mf, mg:
+                return choice(mf, mg)
+            case _:
+                return foldr(choice, mfs)  # type: ignore
     def mf(v:Value) -> Ma:
         def ma(y:Success, n:Failure, e:Escape) -> Solutions:
             # we serialize the mfs and make the received fail continuation n()
             # our new escape continuation, so we can jump out of a computation:
-            return reduce(choice, mfs, fail)(v)(y, n, n)  # type: ignore
+            return join(mfs)(v)(y, n, n)
         return ma
     return mf
 
