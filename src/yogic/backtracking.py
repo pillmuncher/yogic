@@ -75,7 +75,7 @@ def then(mf:Mf, mg:Mf) -> Mf:
     return mh
 
 
-def _seq_from_iterable(mfs:Iterable[Mf]) -> Mf:
+def _seq_from_iterable(mfs:tuple[Mf]) -> Mf:
     '''Find solutions for all mfs'''
     match mfs:
         case ():
@@ -90,7 +90,7 @@ def _seq_from_iterable(mfs:Iterable[Mf]) -> Mf:
 
 def seq(*mfs:Mf) -> Mf:
     '''Find solutions for all mfs'''
-    return _seq_from_iterable(mfs)
+    return _seq_from_iterable(mfs)  # type: ignore
 
 seq.from_iterable = _seq_from_iterable  # type: ignore
 
@@ -119,7 +119,7 @@ def cut(v:Value) -> Ma:
     return ma
 
 
-def _amb_from_iterable(mfs:Iterable[Mf]) -> Mf:
+def _amb_from_iterable(mfs:tuple[Mf]) -> Mf:
     '''Find solutsons for some mfs. This creates a choice point.'''
     def join(mfs):
         match mfs:
@@ -142,7 +142,7 @@ def _amb_from_iterable(mfs:Iterable[Mf]) -> Mf:
 
 def amb(*mfs:Mf) -> Mf:
     '''Find solutions for some mfs. This creates a choice point.'''
-    return _amb_from_iterable(mfs)
+    return _amb_from_iterable(mfs)  # type: ignore
 
 amb.from_iterable = _amb_from_iterable  # type: ignore
 
