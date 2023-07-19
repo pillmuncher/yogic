@@ -20,12 +20,12 @@ Solution = TypeVar('Solution')
 Solutions = Iterable[Solution]
 Escape = Callable[[], Solutions]
 Failure = Callable[[], Solutions]
-Success = Callable[[Value, Failure, Escape], Solutions]
+Success = Callable[[Value, Failure], Solutions]
 Ma = Callable[[Success, Failure, Escape], Solutions]
 Mf = Callable[[Value], Ma]
 
 
-def success(v:Value, n:Failure, e:Escape) -> Solutions:
+def success(v:Value, n:Failure) -> Solutions:
     '''Return the Solution v and start searching for more Solutions.'''
     # after we return the solution we invoke the
     # fail continuation to kick off backtracking:
@@ -41,7 +41,7 @@ def failure() -> Solutions:
 def bind(ma:Ma, mf:Mf) -> Ma:
     '''Return the result of applying mf to ma.'''
     def apply(y:Success, n:Failure, e:Escape) -> Solutions:
-        def yea(v:Value, m:Failure, _:Escape) -> Solutions:
+        def yea(v:Value, m:Failure) -> Solutions:
             return mf(v)(y, m, e)
         return ma(yea, n, e)
     return apply
@@ -52,7 +52,7 @@ def unit(v:Value) -> Ma:
     Together with 'then', this makes the monad also a monoid. Together
     with 'fail' and 'choice', this makes the monad also a lattice.'''
     def ma(y:Success, n:Failure, e:Escape) -> Solutions:
-        return y(v, n, e)
+        return y(v, n)
     return ma
 
 
@@ -106,7 +106,7 @@ def cut(v:Value) -> Ma:
     def ma(y:Success, n:Failure, e:Escape) -> Solutions:
         # we commit to the first solution (if it exists) by invoking
         # the escape continuation and making it our backtracking path:
-        yield from y(v, e, e)
+        yield from y(v, e)
     return ma
 
 
