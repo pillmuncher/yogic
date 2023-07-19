@@ -36,7 +36,7 @@ def success(v:Value, n:Failure|Escape) -> Solutions:
 
 
 def failure() -> Solutions:
-    '''Fail and start searching for Solutions.'''
+    '''Fail.'''
     return ()
 
 
