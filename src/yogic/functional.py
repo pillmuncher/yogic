@@ -14,6 +14,7 @@ Join = Callable[[Value, Value], Value]
 
 
 def flip(f:Callable[..., Value]) -> Callable[..., Value]:
+    '''Flip the order of arguments with which a function is called.'''
     @wraps(f)
     def flipped(*args):
         return f(*reversed(args))
@@ -21,4 +22,5 @@ def flip(f:Callable[..., Value]) -> Callable[..., Value]:
 
 
 def foldr(f:Join, elems:Iterable[Value], end:Value) -> Value:
+    '''Right associative reduce.'''
     return foldl(flip(f), reversed(tuple(elems)), end)
