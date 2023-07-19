@@ -15,6 +15,7 @@ from typing import Callable, TypeVar
 
 from .functional import foldr
 
+
 Value = TypeVar('Value')
 Solution = TypeVar('Solution')
 
@@ -121,21 +122,20 @@ def cut(v:Value) -> Ma:
 
 def _amb_from_iterable(mfs:tuple[Mf]) -> Mf:
     '''Find solutsons for some mfs. This creates a choice point.'''
-    def join(mfs):
-        match mfs:
-            case ():
-                return fail
-            case mf,:
-                return mf
-            case mf, mg:
-                return choice(mf, mg)
-            case _:
-                return foldr(choice, mfs)  # type: ignore
+    match mfs:
+        case ():
+            joined = fail
+        case mf,:
+            joined = mf
+        case mf, mg:
+            joined = choice(mf, mg)
+        case _:
+            joined = foldr(choice, mfs)  # type: ignore
     def mf(v:Value) -> Ma:
         def ma(y:Success, n:Failure, e:Escape) -> Solutions:
             # we serialize the mfs and make the received fail continuation n()
             # our new escape continuation, so we can jump out of a computation:
-            return join(mfs)(v)(y, n, n)
+            return joined(v)(y, n, n)
         return ma
     return mf
 
