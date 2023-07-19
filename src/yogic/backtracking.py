@@ -68,7 +68,7 @@ def cut(v:Value) -> Ma:
 
 
 def fail(v:Value) -> Ma:
-    '''Ignore the argument and return an 'empty' monad. Represents failure.
+    '''Ignore the argument and start backtracking. Represents failure.
     Together with 'coice', this makes the monad also a monoid. Together
     with 'unit' and 'then', this makes the monad also a lattice.'''
     def ma(y:Success, n:Failure, e:Escape) -> Solutions:
