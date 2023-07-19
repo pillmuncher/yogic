@@ -95,7 +95,7 @@ def _seq_from_iterable(mfs:tuple[Mf]) -> Mf:
         case mf, mg:
             return then(mf, mg)
         case _:
-            return foldr(then, mfs)  # type: ignore
+            return foldr(then, mfs)
 
 
 def seq(*mfs:Mf) -> Mf:
@@ -130,7 +130,7 @@ def _amb_from_iterable(mfs:tuple[Mf]) -> Mf:
         case mf, mg:
             joined = choice(mf, mg)
         case _:
-            joined = foldr(choice, mfs)  # type: ignore
+            joined = foldr(choice, mfs)
     def mh(v:Value) -> Ma:
         def ma(y:Success, n:Failure, e:Escape) -> Solutions:
             # we serialize the mfs and make the received fail continuation n()
