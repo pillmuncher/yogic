@@ -61,8 +61,8 @@ def unit(v:Value) -> Ma:
 def cut(v:Value) -> Ma:
     '''Prune the search tree at the previous choice point.'''
     def ma(y:Success, n:Failure, e:Escape) -> Solutions:
-        # we commit to the first solution (if it exists) by invoking
-        # the escape continuation and making it our backtracking path:
+        # we commit to current execution path by injecting the 
+        # escape continuation and making it our backtracking path:
         return y(v, e)
     return ma
 
