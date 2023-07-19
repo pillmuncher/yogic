@@ -37,7 +37,7 @@ def success(v:Value, n:Failure|Escape) -> Solutions:
 
 def failure() -> Solutions:
     '''Fail.'''
-    return ()
+    yield from ()
 
 
 def bind(ma:Ma, mf:Mf) -> Ma:
