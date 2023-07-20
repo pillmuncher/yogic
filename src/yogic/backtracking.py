@@ -86,12 +86,12 @@ def then(mf:Mf, mg:Mf) -> Mf:
 
 
 def _seq_from_iterable(mfs:Iterable[Mf]) -> Mf:
-    '''Find solutions for all mfs'''
+    '''Find solutions for all mfs in sequence.'''
     return foldr(then, mfs, unit)
 
 
 def seq(*mfs:Mf) -> Mf:
-    '''Find solutions for all mfs'''
+    '''Find solutions for all mfs in sequence.'''
     return _seq_from_iterable(mfs)
 
 seq.from_iterable = _seq_from_iterable  # type: ignore
