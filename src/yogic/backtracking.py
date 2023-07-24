@@ -13,6 +13,7 @@ from collections.abc import Iterable
 from functools import wraps
 from typing import Callable, TypeVar
 
+from .extension import extend
 from .functional import foldr
 
 
@@ -91,9 +92,12 @@ def _seq_from_iterable(mfs:Iterable[Mf]) -> Mf:
 
 def seq(*mfs:Mf) -> Mf:
     '''Find solutions for all mfs in sequence.'''
-    return _seq_from_iterable(mfs)
+    return seq.from_iterable(mfs)
 
-seq.from_iterable = _seq_from_iterable  # type: ignore
+@extend(seq)
+def from_iterable(mfs:Iterable[Mf]) -> Mf:
+    '''Find solutions for all mfs in sequence.'''
+    return foldr(then, mfs, unit)
 
 
 def choice(mf:Mf, mg:Mf) -> Mf:
@@ -111,7 +115,13 @@ def choice(mf:Mf, mg:Mf) -> Mf:
     return mh
 
 
-def _amb_from_iterable(mfs:Iterable[Mf]) -> Mf:
+def amb(*mfs:Mf) -> Mf:
+    '''Find solutions for some mfs. This creates a choice point.'''
+    return amb.from_iterable(mfs)
+
+
+@extend(amb)
+def from_iterable(mfs:Iterable[Mf]) -> Mf:
     '''Find solutsons for some mfs. This creates a choice point.'''
     joined = foldr(choice, mfs, fail)
     def mf(v:Value) -> Ma:
@@ -121,13 +131,6 @@ def _amb_from_iterable(mfs:Iterable[Mf]) -> Mf:
             return joined(v)(y, n, n)
         return ma
     return mf
-
-
-def amb(*mfs:Mf) -> Mf:
-    '''Find solutions for some mfs. This creates a choice point.'''
-    return _amb_from_iterable(mfs)
-
-amb.from_iterable = _amb_from_iterable  # type: ignore
 
 
 def no(mf:Mf) -> Mf:
