@@ -29,8 +29,7 @@ Mf = Callable[[Value], Ma]
 
 def success(v:Value, b:Failure|Escape) -> Solutions:
     '''Return the Solution v and start searching for more Solutions.'''
-    # after we return the solution we invoke the
-    # fail continuation to kick off backtracking:
+    # we return the solution and then invoke the backtracking continuation:
     yield v
     yield from b()
 
