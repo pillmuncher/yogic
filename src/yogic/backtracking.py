@@ -27,12 +27,12 @@ Ma = Callable[[Success, Failure, Escape], Solutions]
 Mf = Callable[[Value], Ma]
 
 
-def success(v:Value, n:Failure|Escape) -> Solutions:
+def success(v:Value, b:Failure|Escape) -> Solutions:
     '''Return the Solution v and start searching for more Solutions.'''
     # after we return the solution we invoke the
     # fail continuation to kick off backtracking:
     yield v
-    yield from n()
+    yield from b()
 
 
 def failure() -> Solutions:
@@ -43,8 +43,8 @@ def failure() -> Solutions:
 def bind(ma:Ma, mf:Mf) -> Ma:
     '''Return the result of applying mf to ma.'''
     def bound(y:Success, n:Failure, e:Escape) -> Solutions:
-        def on_success(v:Value, m:Failure|Escape) -> Solutions:
-            return mf(v)(y, m, e)
+        def on_success(v:Value, b:Failure|Escape) -> Solutions:
+            return mf(v)(y, b, e)
         return ma(on_success, n, e)
     return bound
 
