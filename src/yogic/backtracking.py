@@ -104,9 +104,9 @@ def choice(mf:Mf, mg:Mf) -> Mf:
         def ma(y:Success, n:Failure, e:Escape) -> Solutions:
             # we pass mf and mg the same success continuation, so we
             # can invoke mf and mg at the same point in the computation:
-            def on_fail() -> Solutions:
+            def on_failure() -> Solutions:
                 return mg(v)(y, n, e)
-            return mf(v)(y, on_fail, e)
+            return mf(v)(y, on_failure, e)
         return ma
     return mh
 
