@@ -70,7 +70,8 @@ def cut(v:Value) -> Ma:
 def fail(v:Value) -> Ma:
     '''Ignore the argument and start backtracking. Represents failure.
     Together with 'coice', this makes the monad also a monoid. Together
-    with 'unit' and 'then', this makes the monad also a lattice.'''
+    with 'unit' and 'then', this makes the monad also a lattice.
+    It is also mzero.'''
     def ma(y:Success, n:Failure, e:Escape) -> Solutions:
         return n()
     return ma
@@ -83,11 +84,6 @@ def then(mf:Mf, mg:Mf) -> Mf:
     def mh(v:Value) -> Ma:
         return bind(mf(v), mg)
     return mh
-
-
-def _seq_from_iterable(mfs:Iterable[Mf]) -> Mf:
-    '''Find solutions for all mfs in sequence.'''
-    return foldr(then, mfs, unit)
 
 
 def seq(*mfs:Mf) -> Mf:
