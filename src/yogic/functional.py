@@ -1,6 +1,9 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-'''Some functional utility functions that should be in the language.'''
+'''
+Provides functional programming utilities for Python, including functions for
+flipping argument order and performing a right fold operation on iterables.
+'''
 
 from collections.abc import Iterable
 from functools import wraps, reduce as foldl
@@ -14,7 +17,16 @@ Join = Callable[[Value, Value], Value]
 
 
 def flip(f:Callable[..., Value]) -> Callable[..., Value]:
-    '''Flip the order of arguments with which a function is called.'''
+    '''
+    Decorator function to flip the argument order of a given function.
+
+    Parameters:
+        f (Callable[..., Value]): The function to be flipped.
+
+    Returns:
+        Callable[..., Value]: A new function that takes the reversed arguments
+        and calls the original function.
+    '''
     @wraps(f)
     def flipped(*args):
         return f(*reversed(args))
@@ -22,5 +34,18 @@ def flip(f:Callable[..., Value]) -> Callable[..., Value]:
 
 
 def foldr(f:Join, elems:Iterable[Value], end:Value) -> Value:
-    '''Right associative reduce.'''
+    '''
+    Performs a right fold operation on the given iterable.
+
+    The function applies the binary operator `f` cumulatively from right to
+    left to the elements of the iterable `elems`, reducing it to a single value.
+
+    Parameters:
+        f (Join): The binary operator function to be applied during folding.
+        elems (Iterable[Value]): The iterable to be folded from right to left.
+        end (Value): The initial value for the fold operation.
+
+    Returns:
+        Value: The final result of the right fold operation.
+    '''
     return foldl(flip(f), reversed(tuple(elems)), end)

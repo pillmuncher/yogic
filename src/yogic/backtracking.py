@@ -30,7 +30,6 @@ Mf = Callable[[Value], Ma]
 
 def success(v:Value, b:Failure|Escape) -> Solutions:
     '''Return the Solution v and start searching for more Solutions.'''
-    # we return the solution and then invoke the backtracking continuation:
     yield v
     yield from b()
 
@@ -88,12 +87,15 @@ def then(mf:Mf, mg:Mf) -> Mf:
 
 def seq(*mfs:Mf) -> Mf:
     '''Find solutions for all mfs in sequence.'''
-    return seq.from_iterable(mfs)
+     # pylint: disable=E1101
+    return seq.from_iterable(mfs) # type: ignore
+
 
 @extend(seq)
 def from_iterable(mfs:Iterable[Mf]) -> Mf:
     '''Find solutions for all mfs in sequence.'''
     return foldr(then, mfs, unit)
+del from_iterable
 
 
 def choice(mf:Mf, mg:Mf) -> Mf:
@@ -113,10 +115,12 @@ def choice(mf:Mf, mg:Mf) -> Mf:
 
 def amb(*mfs:Mf) -> Mf:
     '''Find solutions for some mfs. This creates a choice point.'''
-    return amb.from_iterable(mfs)
+     # pylint: disable=E1101
+    return amb.from_iterable(mfs) # type: ignore
 
 
-@extend(amb)
+# pylint: disable=E0102
+@extend(amb) # type: ignore
 def from_iterable(mfs:Iterable[Mf]) -> Mf:
     '''Find solutsons for some mfs. This creates a choice point.'''
     joined = foldr(choice, mfs, fail)
@@ -127,6 +131,7 @@ def from_iterable(mfs:Iterable[Mf]) -> Mf:
             return joined(v)(y, n, n)
         return ma
     return mf
+del from_iterable
 
 
 def no(mf:Mf) -> Mf:

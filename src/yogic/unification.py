@@ -39,8 +39,8 @@ class Subst(ChainMap):
         match self.deref(obj):
             case list() | tuple() as sequence:
                 return type(sequence)(self.smooth(each) for each in sequence)
-            case obj:
-                return obj
+            case thing:
+                return thing
 
     @property
     class proxy(Mapping):
@@ -68,6 +68,7 @@ def _unify(this, that):
             return unit
         case list() | tuple(), list() | tuple() if compatible(this, that):
             # Two lists or tuples are unified only if their elements are also:
+            # pylint: disable=E1101
             return seq.from_iterable(map(unify, this, that))  # type: ignore
         case Variable(), _:
             # Bind a Variable to another thing:
