@@ -7,7 +7,7 @@ from yogic import *
 
 @predicate
 def equate(letters, numbers):
-    return alt.from_iterable(unify(letters, list(permutated_numbers))
+    return amb.from_iterable(unify(letters, list(permutated_numbers))
                 for permutated_numbers in permutations(numbers))
 
 # -----8<---------8<---------8<---------8<---------8<---------8<---------8<-----
