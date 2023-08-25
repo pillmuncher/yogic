@@ -191,20 +191,20 @@ Mf = Callable[[Subst], Ma]
   return a monadic object.
 
 ```python
-def bind(ma:Ma, mf:Mf) -> Ma
+bind(ma:Ma, mf:Mf) -> Ma
 ```
 - Applies the monadic computation `mf` to `ma` and returns the result.  
   In the context of the backtracking monad this means turning `mf` into a
   continuation.
 
 ```python
-def unit(subst:Subst) -> Ma
+unit(subst:Subst) -> Ma
 ```
 - Lifts a substitution environment `subst` into a computation.  
   Succeeds once and then initates backtracking.
 
 ```python
-def cut(subst:Subst) -> Ma
+cut(subst:Subst) -> Ma
 ```
 - Lifts a substitution environment `subst` into a computation.  
   Succeeds once, and instead of normal backtracking aborts the current
@@ -212,70 +212,70 @@ def cut(subst:Subst) -> Ma
   search space.
 
 ```python
-def fail(subst.Subst) -> Ma
+fail(subst.Subst) -> Ma
 ```
 - Lifts a substitution environment `subst` into a computation.  
   Never succeeds. Immediately initiates backtracking.
 
 ```python
-def then(mf:Mf, mg:Mf) -> Mf
+then(mf:Mf, mg:Mf) -> Mf
 ```
 - Composes two computations sequentially.
 
 ```python
-def seq(*mfs:Mf) -> Mf
+seq(*mfs:Mf) -> Mf
 ```
 - Composes multiple computations sequentially.
 
 ```python
-def seq.from_enumerable(mfs:Sequence[Mf]) -> Mf
+seq.from_enumerable(mfs:Sequence[Mf]) -> Mf
 ```
 - Composes multiple computations sequentially from an enumerable.
 
 ```python
-def choice(mf:Mf, mg:Mf) -> Mf
+choice(mf:Mf, mg:Mf) -> Mf
 ```
 - Represents a choice between two computations.  
   Takes two computations `mf` and `mg` and returns a new computation that tries
   `mf`, and if that fails, falls back to `mg`. This defines a *choice point*.
 
 ```python
-def amb(*mfs:Mf) -> Mf
+amb(*mfs:Mf) -> Mf
 ```
 - Represents a choice between multiple computations.  
   Takes a variable number of computations and returns a new computation that
   tries all of them in series with backtracking. This defines a *choice point*.
 
 ```python
-def amb.from_enumerable(mfs:Sequence[Mf]) -> Mf
+amb.from_enumerable(mfs:Sequence[Mf]) -> Mf
 ```
 - Represents a choice between multiple computations from an enumerable.  
   Takes a sequence of computations `mfs` and returns a new computation that
   tries all of them in series with backtracking. This defines a *choice point*.
 
 ```python
-def not(mf:Mf) -> Mf
+not(mf:Mf) -> Mf
 ```
 - Negates the result of a computation.  
   Returns a new computation that succeeds if `mf` fails and vice versa.
 
 ```python
-def unify(...) -> Mf
+unify(...) -> Mf
 ```
 - Tries to unify pairs of objects. Fails if any pair is not unifiable.
 
 ```python
-def unify_any(Variable v, *objects) -> Mf
+unify_any(Variable v, *objects) -> Mf
 ```
 - Tries to unify a variable with any one of objects. Fails if no object is unifiable.
 
 ```python
-def resolve(goal:Mf) -> Solutions
+resolve(goal:Mf) -> Solutions
 ```
 - Perform logical resolution of the computation represented by `goal`.
 
 ```python
-public class Variable
+class Variable
 ```
 - Represents named logical variables.
 
