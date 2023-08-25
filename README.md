@@ -149,36 +149,40 @@ functions/predicates.
 
 ## **API:**
 
-### Success Function Type
+### Success
 
 A function type that represents a successful resolution. `Success` continuations are called with a substitution environment `subst` and a `Failure` continuation `backtrack`. They yield the provided substitution environment once and then yield whatever `backtrack()` yields.
 
-### Failure Function Type
+### Failure
 
 A function type that represents a failed resolution. `Failure` continuations are called to initiate backtracking.
 
-### Ma Monad Type
+### Ma
 
 The monad type. Combinators of this type take a `Success` continuation (`yes`) and two `Failure` continuations (`no` and `esc`). The `yes` continuation represents the current continuation, `no` represents the backtracking path, and `esc` is the escape continuation invoked by the `cut` combinator to jump out of the current computation back to the previous choice point.
 
-### Mf Monadic Function Type
+### Mf
 
-Combinators of this type take a substitution environment `subst` and return a monadic object.
+The monadic function type. Combinators of this type take a substitution environment `subst` and return a monadic object.
+
+### Subst
+
+The type of the substitution environment that map variables to Values.
 
 ### Combinators
 
-- `bind(ma, mf)`: Applies the monadic computation `mf` to `ma` and returns the result. In the context of the backtracking monad, this means turning `mf` into a continuation.
-- `unit(subst)`: Takes a substitution environment `subst` into a computation. It succeeds once and then initiates backtracking.
-- `cut(subst)`: Takes a substitution environment `subst` into a computation. It succeeds once, and instead of normal backtracking, aborts the current computation and jumps to the previous choice point, effectively pruning the search space.
-- `fail(subst)`: Takes a substitution environment `subst` into a computation that never succeeds. It immediately initiates backtracking.
-- `seq(*mfs)`: Composes multiple computations sequentially.
-- `and_from_enumerable(mfs)`: Composes multiple computations sequentially from an enumerable.
-- `amb(*mfs)`: Represents a choice between multiple computations. It takes a variable number of computations and returns a new computation that tries all of them in series with backtracking. This defines a *choice point*.
-- `or_from_enumerable(mfs)`: Represents a choice between multiple computations from an enumerable. It takes a sequence of computations `mfs` and returns a new computation that tries all of them in series with backtracking. This defines a *choice point*.
-- `not_(mf)`: Negates the result of a computation. It returns a new computation that succeeds if `mf` fails and vice versa.
-- `unify(*pairs)`: Tries to unify pairs of objects. It fails if any pair is not unifiable.
-- `unify_any(v, *os)`: Tries to unify a variable with any one of the objects. It fails if no object is unifiable.
-- `resolve(goal)`: Perform logical resolution of the computation represented by `goal`.
+- `bind(ma:Ma, mf:Mf) -> Ma`: Applies the monadic computation `mf` to `ma` and returns the result. In the context of the backtracking monad, this means turning `mf` into a continuation.
+- `unit(subst:Subst) -> Solutions`: Takes a substitution environment `subst` into a computation. It succeeds once and then initiates backtracking.
+- `cut(subst:Subst) -> Solutions`: Takes a substitution environment `subst` into a computation. It succeeds once, and instead of normal backtracking, aborts the current computation and jumps to the previous choice point, effectively pruning the search space.
+- `fail(subst:Subst) -> Solutions`: Takes a substitution environment `subst` into a computation that never succeeds. It immediately initiates backtracking.
+- `seq(*mfs:Mf) -> Mf`: Composes multiple computations sequentially.
+- `and_from_enumerable(mfs:Sequence[Mf]) -> Mf`: Composes multiple computations sequentially from an enumerable.
+- `amb(*mfs:Mf) -> Mf`: Represents a choice between multiple computations. It takes a variable number of computations and returns a new computation that tries all of them in series with backtracking. This defines a *choice point*.
+- `or_from_enumerable(mfs:Sequence[Mf]) -> Mf`: Represents a choice between multiple computations from an enumerable. It takes a sequence of computations `mfs` and returns a new computation that tries all of them in series with backtracking. This defines a *choice point*.
+- `not_(mf:Mf) -> Mf`: Negates the result of a computation. It returns a new computation that succeeds if `mf` fails and vice versa.
+- `unify(*pairs) -> Mf`: Tries to unify pairs of objects. It fails if any pair is not unifiable.
+- `unify_any(v, *os) -Mf`: Tries to unify a variable with any one of the objects. It fails if no object is unifiable.
+- `resolve(goal:Mf) -> Solutions`: Perform logical resolution of the computation represented by `goal`.
 
 ### Usage
 
