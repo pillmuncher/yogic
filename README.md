@@ -149,34 +149,18 @@ functions/predicates.
 
 ## **API:**
 
-### Solutions = Iterable[Subst]
+### 
 - ...
-
-### Ma = Callable[[Success, Failure, Failure], Solutions]
-- The monad type. Combinators of this type take a `Success` continuation (`yes`) and two `Failure` continuations (`no` and `esc`). The `yes` continuation represents the current continuation, `no` represents the backtracking path, and `esc` is the escape continuation invoked by the `cut` combinator to jump out of the current computation back to the previous choice point.
-
-### Mf = Callable[[Subst], Ma]
-- The monadic function type. Combinators of this type take a substitution environment `subst` and return a monadic object.
-
-### Combinators
-
-- `bind(ma:Ma, mf:Mf) -> Ma`: Applies the monadic computation `mf` to `ma` and returns the result. In the context of the backtracking monad, this means turning `mf` into a continuation.
-- `unit(subst:Subst) -> Solutions`: Takes a substitution environment `subst` into a computation. It succeeds once and then initiates backtracking.
-- `cut(subst:Subst) -> Solutions`: Takes a substitution environment `subst` into a computation. It succeeds once, and instead of normal backtracking, aborts the current computation and jumps to the previous choice point, effectively pruning the search space.
-- `fail(subst:Subst) -> Solutions`: Takes a substitution environment `subst` into a computation that never succeeds. It immediately initiates backtracking.
-- `seq(*mfs:Mf) -> Mf`: Composes multiple computations sequentially.
-- `and_from_enumerable(mfs:Sequence[Mf]) -> Mf`: Composes multiple computations sequentially from an enumerable.
-- `amb(*mfs:Mf) -> Mf`: Represents a choice between multiple computations. It takes a variable number of computations and returns a new computation that tries all of them in series with backtracking. This defines a *choice point*.
-- `or_from_enumerable(mfs:Sequence[Mf]) -> Mf`: Represents a choice between multiple computations from an enumerable. It takes a sequence of computations `mfs` and returns a new computation that tries all of them in series with backtracking. This defines a *choice point*.
-- `not_(mf:Mf) -> Mf`: Negates the result of a computation. It returns a new computation that succeeds if `mf` fails and vice versa.
-- `unify(*pairs) -> Mf`: Tries to unify pairs of objects. It fails if any pair is not unifiable.
-- `unify_any(v, *os) -Mf`: Tries to unify a variable with any one of the objects. It fails if no object is unifiable.
-- `resolve(goal:Mf) -> Solutions`: Perform logical resolution of the computation represented by `goal`.
 
 ```python
 Subst = TypeVar('Subst')
 ```
 The type of the substitution environment that map variables to Values.
+
+```python
+Solutions = Iterable[Subst]
+```
+- ...
 
 ```python
 Failure = Callable[[], Solutions]
