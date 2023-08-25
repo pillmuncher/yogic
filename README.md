@@ -2,7 +2,8 @@
 
 
 An embedded DSL of monadic combinators for first-order logic programming in Python.
-It's called Yogic because logic programming is another step on the path to
+
+It's named Yogic because logic programming is another step on the path to
 enlightenment.
 
 [![alt text](https://imgs.xkcd.com/comics/python.png "Flying")](https://xkcd.com/353)
