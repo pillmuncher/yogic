@@ -200,13 +200,13 @@ bind(ma:Ma, mf:Mf) -> Ma
 ```python
 unit(subst:Subst) -> Ma
 ```
-- Lifts a substitution environment `subst` into a computation.  
+- Takes a substitution environment `subst` into a computation.  
   Succeeds once and then initates backtracking.
 
 ```python
 cut(subst:Subst) -> Ma
 ```
-- Lifts a substitution environment `subst` into a computation.  
+- Takes a substitution environment `subst` into a computation.  
   Succeeds once, and instead of normal backtracking aborts the current
   computation and jumps to the previous choice point, effectively pruning the
   search space.
@@ -214,7 +214,7 @@ cut(subst:Subst) -> Ma
 ```python
 fail(subst.Subst) -> Ma
 ```
-- Lifts a substitution environment `subst` into a computation.  
+- Takes a substitution environment `subst` into a computation.  
   Never succeeds. Immediately initiates backtracking.
 
 ```python
@@ -260,12 +260,12 @@ not(mf:Mf) -> Mf
   Returns a new computation that succeeds if `mf` fails and vice versa.
 
 ```python
-unify(...) -> Mf
+unify(this:Any, that:Any) -> Mf
 ```
 - Tries to unify pairs of objects. Fails if any pair is not unifiable.
 
 ```python
-unify_any(Variable v, *objects) -> Mf
+unify_any(Variable v, *objects:Any) -> Mf
 ```
 - Tries to unify a variable with any one of objects. Fails if no object is unifiable.
 
