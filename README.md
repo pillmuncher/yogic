@@ -148,7 +148,7 @@ cannot be proven in the universe described by the given set of
 functions/predicates.
 
 ## **API:**
-TODO: reworl API docs
+TODO: reworl API docs!
 
 ```python
 Subst = TypeVar('Subst')
