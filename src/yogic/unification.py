@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from itertools import count
 from typing import ClassVar
 
-from .backtracking import Solutions, Mf, unit, fail, seq, run
+from .backtracking import Solutions, Mf, unit, fail, seq, amb, run
 
 
 @dataclass(frozen=True, slots=True)
@@ -90,6 +90,9 @@ def unify(this, that) -> Mf:
     # pylint: disable=E1102,W0108
     return lambda subst: _unify(subst.deref(this), subst.deref(that))(subst)
 
+
+def unify_any(v:Variable, *values) -> Mf:
+    return amb.from_iterable(unify(v, value) for value in values)
 
 def resolve(goal:Mf) -> Solutions:
     '''Start the logical resolution of 'goal'. Return all solutions.'''

@@ -41,11 +41,11 @@ def failure() -> Solutions:
 
 def bind(ma:Ma, mf:Mf) -> Ma:
     '''Return the result of applying mf to ma.'''
-    def bound(y:Success, n:Failure, e:Escape) -> Solutions:
+    def mb(y:Success, n:Failure, e:Escape) -> Solutions:
         def on_success(v:Value, b:Failure|Escape) -> Solutions:
             return mf(v)(y, b, e)
         return ma(on_success, n, e)
-    return bound
+    return mb
 
 
 def unit(v:Value) -> Ma:
@@ -80,9 +80,9 @@ def then(mf:Mf, mg:Mf) -> Mf:
     '''Apply two monadic functions mf and mg in sequence.
     Together with 'unit', this makes the monad also a monoid. Together
     with 'fail' and 'choice', this makes the monad also a lattice.'''
-    def mh(v:Value) -> Ma:
+    def mgf(v:Value) -> Ma:
         return bind(mf(v), mg)
-    return mh
+    return mgf
 
 
 def seq(*mfs:Mf) -> Mf:
@@ -102,7 +102,7 @@ def choice(mf:Mf, mg:Mf) -> Mf:
     '''Succeeds if either of the Mf functions succeeds.
     Together with 'fail', this makes the monad also a monoid. Together
     with 'unit' and 'then', this makes the monad also a lattice.'''
-    def mh(v:Value) -> Ma:
+    def mgf(v:Value) -> Ma:
         def ma(y:Success, n:Failure, e:Escape) -> Solutions:
             # we pass mf and mg the same success continuation, so we
             # can invoke mf and mg at the same point in the computation:
@@ -110,7 +110,7 @@ def choice(mf:Mf, mg:Mf) -> Mf:
                 return mg(v)(y, n, e)
             return mf(v)(y, on_failure, e)
         return ma
-    return mh
+    return mgf
 
 
 def amb(*mfs:Mf) -> Mf:

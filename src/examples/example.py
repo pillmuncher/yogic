@@ -1,6 +1,7 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
 from yogic import *
+from yogic.unification import unify_any
 
 
 @predicate
@@ -23,19 +24,11 @@ def descendant(a, c):
 
 @predicate
 def human(a):
-    return amb(
-        unify(a, 'socrates'),
-        unify(a, 'plato'),
-        unify(a, 'archimedes'),
-    )
+    return unify_any(a, 'socrates', 'plato', 'archimedes')
 
 @predicate
 def dog(a):
-    return amb(
-        unify(a, 'fifi'),
-        seq(unify(a, 'fluffy'), cut),
-        unify(a, 'daisy'),
-    )
+    return unify_any(a, 'fifi', 'fluffy', 'daisy')
 
 @predicate
 def not_dog(a):
