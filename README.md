@@ -1,47 +1,50 @@
 # Yogic
 
 
-An embedded DSL of monadic combinators for first-order logic programming in Python.
+An embedded DSL of monadic combinators for first-order logic programming
+in Python.
 
-It's named Yogic because logic programming is another step on the path to
-enlightenment.
+It's named Yogic because logic programming is another step on the path
+to enlightenment.
 
 [![alt text](https://imgs.xkcd.com/comics/python.png "Flying")](https://xkcd.com/353)
 
 ## **Key features:**
 
-- **Horn Clauses as Functions**: Express logical facts and rules as simple
-  functions.
+- **Horn Clauses as Functions**: Express logical facts and rules as
+  simple functions.
 
 - **Composable Combinators**: Define expressions of first-order logic by
   simply composing combinator functions.
 
-- **Logical Variables**: Represented by the ``Variable`` class, they can be
-  bound to arbitrary values including other variables during resolution.
+- **Logical Variables**: Represented by the ``Variable`` class, they can
+  be bound to arbitrary values including other variables during
+  resolution.
 
-- **Substitution and Unification**: The substitution environment provides
-  variable bindings and is incrementally constructed during resolution. It
-  is returned for each successful resolution.
+- **Substitution and Unification**: The substitution environment
+  provides variable bindings and is incrementally constructed during
+  resolution. It is returned for each successful resolution.
 
 - **Backtracking**: The monad combines the List and the Triple-Barrelled
-  Continuation Monads for resolution, backtracking, and branch pruning via
-  the ``cut`` combinator.
+  Continuation Monads for resolution, backtracking, and branch pruning
+  via the ``cut`` combinator.
 
 - **Algebraic Structures**: ``unit`` and ``then`` form a *Monoid* over
-  monadic combinator functions, as do ``fail`` and ``choice``. Together they
-  form a *Distributive Lattice* with ``then`` as the *meet* (infimum) and
-  ``choice`` as the *join* (supremum) operator, and ``unit`` and ``fail`` as
-  their respective identity elements. Because of the sequential nature of
-  the employed resolution algorithm combined with the `cut`, the lattice is
-  *non-commutative*.
+  monadic combinator functions, as do ``fail`` and ``choice``. Together
+  they form a *Distributive Lattice* with ``then`` as the *meet*
+  (infimum) and ``choice`` as the *join* (supremum) operator, and
+  ``unit`` and ``fail`` as their respective identity elements. Because
+  of the sequential nature of the employed resolution algorithm combined
+  with the `cut`, the lattice is *non-commutative*.
 
 ## **A Motivating Example:**
 
-We represent logical facts as functions that specify which individuals are
-humans and dogs and define a `child(a, b)` relation such that `a` is the child
-of `b`. Then we define rules that specify what a descendant and a mortal being
-is. We then run queries that tell us which individuals are descendants of whom
-and which individuals are both mortal and no dogs:
+We represent logical facts as functions that specify which individuals
+are humans and dogs and define a `child(a, b)` relation such that `a` is
+the child of `b`. Then we define rules that specify what a descendant
+and a mortal being is. We then run queries that tell us which
+individuals are descendants of whom and which individuals are both
+mortal and no dogs:
 ```python
 from yogic import *
 
@@ -107,8 +110,8 @@ socrates is mortal and no dog.
 plato is mortal and no dog.
 archimedes is mortal and no dog.
 ```
-Note that `jim`, `bob`, `joe` and `ian` are not part of the result of the
-second query because we didn't specify that they are human.
+Note that `jim`, `bob`, `joe` and `ian` are not part of the result of
+the second query because we didn't specify that they are human.
 
 ## **How it works:**
 
@@ -139,13 +142,13 @@ there's nothing left to prove. This process is called a *resolution*.
 ## **How to use it:**
 
 Just write functions that take in Variables and other values like in the
-example above, and return monadic functions of type ``Mf``, constructed by
-composing your functions with the combinator functions provided by this
-module, and start the resolution by giving an initial function, a so-called
-*goal*, to ``resolve()`` and iterate over the results, one for each way *goal*
-can be proven. No result means a failed resolution, that is the function
-cannot be proven in the universe described by the given set of
-functions/predicates.
+example above, and return monadic functions of type ``Mf``, constructed
+by composing your functions with the combinator functions provided by
+this module, and start the resolution by giving an initial function, a
+so-called *goal*, to ``resolve()`` and iterate over the results, one for
+each way *goal* can be proven. No result means a failed resolution, that
+is the function cannot be proven in the universe described by the given
+set of functions/predicates.
 
 ## **API:**
 TODO: rework API docs!
@@ -158,7 +161,8 @@ Subst = TypeVar('Subst')
 ```python
 Solutions = Iterable[Subst]
 ```
-- A sequence of substitution environments, one for each solution for a logical query.
+- A sequence of substitution environments, one for each solution for a
+  logical query.
 
 ```python
 Failure = Callable[[], Solutions]
@@ -169,96 +173,102 @@ Failure = Callable[[], Solutions]
 ```python
 Success = Callable[[Subst, Failure], Solutions]
 ```
-- A function type that represents a successful resolution.  
-  `Success` continuations are called with a substitution environment `subst`
-  and a `Failure` continuation `backtrack` and yield the provided substitution
-  environment once and then yield whatever `backtrack()` yields.
+- A function type that represents a successful resolution.
+  `Success` continuations are called with a substitution environment of
+  type `Subst` and a `Failure` continuation for backtackiing. They first
+  yield the provided substitution environment once and then yield
+  whatever the `Failure` continuation yields.
 
 ```python
 Ma = Callable[[Success, Failure, Failure], Solutions]
 ```
-- The monad type.  
-  Combinators of this type take a `Success` continuation and two `Failure`
-  continuations. The `yes` continuation represents the current continuation
-  and `no` represents the backtracking path. `esc` is the escape continuation
-  that is invoked by the `cut` combinator to jump out of the current
-  comptutation back to the previous choice point. 
+- The monadic computation type.  
+  Combinators of this type take a `Success` continuation and two
+  `Failure` continuations. The `Success` continuation represents the
+  current continuation The first `Failure` continuation represents the
+  backtracking path. The second `Failure` Continuation is the escape
+  continuation that is invoked by the `cut` combinator to jump out of
+  the current comptutation back to the previous choice point. 
 
 ```python
 Mf = Callable[[Subst], Ma]
 ```
-- The monadic function type.  
-  Combinators of this type take a substitution environment `subst` and
-  return a monadic object.
+- The monadic continuation type.  
+  Combinators of this type take a substitution environment of type
+  `Subst` and return a monadic object.
 
 ```python
 bind(ma:Ma, mf:Mf) -> Ma
 ```
-- Applies the monadic computation `mf` to `ma` and returns the result.  
-  In the context of the backtracking monad this means turning `mf` into a
-  continuation.
+- Applies the monadic continuation `mf` to `ma` and returns the result.
+  In the context of the backtracking monad this means turning `mf` into
+  the continuation of the computation `ma`.
 
 ```python
 unit(subst:Subst) -> Ma
 ```
-- Takes a substitution environment `subst` into a computation.  
+- Takes a substitution environment `subst` into a monadic computation.
   Succeeds once and then initates backtracking.
 
 ```python
 cut(subst:Subst) -> Ma
 ```
-- Takes a substitution environment `subst` into a computation.  
+- Takes a substitution environment `subst` into a monadic computation.  
   Succeeds once, and instead of normal backtracking aborts the current
-  computation and jumps to the previous choice point, effectively pruning the
-  search space.
+  computation and jumps to the previous choice point, effectively
+  pruning the search space.
 
 ```python
-fail(subst.Subst) -> Ma
+fail(subst:Subst) -> Ma
 ```
-- Takes a substitution environment `subst` into a computation.  
+- Takes a substitution environment `subst` into a monadic computation.  
   Never succeeds. Immediately initiates backtracking.
 
 ```python
 then(mf:Mf, mg:Mf) -> Mf
 ```
-- Composes two computations sequentially.
+- Composes two monadic continuations sequentially.
 
 ```python
 seq(*mfs:Mf) -> Mf
 ```
-- Composes multiple computations sequentially.
+- Composes multiple monadic continuations sequentially.
 
 ```python
 seq.from_enumerable(mfs:Sequence[Mf]) -> Mf
 ```
-- Composes multiple computations sequentially from an enumerable.
+- Composes multiple monadic continuations sequentially from an enumerable.
 
 ```python
 choice(mf:Mf, mg:Mf) -> Mf
 ```
-- Represents a choice between two computations.  
-  Takes two computations `mf` and `mg` and returns a new computation that tries
-  `mf`, and if that fails, falls back to `mg`. This defines a *choice point*.
+- Represents a choice between two monadic continuations.  
+  Takes two continuations `mf` and `mg` and returns a new continuation
+  that tries `mf`, and if that fails, falls back to `mg`.
+  This defines a *choice point*.
 
 ```python
 amb(*mfs:Mf) -> Mf
 ```
-- Represents a choice between multiple computations.  
-  Takes a variable number of computations and returns a new computation that
-  tries all of them in series with backtracking. This defines a *choice point*.
+- Represents a choice between multiple monadic continuations.  
+  Takes a variable number of continuations and returns a new
+  continuation that tries all of them in series with backtracking.
+  This defines a *choice point*.
 
 ```python
 amb.from_enumerable(mfs:Sequence[Mf]) -> Mf
 ```
-- Represents a choice between multiple computations from an enumerable.  
-  Takes a sequence of computations `mfs` and returns a new computation that
-  tries all of them in series with backtracking. This defines a *choice point*.
+- Represents a choice between multiple monadic continuations from an
+  enumerable.  
+  Takes a sequence of continuations `mfs` and returns a new continuation
+  that tries all of them in series with backtracking.
+  This defines a *choice point*.
 
 ```python
 not(mf:Mf) -> Mf
 ```
-- Negates the result of a computation.  
-  Returns a new computation that succeeds if `mf` fails and vice versa.
+- Negates the result of a monadic continuation.  
+  Returns a new continuation that succeeds if `mf` fails and vice versa.
 
 ```python
 unify(this:Any, that:Any) -> Mf
@@ -268,12 +278,14 @@ unify(this:Any, that:Any) -> Mf
 ```python
 unify_any(Variable v, *objects:Any) -> Mf
 ```
-- Tries to unify a variable with any one of objects. Fails if no object is unifiable.
+- Tries to unify a variable with any one of objects.
+  Fails if no object is unifiable.
 
 ```python
 resolve(goal:Mf) -> Solutions
 ```
-- Perform logical resolution of the computation represented by `goal`.
+- Perform logical resolution of the monadic continuation represented by
+  `goal`.
 
 ```python
 class Variable
