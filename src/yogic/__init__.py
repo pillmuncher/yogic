@@ -20,11 +20,12 @@ __all__ = (
     # re-export from .unification
     'resolve',
     'unify',
+    'unify_any',
     'var',
 )
 
 from .backtracking import bind, unit, fail, no, then, seq, amb, predicate, cut
-from .unification import resolve, unify, var
+from .unification import resolve, unify, unify_any, var
 
 from . import _version
 __version__ = _version.get_versions()['version']

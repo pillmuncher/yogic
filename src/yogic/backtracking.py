@@ -44,7 +44,7 @@ def bind(ma:Ma, mf:Mf) -> Ma:
     def mb(y:Success, n:Failure, e:Escape) -> Solutions:
         def on_success(v:Value, b:Failure|Escape) -> Solutions:
             return mf(v)(y, b, e)
-        return ma(on_success, n, e)
+        yield from ma(on_success, n, e)
     return mb
 
 
