@@ -167,7 +167,7 @@ Solutions = Iterable[Subst]
 ```python
 Failure = Callable[[], Solutions]
 ```
-- A function type that represents a failed resolution.  
+- A function type that represents a failed resolution. 
   `Failure` continuations are called to initiate backtracking.
 
 ```python
@@ -182,18 +182,18 @@ Success = Callable[[Subst, Failure], Solutions]
 ```python
 Ma = Callable[[Success, Failure, Failure], Solutions]
 ```
-- The monadic computation type.  
+- The monadic computation type. 
   Combinators of this type take a `Success` continuation and two
   `Failure` continuations. The `Success` continuation represents the
   current continuation The first `Failure` continuation represents the
   backtracking path. The second `Failure` Continuation is the escape
   continuation that is invoked by the `cut` combinator to jump out of
-  the current comptutation back to the previous choice point. 
+  the current comptutation back to the previous choice point.
 
 ```python
 Mf = Callable[[Subst], Ma]
 ```
-- The monadic continuation type.  
+- The monadic continuation type. 
   Combinators of this type take a substitution environment of type
   `Subst` and return a monadic object.
 
@@ -213,7 +213,7 @@ unit(subst:Subst) -> Ma
 ```python
 cut(subst:Subst) -> Ma
 ```
-- Takes a substitution environment `subst` into a monadic computation.  
+- Takes a substitution environment `subst` into a monadic computation. 
   Succeeds once, and instead of normal backtracking aborts the current
   computation and jumps to the previous choice point, effectively
   pruning the search space.
@@ -221,7 +221,7 @@ cut(subst:Subst) -> Ma
 ```python
 fail(subst:Subst) -> Ma
 ```
-- Takes a substitution environment `subst` into a monadic computation.  
+- Takes a substitution environment `subst` into a monadic computation. 
   Never succeeds. Immediately initiates backtracking.
 
 ```python
@@ -242,7 +242,7 @@ seq.from_enumerable(mfs:Sequence[Mf]) -> Mf
 ```python
 choice(mf:Mf, mg:Mf) -> Mf
 ```
-- Represents a choice between two monadic continuations.  
+- Represents a choice between two monadic continuations. 
   Takes two continuations `mf` and `mg` and returns a new continuation
   that tries `mf`, and if that fails, falls back to `mg`.
   This defines a *choice point*.
@@ -250,7 +250,7 @@ choice(mf:Mf, mg:Mf) -> Mf
 ```python
 amb(*mfs:Mf) -> Mf
 ```
-- Represents a choice between multiple monadic continuations.  
+- Represents a choice between multiple monadic continuations. 
   Takes a variable number of continuations and returns a new
   continuation that tries all of them in series with backtracking.
   This defines a *choice point*.
@@ -259,7 +259,7 @@ amb(*mfs:Mf) -> Mf
 amb.from_enumerable(mfs:Sequence[Mf]) -> Mf
 ```
 - Represents a choice between multiple monadic continuations from an
-  enumerable.  
+  enumerable. 
   Takes a sequence of continuations `mfs` and returns a new continuation
   that tries all of them in series with backtracking.
   This defines a *choice point*.
@@ -267,7 +267,7 @@ amb.from_enumerable(mfs:Sequence[Mf]) -> Mf
 ```python
 not(mf:Mf) -> Mf
 ```
-- Negates the result of a monadic continuation.  
+- Negates the result of a monadic continuation. 
   Returns a new continuation that succeeds if `mf` fails and vice versa.
 
 ```python
@@ -294,38 +294,38 @@ class Variable
 
 ## Links:
 
-Unification:  
+Unification: 
 https://eli.thegreenplace.net/2018/unification/
 
-Backtracking:  
+Backtracking: 
 https://en.wikipedia.org/wiki/Backtracking
 
-Logical Resolution:  
+Logical Resolution: 
 http://web.cse.ohio-state.edu/~stiff.4/cse3521/logical-resolution.html
 
-Horn Clauses:  
+Horn Clauses: 
 https://en.wikipedia.org/wiki/Horn_clause
 
-Monoid:  
+Monoid: 
 https://en.wikipedia.org/wiki/Monoid
 
-Distributive Lattice:  
+Distributive Lattice: 
 https://en.wikipedia.org/wiki/Distributive_lattice
 
-Monads:  
+Monads: 
 https://en.wikipedia.org/wiki/Monad_(functional_programming)
 
-Monads Explained in C# (again):  
+Monads Explained in C# (again): 
 https://mikhail.io/2018/07/monads-explained-in-csharp-again/
 
-Discovering the Continuation Monad in C#:  
+Discovering the Continuation Monad in C#: 
 https://functionalprogramming.medium.com/deriving-continuation-monad-from-callbacks-23d74e8331d0
 
-Continuations:  
+Continuations: 
 https://en.wikipedia.org/wiki/Continuation
 
-Continuations Made Simple and Illustrated:  
+Continuations Made Simple and Illustrated: 
 https://www.ps.uni-saarland.de/~duchier/python/continuations.html
 
-The Discovery of Continuations:  
+The Discovery of Continuations: 
 https://www.cs.ru.nl/~freek/courses/tt-2011/papers/cps/histcont.pdf
