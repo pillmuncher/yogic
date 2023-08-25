@@ -152,12 +152,12 @@ functions/predicates.
 ```python
 Subst = TypeVar('Subst')
 ```
-- The type of the substitution environment that map variables to Values.
+- The type of the substitution environment that maps variables to values.
 
 ```python
 Solutions = Iterable[Subst]
 ```
-- ...
+- A sequence of substitution environments, one for each solution for a logical query.
 
 ```python
 Failure = Callable[[], Solutions]
