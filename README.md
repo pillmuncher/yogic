@@ -149,25 +149,14 @@ functions/predicates.
 
 ## **API:**
 
-### Success
+### Solutions = Iterable[Subst]
+- ...
 
-A function type that represents a successful resolution. `Success` continuations are called with a substitution environment `subst` and a `Failure` continuation `backtrack`. They yield the provided substitution environment once and then yield whatever `backtrack()` yields.
+### Ma = Callable[[Success, Failure, Failure], Solutions]
+- The monad type. Combinators of this type take a `Success` continuation (`yes`) and two `Failure` continuations (`no` and `esc`). The `yes` continuation represents the current continuation, `no` represents the backtracking path, and `esc` is the escape continuation invoked by the `cut` combinator to jump out of the current computation back to the previous choice point.
 
-### Failure
-
-A function type that represents a failed resolution. `Failure` continuations are called to initiate backtracking.
-
-### Ma
-
-The monad type. Combinators of this type take a `Success` continuation (`yes`) and two `Failure` continuations (`no` and `esc`). The `yes` continuation represents the current continuation, `no` represents the backtracking path, and `esc` is the escape continuation invoked by the `cut` combinator to jump out of the current computation back to the previous choice point.
-
-### Mf
-
-The monadic function type. Combinators of this type take a substitution environment `subst` and return a monadic object.
-
-### Subst
-
-The type of the substitution environment that map variables to Values.
+### Mf = Callable[[Subst], Ma]
+- The monadic function type. Combinators of this type take a substitution environment `subst` and return a monadic object.
 
 ### Combinators
 
@@ -184,31 +173,27 @@ The type of the substitution environment that map variables to Values.
 - `unify_any(v, *os) -Mf`: Tries to unify a variable with any one of the objects. It fails if no object is unifiable.
 - `resolve(goal:Mf) -> Solutions`: Perform logical resolution of the computation represented by `goal`.
 
-### Usage
+```python
+Subst = TypeVar('Subst')
+```
+The type of the substitution environment that map variables to Values.
 
 ```python
-# Example code showcasing the usage of the logic programming system
-# ...
+Failure = Callable[[], Solutions]
+```
+- A function type that represents a failed resolution.  
+  `Failure` continuations are called to initiate backtracking.
 
-if __name__ == "__main__":
-    main()
-
-```csharp
-public delegate Solutions Success(Subst subst, Failure backtrack)
+```python
+Success = Callable[[Subst, Failure], Solutions]
 ```
 - A function type that represents a successful resolution.  
   `Success` continuations are called with a substitution environment `subst`
   and a `Failure` continuation `backtrack` and yield the provided substitution
   environment once and then yield whatever `backtrack()` yields.
 
-```csharp
-public delegate Solutions Failure()
-```
-- A function type that represents a failed resolution.  
-  `Failure` continuations are called to initiate backtracking.
-
-```csharp
-public delegate Solutions Ma(Success yes, Failure no, Failure esc)
+```python
+Ma = Callable[[Success, Failure, Failure], Solutions]
 ```
 - The monad type.  
   Combinators of this type take a `Success` continuation and two `Failure`
@@ -217,221 +202,98 @@ public delegate Solutions Ma(Success yes, Failure no, Failure esc)
   that is invoked by the `cut` combinator to jump out of the current
   comptutation back to the previous choice point. 
 
-```csharp
-public delegate Ma Mf(Subst subst)
+```python
+Mf = Callable[[Subst], Ma]
 ```
 - The monadic function type.  
   Combinators of this type take a substitution environment `subst` and
   return a monadic object.
 
-```csharp
-public static Ma bind(Ma ma, Mf mf)
+```python
+def bind(ma:Ma, mf:Mf) -> Ma
 ```
 - Applies the monadic computation `mf` to `ma` and returns the result.  
   In the context of the backtracking monad this means turning `mf` into a
   continuation.
 
-```csharp
-public static Ma unit(Subst subst)
+```python
+def unit(subst:Subst) -> Ma
 ```
 - Lifts a substitution environment `subst` into a computation.  
   Succeeds once and then initates backtracking.
 
-```csharp
-public static Ma cut(Subst subst)
+```python
+def cut(subst:Subst) -> Ma
 ```
 - Lifts a substitution environment `subst` into a computation.  
   Succeeds once, and instead of normal backtracking aborts the current
   computation and jumps to the previous choice point, effectively pruning the
   search space.
 
-```csharp
-public static Ma fail(Subst subst)
+```python
+def fail(subst.Subst) -> Ma
 ```
 - Lifts a substitution environment `subst` into a computation.  
   Never succeeds. Immediately initiates backtracking.
 
-```csharp
-public static Mf then(Mf mf, Mf mg)
+```python
+def then(mf:Mf, mg:Mf) -> Mf
 ```
 - Composes two computations sequentially.
 
-```csharp
-public static Mf and(params Mf[] mfs)
+```python
+def seq(*mfs:Mf) -> Mf
 ```
 - Composes multiple computations sequentially.
 
-```csharp
-public static Mf and_from_enumerable(IEnumerable<Mf> mfs)
+```python
+def seq.from_enumerable(mfs:Sequence[Mf]) -> Mf
 ```
 - Composes multiple computations sequentially from an enumerable.
 
-```csharp
-public static Mf choice(Mf mf, Mf mg)
+```python
+def choice(mf:Mf, mg:Mf) -> Mf
 ```
 - Represents a choice between two computations.  
   Takes two computations `mf` and `mg` and returns a new computation that tries
   `mf`, and if that fails, falls back to `mg`. This defines a *choice point*.
 
-```csharp
-public static Mf or(params Mf[] mfs)
+```python
+def amb(*mfs:Mf) -> Mf
 ```
 - Represents a choice between multiple computations.  
   Takes a variable number of computations and returns a new computation that
   tries all of them in series with backtracking. This defines a *choice point*.
 
-```csharp
-public static Mf or_from_enumerable(IEnumerable<Mf> mfs)
+```python
+def amb.from_enumerable(mfs:Sequence[Mf]) -> Mf
 ```
 - Represents a choice between multiple computations from an enumerable.  
   Takes a sequence of computations `mfs` and returns a new computation that
   tries all of them in series with backtracking. This defines a *choice point*.
 
-```csharp
-public static Mf not(Mf mf)
+```python
+def not(mf:Mf) -> Mf
 ```
 - Negates the result of a computation.  
   Returns a new computation that succeeds if `mf` fails and vice versa.
 
-```csharp
-public static Mf unify(params ValueTuple<object, object>[] pairs)
+```python
+def unify(...) -> Mf
 ```
 - Tries to unify pairs of objects. Fails if any pair is not unifiable.
 
-```csharp
-  public static Mf unify_any(Variable v, params object[] os) =>
+```python
+def unify_any(Variable v, *objects) -> Mf
 ```
 - Tries to unify a variable with any one of objects. Fails if no object is unifiable.
 
-```csharp
-public static Solutions resolve(Mf goal)
+```python
+def resolve(goal:Mf) -> Solutions
 ```
 - Perform logical resolution of the computation represented by `goal`.
 
-```csharp
-public class Variable
-```
-- Represents named logical variables.
-
-
-
-
-```csharp
-public delegate Solutions Success(Subst subst, Failure backtrack)
-```
-- A function type that represents a successful resolution.  
-  `Success` continuations are called with a substitution environment `subst`
-  and a `Failure` continuation `backtrack` and yield the provided substitution
-  environment once and then yield whatever `backtrack()` yields.
-
-```csharp
-public delegate Solutions Failure()
-```
-- A function type that represents a failed resolution.  
-  `Failure` continuations are called to initiate backtracking.
-
-```csharp
-public delegate Solutions Ma(Success yes, Failure no, Failure esc)
-```
-- The monad type.  
-  Combinators of this type take a `Success` continuation and two `Failure`
-  continuations. The `yes` continuation represents the current continuation
-  and `no` represents the backtracking path. `esc` is the escape continuation
-  that is invoked by the `cut` combinator to jump out of the current
-  comptutation back to the previous choice point. 
-
-```csharp
-public delegate Ma Mf(Subst subst)
-```
-- The monadic function type.  
-  Combinators of this type take a substitution environment `subst` and
-  return a monadic object.
-
-```csharp
-public static Ma bind(Ma ma, Mf mf)
-```
-- Applies the monadic computation `mf` to `ma` and returns the result.  
-  In the context of the backtracking monad this means turning `mf` into a
-  continuation.
-
-```csharp
-public static Ma unit(Subst subst)
-```
-- Lifts a substitution environment `subst` into a computation.  
-  Succeeds once and then initates backtracking.
-
-```csharp
-public static Ma cut(Subst subst)
-```
-- Lifts a substitution environment `subst` into a computation.  
-  Succeeds once, and instead of normal backtracking aborts the current
-  computation and jumps to the previous choice point, effectively pruning the
-  search space.
-
-```csharp
-public static Ma fail(Subst subst)
-```
-- Lifts a substitution environment `subst` into a computation.  
-  Never succeeds. Immediately initiates backtracking.
-
-```csharp
-public static Mf then(Mf mf, Mf mg)
-```
-- Composes two computations sequentially.
-
-```csharp
-public static Mf and(params Mf[] mfs)
-```
-- Composes multiple computations sequentially.
-
-```csharp
-public static Mf and_from_enumerable(IEnumerable<Mf> mfs)
-```
-- Composes multiple computations sequentially from an enumerable.
-
-```csharp
-public static Mf choice(Mf mf, Mf mg)
-```
-- Represents a choice between two computations.  
-  Takes two computations `mf` and `mg` and returns a new computation that tries
-  `mf`, and if that fails, falls back to `mg`. This defines a *choice point*.
-
-```csharp
-public static Mf or(params Mf[] mfs)
-```
-- Represents a choice between multiple computations.  
-  Takes a variable number of computations and returns a new computation that
-  tries all of them in series with backtracking. This defines a *choice point*.
-
-```csharp
-public static Mf or_from_enumerable(IEnumerable<Mf> mfs)
-```
-- Represents a choice between multiple computations from an enumerable.  
-  Takes a sequence of computations `mfs` and returns a new computation that
-  tries all of them in series with backtracking. This defines a *choice point*.
-
-```csharp
-public static Mf not(Mf mf)
-```
-- Negates the result of a computation.  
-  Returns a new computation that succeeds if `mf` fails and vice versa.
-
-```csharp
-public static Mf unify(params ValueTuple<object, object>[] pairs)
-```
-- Tries to unify pairs of objects. Fails if any pair is not unifiable.
-
-```csharp
-  public static Mf unify_any(Variable v, params object[] os) =>
-```
-- Tries to unify a variable with any one of objects. Fails if no object is unifiable.
-
-```csharp
-public static Solutions resolve(Mf goal)
-```
-- Perform logical resolution of the computation represented by `goal`.
-
-```csharp
+```python
 public class Variable
 ```
 - Represents named logical variables.

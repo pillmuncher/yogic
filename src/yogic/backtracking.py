@@ -17,20 +17,18 @@ from .extension import extend
 from .functional import foldr
 
 
-Value = TypeVar('Value')
-Solution = TypeVar('Solution')
+Subst = TypeVar('Subst')
 
-Solutions = Iterable[Solution]
-Escape = Callable[[], Solutions]
+Solutions = Iterable[Subst]
 Failure = Callable[[], Solutions]
-Success = Callable[[Value, Failure|Escape], Solutions]
-Ma = Callable[[Success, Failure, Escape], Solutions]
-Mf = Callable[[Value], Ma]
+Success = Callable[[Subst, Failure], Solutions]
+Ma = Callable[[Success, Failure, Failure], Solutions]
+Mf = Callable[[Subst], Ma]
 
 
-def success(v:Value, b:Failure|Escape) -> Solutions:
-    '''Return the Solution v and start searching for more Solutions.'''
-    yield v
+def success(s:Subst, b:Failure) -> Solutions:
+    '''Return the Subst s and start searching for more Solutions.'''
+    yield s
     yield from b()
 
 
@@ -41,37 +39,37 @@ def failure() -> Solutions:
 
 def bind(ma:Ma, mf:Mf) -> Ma:
     '''Return the result of applying mf to ma.'''
-    def mb(y:Success, n:Failure, e:Escape) -> Solutions:
-        def on_success(v:Value, b:Failure|Escape) -> Solutions:
-            return mf(v)(y, b, e)
+    def mb(y:Success, n:Failure, e:Failure) -> Solutions:
+        def on_success(s:Subst, b:Failure) -> Solutions:
+            return mf(s)(y, b, e)
         yield from ma(on_success, n, e)
     return mb
 
 
-def unit(v:Value) -> Ma:
-    '''Take the single value v into the monad. Represents success.
+def unit(s:Subst) -> Ma:
+    '''Take the single value s into the monad. Represents success.
     Together with 'then', this makes the monad also a monoid. Together
     with 'fail' and 'choice', this makes the monad also a lattice.'''
-    def ma(y:Success, n:Failure, e:Escape) -> Solutions:
-        return y(v, n)
+    def ma(y:Success, n:Failure, e:Failure) -> Solutions:
+        return y(s, n)
     return ma
 
 
-def cut(v:Value) -> Ma:
+def cut(s:Subst) -> Ma:
     '''Succeed, then prune the search tree at the previous choice point.'''
-    def ma(y:Success, n:Failure, e:Escape) -> Solutions:
+    def ma(y:Success, n:Failure, e:Failure) -> Solutions:
         # we commit to the current execution path by injecting
         # the escape continuation as our new backtracking path:
-        return y(v, e)
+        return y(s, e)
     return ma
 
 
-def fail(v:Value) -> Ma:
+def fail(s:Subst) -> Ma:
     '''Ignore the argument and start backtracking. Represents failure.
     Together with 'coice', this makes the monad also a monoid. Together
     with 'unit' and 'then', this makes the monad also a lattice.
     It is also mzero.'''
-    def ma(y:Success, n:Failure, e:Escape) -> Solutions:
+    def ma(y:Success, n:Failure, e:Failure) -> Solutions:
         return n()
     return ma
 
@@ -80,8 +78,8 @@ def then(mf:Mf, mg:Mf) -> Mf:
     '''Apply two monadic functions mf and mg in sequence.
     Together with 'unit', this makes the monad also a monoid. Together
     with 'fail' and 'choice', this makes the monad also a lattice.'''
-    def mgf(v:Value) -> Ma:
-        return bind(mf(v), mg)
+    def mgf(s:Subst) -> Ma:
+        return bind(mf(s), mg)
     return mgf
 
 
@@ -102,13 +100,13 @@ def choice(mf:Mf, mg:Mf) -> Mf:
     '''Succeeds if either of the Mf functions succeeds.
     Together with 'fail', this makes the monad also a monoid. Together
     with 'unit' and 'then', this makes the monad also a lattice.'''
-    def mgf(v:Value) -> Ma:
-        def ma(y:Success, n:Failure, e:Escape) -> Solutions:
+    def mgf(s:Subst) -> Ma:
+        def ma(y:Success, n:Failure, e:Failure) -> Solutions:
             # we pass mf and mg the same success continuation, so we
             # can invoke mf and mg at the same point in the computation:
             def on_failure() -> Solutions:
-                return mg(v)(y, n, e)
-            return mf(v)(y, on_failure, e)
+                return mg(s)(y, n, e)
+            return mf(s)(y, on_failure, e)
         return ma
     return mgf
 
@@ -124,11 +122,11 @@ def amb(*mfs:Mf) -> Mf:
 def from_iterable(mfs:Iterable[Mf]) -> Mf:
     '''Find solutsons for some mfs. This creates a choice point.'''
     joined = foldr(choice, mfs, fail)
-    def mf(v:Value) -> Ma:
-        def ma(y:Success, n:Failure, e:Escape) -> Solutions:
+    def mf(s:Subst) -> Ma:
+        def ma(y:Success, n:Failure, e:Failure) -> Solutions:
             # we serialize the mfs and inject the
             # fail continuation as the escape path:
-            return joined(v)(y, n, n)
+            return joined(s)(y, n, n)
         return ma
     return mf
 del from_iterable
@@ -144,12 +142,12 @@ def predicate(p:Callable[..., Mf]) -> Callable[..., Mf]:
     # All this does is to create another level of indirection.
     @wraps(p)
     def pred(*args, **kwargs) -> Mf:
-        def mf(v:Value) -> Ma:
-            return p(*args, **kwargs)(v)
+        def mf(s:Subst) -> Ma:
+            return p(*args, **kwargs)(s)
         return mf
     return pred
 
 
-def run(mf:Mf, v:Value) -> Solutions:
+def run(mf:Mf, s:Subst) -> Solutions:
     '''Start the monadic computation represented by mf.'''
-    return mf(v)(success, failure, failure)
+    return mf(s)(success, failure, failure)
