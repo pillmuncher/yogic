@@ -149,13 +149,10 @@ functions/predicates.
 
 ## **API:**
 
-### 
-- ...
-
 ```python
 Subst = TypeVar('Subst')
 ```
-The type of the substitution environment that map variables to Values.
+- The type of the substitution environment that map variables to Values.
 
 ```python
 Solutions = Iterable[Subst]
