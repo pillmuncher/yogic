@@ -115,7 +115,7 @@ the second query because we didn't specify that they are human.
 
 ## **How it works:**
 
-We interpret a function ``f(x1,...,xm) { return or(g1,...,gn); }``
+We interpret a function ``f(x1,...,xm) { return amb(g1,...,gn); }``
 as a set of logical implications:
 
 ```
