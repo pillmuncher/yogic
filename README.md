@@ -1,9 +1,5 @@
-Yet another Prolog-like thingy for Python. It's called yogic because logic programming is another step on the path to enlightenment. Just like yogic flying.
-
-[![alt text](https://imgs.xkcd.com/comics/python.png "Flying")](https://xkcd.com/353)
-
-# yogic.cs
-**Yogic, but in C#.**
+# yogic
+**Yogic**
 
 
 An embedded DSL of monadic combinators for first-order logic programming in Python.
@@ -145,12 +141,6 @@ functions/predicates.
 
 ## **API:**
 
-# Backtracking Monad-based Logic Programming in Python
-
-This repository contains a Python implementation of a logic programming system using the Backtracking Monad approach. This approach allows you to express logical constraints and perform unification in a clean and structured manner.
-
-## Core Concepts
-
 ### Success Function Type
 
 A function type that represents a successful resolution. `Success` continuations are called with a substitution environment `subst` and a `Failure` continuation `backtrack`. They yield the provided substitution environment once and then yield whatever `backtrack()` yields.
@@ -170,9 +160,9 @@ Combinators of this type take a substitution environment `subst` and return a mo
 ### Combinators
 
 - `bind(ma, mf)`: Applies the monadic computation `mf` to `ma` and returns the result. In the context of the backtracking monad, this means turning `mf` into a continuation.
-- `unit(subst)`: Lifts a substitution environment `subst` into a computation. It succeeds once and then initiates backtracking.
-- `cut(subst)`: Lifts a substitution environment `subst` into a computation. It succeeds once, and instead of normal backtracking, aborts the current computation and jumps to the previous choice point, effectively pruning the search space.
-- `fail(subst)`: Lifts a substitution environment `subst` into a computation that never succeeds. It immediately initiates backtracking.
+- `unit(subst)`: Takes a substitution environment `subst` into a computation. It succeeds once and then initiates backtracking.
+- `cut(subst)`: Takes a substitution environment `subst` into a computation. It succeeds once, and instead of normal backtracking, aborts the current computation and jumps to the previous choice point, effectively pruning the search space.
+- `fail(subst)`: Takes a substitution environment `subst` into a computation that never succeeds. It immediately initiates backtracking.
 - `seq(*mfs)`: Composes multiple computations sequentially.
 - `and_from_enumerable(mfs)`: Composes multiple computations sequentially from an enumerable.
 - `amb(*mfs)`: Represents a choice between multiple computations. It takes a variable number of computations and returns a new computation that tries all of them in series with backtracking. This defines a *choice point*.
