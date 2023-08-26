@@ -150,7 +150,6 @@ is the function cannot be proven in the universe described by the given
 set of functions/predicates.
 
 ## **API:**
-TODO: rework API docs!
 
 ```python
 Subst = TypeVar('Subst')
