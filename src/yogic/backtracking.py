@@ -41,8 +41,8 @@ def bind(ma:Ma, mf:Mf) -> Ma:
     '''Return the result of applying mf to ma.'''
     def mb(y:Success, n:Failure, e:Failure) -> Solutions:
         def on_success(s:Subst, b:Failure) -> Solutions:
-            return mf(s)(y, b, e)
-        yield from ma(on_success, n, e)
+            yield from mf(s)(y, b, e)
+        return ma(on_success, n, e)
     return mb
 
 

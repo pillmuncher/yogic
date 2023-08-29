@@ -233,9 +233,9 @@ seq(*mfs:Mf) -> Mf
 - Composes multiple monadic continuations sequentially.
 
 ```python
-seq.from_enumerable(mfs:Sequence[Mf]) -> Mf
+seq.from_iterable(mfs:Sequence[Mf]) -> Mf
 ```
-- Composes multiple monadic continuations sequentially from an enumerable.
+- Composes multiple monadic continuations sequentially from an iterable.
 
 ```python
 choice(mf:Mf, mg:Mf) -> Mf
@@ -254,10 +254,10 @@ amb(*mfs:Mf) -> Mf
   This defines a *choice point*.
 
 ```python
-amb.from_enumerable(mfs:Sequence[Mf]) -> Mf
+amb.from_iterable(mfs:Sequence[Mf]) -> Mf
 ```
 - Represents a choice between multiple monadic continuations from an
-  enumerable.
+  iterable.
   Takes a sequence of continuations `mfs` and returns a new continuation
   that tries all of them in series with backtracking.
   This defines a *choice point*.
