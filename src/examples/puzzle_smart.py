@@ -8,7 +8,7 @@ from yogic import *
 
 @predicate
 def equate(number, variables):
-    return amb.from_iterable(unify(variable, number) for variable in variables)
+    return amb.from_iterable(unify((variable, number)) for variable in variables)
 
 def simplify(puzzle):
     candidates = defaultdict(set)

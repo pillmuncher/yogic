@@ -54,11 +54,11 @@ def dog(a):     # fluffy, daisy, and fifi are dogs
 
 def child(a, b):
     return amb(
-        seq(unify(a, "jim"), unify(b, "bob")),      # jim is a child of bob.
-        seq(unify(a, "joe"), unify(b, "bob")),      # joe is a child of bob.
-        seq(unify(a, "ian"), unify(b, "jim")),      # ian is a child of jim.
-        seq(unify(a, "fifi"), unify(b, "fluffy")),  # fifi is a child of fluffy.
-        seq(unify(a, "fluffy"), unify(b, "daisy"))  # fluffy is a child of daisy.
+        unify((a, "jim"), (b, "bob")),      # jim is a child of bob.
+        unify((a, "joe"), (b, "bob")),      # joe is a child of bob.
+        unify((a, "ian"), (b, "jim")),      # ian is a child of jim.
+        unify((a, "fifi"), (b, "fluffy")),  # fifi is a child of fluffy.
+        unify((a, "fluffy"), (b, "daisy"))  # fluffy is a child of daisy.
     )
 
 def descendant(a, c):

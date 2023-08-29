@@ -1,145 +1,49 @@
-# Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
-
 from yogic import *
-from yogic.unification import unify_any
 
+def human(a):   # socrates, plato, and archimedes are human
+    return unify_any(a, "socrates", "plato", "archimedes")
 
-@predicate
+def dog(a):     # fluffy, daisy, and fifi are dogs
+    return unify_any(a, "fluffy", "daisy", "fifi")
+
 def child(a, b):
     return amb(
-        unify([a, b], ['bob', 'archimedes']),
-        unify([a, b], ['daisy', 'fluffy']),
-        unify([a, b], ['fluffy', 'fifi']),
-        unify([a, b], ['athene', 'zeus']),
+        unify((a, "jim"), (b, "bob")),      # jim is a child of bob.
+        unify((a, "joe"), (b, "bob")),      # joe is a child of bob.
+        unify((a, "ian"), (b, "jim")),      # ian is a child of jim.
+        unify((a, "fifi"), (b, "fluffy")),  # fifi is a child of fluffy.
+        unify((a, "fluffy"), (b, "daisy"))  # fluffy is a child of daisy.
     )
 
-
-@predicate
 def descendant(a, c):
     b = var()
-    return amb(
-        child(a, c),
-        seq(child(a, b), descendant(b, c)),
-    )
+    # by returning a lambda function we
+    # create another level of indirection,
+    # so that the recursion doesn't
+    # immediately trigger an infinite loop
+    # and cause a stack overflow:
+    return lambda subst: amb(               # a is a descendant of c iff:
+        child(a, c),                        # a is a child of c, or
+        seq(child(a, b), descendant(b, c))  # a is a child of b and b is b descendant of c.
+    )(subst)
 
-@predicate
-def human(a):
-    return unify_any(a, 'socrates', 'plato', 'archimedes')
-
-@predicate
-def dog(a):
-    return unify_any(a, 'fifi', 'fluffy', 'daisy')
-
-@predicate
-def not_dog(a):
-    return no(dog(a))
-
-@predicate
 def mortal(a):
     b = var()
-    return amb(
-        human(a),
-        dog(a),
-        seq(descendant(a, b), mortal(b)),
-    )
+    return lambda subst: amb(               # a is mortal iff:
+        human(a),                           # a is human, or
+        dog(a),                             # a is a dog, or
+        seq(descendant(a, b), mortal(b))    # a descends from a mortal.
+    )(subst)
 
-@predicate
-def append(a, b, c):
+def main():
     x = var()
     y = var()
-    z = var()
-    return seq(
-        unify([x, y], a),
-        unify([y, z], b),
-        unify([x, z], c),
-    )
+    for subst in resolve(child(x, y)):
+        print(f"{subst[x]} is a descendant of {subst[y]}.")
+    print()
+    for subst in resolve(seq(mortal(x), no(dog(x)))):
+        print(f"{subst[x]} is mortal and no dog.")
 
 
-@predicate
-def structure_unification(a, b, c):
-    return seq(
-        unify(a, [b, 2]),
-        unify([1, c], a),
-    )
-
-
-# ----8<---------8<---------8<---------8<---------8<---------8<---------8<-----
-
-
-x = var()
-y = var()
-z = var()
-
-
-for each in resolve(seq(child(x, y), descendant(y, z))):
-    print(each[x], each[y], each[z])
-print()
-
-for each in resolve(structure_unification(x, y, z)):
-    print(each[x], each[y], each[z])
-print()
-
-for each in resolve(append([[1, 2, 3, x], x], [[4, 5, 6, y], y], [z, []])):
-    print(each[x], each[y], each[z])
-print()
-
-for each in resolve(descendant(x, y)):
-    print(each[x], each[y])
-print()
-
-for each in resolve(seq(mortal(x), not_dog(x))):
-    print(each[x])
-print()
-
-for each in resolve(seq(not_dog(x), mortal(x))):
-    print(each[x])
-else:
-    print('no.')
-print()
-
-for each in resolve(dog(x)):
-    print(each[x])
-else:
-    print('no.')
-print()
-
-for each in resolve(no(dog(x))):
-    print(each[x])
-else:
-    print('no.')
-print()
-
-for each in resolve(seq()):
-    print('yes.')
-    break
-else:
-    print('no.')
-print()
-
-for each in resolve(amb()):
-    print('yes.')
-    break
-else:
-    print('no.')
-print()
-
-for each in resolve(mortal('archimedes')):
-    print('yes.')
-    break
-else:
-    print('no.')
-print()
-
-for each in resolve(mortal('joe')):
-    break
-else:
-    print('no.')
-print()
-
-for each in resolve(seq(unify(x, 1), unify(y, 2))):
-    print(each[x], each[y])
-print()
-
-for each in resolve(unify([x, y, 'test'], [y, z, x])):
-    print(each[x], each[y], each[z])
-print()
+if __name__ == "__main__":
+    main()
