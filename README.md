@@ -1,6 +1,5 @@
 # Yogic
-
-**An embedded DSL of monadic combinators for first-order logic programming in Python.**
+An embedded DSL of monadic combinators for first-order logic programming in Python.
 
 
 It's named Yogic because logic programming is another step on the path
