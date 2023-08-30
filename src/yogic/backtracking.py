@@ -10,11 +10,10 @@ the List Monad.'''
 
 
 from collections.abc import Iterable
-from functools import wraps
+from functools import wraps, reduce
 from typing import Callable, TypeVar
 
 from .extension import extend
-from .functional import foldr
 
 
 Subst = TypeVar('Subst')
@@ -110,7 +109,7 @@ def seq(*mfs:Mf) -> Mf:
 @extend(seq)
 def from_iterable(mfs:Iterable[Mf]) -> Mf:
     '''Find solutions for all mfs in sequence.'''
-    return foldr(then, mfs, unit)
+    return reduce(then, mfs, unit)
 del from_iterable
 
 
@@ -140,7 +139,7 @@ def amb(*mfs:Mf) -> Mf:
 @extend(amb) # type: ignore
 def from_iterable(mfs:Iterable[Mf]) -> Mf:
     '''Find solutsons for some mfs. This creates a choice point.'''
-    joined = foldr(choice, mfs, fail)
+    joined = reduce(choice, mfs, fail)
     def mf(s:Subst) -> Ma:
         def ma(y:Success, n:Failure, e:Failure) -> Solutions:
             # we serialize the mfs and inject the
