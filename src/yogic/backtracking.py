@@ -30,21 +30,22 @@ def trampoline(function, *args):
     '''Tail-call elimination driver.'''
     while bounce := function(*args):
         result, function, *args = bounce
-        yield from result
+        if result:
+            yield result
 
 
 def tailcall(function):
     '''Tail-call elimination decorator.'''
     @wraps(function)
     def launch(*args):
-        return (), function, *args
+        return None, function, *args
     return launch
 
 
 @tailcall
 def success(s:Subst, b:Failure) -> Solutions:
     '''Return the Subst s and start searching for more Solutions.'''
-    return [s], b
+    return s, b
 
 
 @tailcall
