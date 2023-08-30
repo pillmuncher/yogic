@@ -7,7 +7,7 @@ from collections import ChainMap
 from collections.abc import Mapping
 from dataclasses import dataclass
 from itertools import count
-from typing import ClassVar
+from typing import ClassVar, Tuple, Any
 
 from .backtracking import Solutions, Mf, unit, fail, seq, amb, run
 
@@ -82,19 +82,19 @@ def _unify(this, that):
 
 
 # Public interface to _unify:
-def unify(*pairs) -> Mf:
+def unify(*pairs:Tuple[Any, Any]) -> Mf:
     '''Unify 'this' and 'that'.
     If at least one is an unbound Variable, bind it to the other object.
     If both are either lists or tuples, try to unify them recursively.
     Otherwise, unify them if they are equal.'''
     # pylint: disable=E1102,W0108
-    return lambda subst: seq.from_iterable(
+    return lambda subst: seq.from_iterable(  # type: ignore
         _unify(subst.deref(this), subst.deref(that)) for this, that in pairs
     )(subst)
 
 
 def unify_any(v:Variable, *values) -> Mf:
-    return amb.from_iterable(unify((v, value)) for value in values)
+    return amb.from_iterable(unify((v, value)) for value in values)  # type: ignore
 
 def resolve(goal:Mf) -> Solutions:
     '''Start the logical resolution of 'goal'. Return all solutions.'''

@@ -26,22 +26,39 @@ Ma = Callable[[Success, Failure, Failure], Solutions]
 Mf = Callable[[Subst], Ma]
 
 
+def trampoline(function, *args):
+    '''Tail-call elimination driver.'''
+    while bounce := function(*args):
+        result, function, *args = bounce
+        yield from result
+
+
+def tailcall(function):
+    '''Tail-call elimination decorator.'''
+    @wraps(function)
+    def launch(*args):
+        return (), function, *args
+    return launch
+
+
+@tailcall
 def success(s:Subst, b:Failure) -> Solutions:
     '''Return the Subst s and start searching for more Solutions.'''
-    yield s
-    yield from b()
+    return [s], b
 
 
+@tailcall
 def failure() -> Solutions:
     '''Fail.'''
-    yield from ()
+    return ()
 
 
 def bind(ma:Ma, mf:Mf) -> Ma:
     '''Return the result of applying mf to ma.'''
     def mb(y:Success, n:Failure, e:Failure) -> Solutions:
+        @tailcall
         def on_success(s:Subst, b:Failure) -> Solutions:
-            yield from mf(s)(y, b, e)
+            return mf(s)(y, b, e)
         return ma(on_success, n, e)
     return mb
 
@@ -51,7 +68,7 @@ def unit(s:Subst) -> Ma:
     Together with 'then', this makes the monad also a monoid. Together
     with 'fail' and 'choice', this makes the monad also a lattice.'''
     def ma(y:Success, n:Failure, e:Failure) -> Solutions:
-        return y(s, n)
+       return y(s, n)
     return ma
 
 
@@ -104,6 +121,7 @@ def choice(mf:Mf, mg:Mf) -> Mf:
         def ma(y:Success, n:Failure, e:Failure) -> Solutions:
             # we pass mf and mg the same success continuation, so we
             # can invoke mf and mg at the same point in the computation:
+            @tailcall
             def on_failure() -> Solutions:
                 return mg(s)(y, n, e)
             return mf(s)(y, on_failure, e)
@@ -126,7 +144,7 @@ def from_iterable(mfs:Iterable[Mf]) -> Mf:
         def ma(y:Success, n:Failure, e:Failure) -> Solutions:
             # we serialize the mfs and inject the
             # fail continuation as the escape path:
-            return joined(s)(y, n, n)
+            return tailcall(joined(s))(y, n, n)
         return ma
     return mf
 del from_iterable
@@ -150,4 +168,4 @@ def predicate(p:Callable[..., Mf]) -> Callable[..., Mf]:
 
 def run(mf:Mf, s:Subst) -> Solutions:
     '''Start the monadic computation represented by mf.'''
-    return mf(s)(success, failure, failure)
+    return trampoline(mf(s), success, failure, failure)
