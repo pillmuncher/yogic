@@ -17,6 +17,7 @@ setuptools = "*"
 tomli = "*"
 versioneer = "*"
 termcolor = "*"
+pyright = "*"
 
 [requires]
 python_version = "3.11"
