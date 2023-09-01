@@ -165,13 +165,20 @@ Solutions = Iterable[Subst]
   logical query.
 
 ```python
-Failure = Callable[[], Solutions]
+Solutions = Iterable[Subst]
+```
+- A structure representing the current solution and the next continuation to
+  invoke.
+  Needed for Tail Call Elimination.
+
+```python
+Failure = Callable[[], ThunkData]
 ```
 - A function type that represents a failed resolution.
   `Failure` continuations are called to initiate backtracking.
 
 ```python
-Success = Callable[[Subst, Failure], Solutions]
+Success = Callable[[Subst, Failure], ThunkData]
 ```
 - A function type that represents a successful resolution.
   `Success` continuations are called with a substitution environment of
@@ -180,7 +187,7 @@ Success = Callable[[Subst, Failure], Solutions]
   whatever the `Failure` continuation yields.
 
 ```python
-Ma = Callable[[Success, Failure, Failure], Solutions]
+Ma = Callable[[Success, Failure, Failure], ThunkData]
 ```
 - The monadic computation type.
   Combinators of this type take a `Success` continuation and two
@@ -329,3 +336,9 @@ https://www.ps.uni-saarland.de/~duchier/python/continuations.html
 
 The Discovery of Continuations:
 https://www.cs.ru.nl/~freek/courses/tt-2011/papers/cps/histcont.pdf
+
+Tail Calls:
+https://en.wikipedia.org/wiki/Tail_call
+
+On Recursion, Continuations and Trampolines:
+https://eli.thegreenplace.net/2017/on-recursion-continuations-and-trampolines/
