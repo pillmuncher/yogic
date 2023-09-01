@@ -92,7 +92,6 @@ Failure = Callable[[], ThunkData]
 Success = Callable[[Subst, Failure], ThunkData]
 Ma = Callable[[Success, Failure, Failure], ThunkData]
 Mf = Callable[[Subst], Ma]
-Cont = Ma | Success | Failure
 
 
 def tailcall(cont) -> Callable[..., ThunkData]:
