@@ -165,7 +165,7 @@ Solutions = Iterable[Subst]
   logical query.
 
 ```python
-Solutions = Iterable[Subst]
+Result = Optional[tuple[Solutions, Failure]]
 ```
 - A structure representing the current solution and the next continuation to
   invoke.
