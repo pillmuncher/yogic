@@ -12,10 +12,8 @@ mypy = "*"
 neotest = "*"
 pyright = "*"
 pytest = "*"
-remote-pdb = "*"
 setuptools = "*"
 termcolor = "*"
-tomli = "*"
 
 [requires]
 python_version = "3.11"
