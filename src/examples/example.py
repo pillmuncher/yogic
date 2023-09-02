@@ -1,3 +1,5 @@
+# Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
+
 from yogic import *
 
 def human(a):   # socrates, plato, and archimedes are human
