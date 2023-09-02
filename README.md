@@ -172,13 +172,13 @@ Solutions = Iterable[Subst]
   Needed for Tail Call Elimination.
 
 ```python
-Failure = Callable[[], ThunkData]
+Failure = Callable[[], Result]
 ```
 - A function type that represents a failed resolution.
   `Failure` continuations are called to initiate backtracking.
 
 ```python
-Success = Callable[[Subst, Failure], ThunkData]
+Success = Callable[[Subst, Failure], Result]
 ```
 - A function type that represents a successful resolution.
   `Success` continuations are called with a substitution environment of
@@ -187,7 +187,7 @@ Success = Callable[[Subst, Failure], ThunkData]
   whatever the `Failure` continuation yields.
 
 ```python
-Ma = Callable[[Success, Failure, Failure], ThunkData]
+Ma = Callable[[Success, Failure, Failure], Result]
 ```
 - The monadic computation type.
   Combinators of this type take a `Success` continuation and two
