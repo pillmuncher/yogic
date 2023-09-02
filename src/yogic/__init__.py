@@ -87,38 +87,39 @@ class Subst(ChainMap):
 
 
 Solutions = Iterable[Subst]
-ThunkData = Optional[tuple[Solutions, 'Failure']]
-Failure = Callable[[], ThunkData]
-Success = Callable[[Subst, Failure], ThunkData]
-Ma = Callable[[Success, Failure, Failure], ThunkData]
+Result = Optional[tuple[Solutions, 'Failure']]
+Failure = Callable[[], Result]
+Success = Callable[[Subst, Failure], Result]
+Ma = Callable[[Success, Failure, Failure], Result]
 Mf = Callable[[Subst], Ma]
+Cont = Ma | Success | Failure
 
 
-def tailcall(cont) -> Callable[..., ThunkData]:
+def tailcall(cont:Cont) -> Callable[..., Result]:
     '''Tail-call elimination.'''
-    @wraps(cont)
-    def wrapped(*args) -> ThunkData:
-        return (), wraps(cont)(lambda: cont(*args))
+    @wraps(cont)  # type: ignore
+    def wrapped(*args) -> Result:
+        return (), wraps(cont)(lambda: cont(*args))  # type: ignore
     return wrapped
 
 
 @tailcall
-def success(s:Subst, b:Failure) -> ThunkData:
-    '''Return the Subst s and start searching for more Result.'''
+def success(s:Subst, b:Failure) -> Result:
+    '''Return the Subst s and start searching for more Solutions.'''
     return [s], b
 
 
 @tailcall
-def failure() -> ThunkData:
+def failure() -> Result:
     '''Fail.'''
 
 
 def bind(ma:Ma, mf:Mf) -> Ma:
     '''Return the result of applying mf to ma.'''
     @tailcall
-    def mb(y:Success, n:Failure, e:Failure) -> ThunkData:
+    def mb(y:Success, n:Failure, e:Failure) -> Result:
         @tailcall
-        def on_success(s:Subst, b:Failure) -> ThunkData:
+        def on_success(s:Subst, b:Failure) -> Result:
             return mf(s)(y, b, e)
         return ma(on_success, n, e)
     return mb
@@ -129,7 +130,7 @@ def unit(s:Subst) -> Ma:
     Together with 'then', this makes the monad also a monoid. Together
     with 'fail' and 'choice', this makes the monad also a lattice.'''
     @tailcall
-    def ma(y:Success, n:Failure, e:Failure) -> ThunkData:
+    def ma(y:Success, n:Failure, e:Failure) -> Result:
         return y(s, n)
     return ma
 
@@ -137,7 +138,7 @@ def unit(s:Subst) -> Ma:
 def cut(s:Subst) -> Ma:
     '''Succeed, then prune the search tree at the previous choice point.'''
     @tailcall
-    def ma(y:Success, n:Failure, e:Failure) -> ThunkData:
+    def ma(y:Success, n:Failure, e:Failure) -> Result:
         # we commit to the current execution path by injecting
         # the escape continuation as our new backtracking path:
         return y(s, e)
@@ -150,7 +151,7 @@ def fail(s:Subst) -> Ma:
     with 'unit' and 'then', this makes the monad also a lattice.
     It is also mzero.'''
     @tailcall
-    def ma(y:Success, n:Failure, e:Failure) -> ThunkData:
+    def ma(y:Success, n:Failure, e:Failure) -> Result:
         return n()
     return ma
 
@@ -183,11 +184,11 @@ def choice(mf:Mf, mg:Mf) -> Mf:
     with 'unit' and 'then', this makes the monad also a lattice.'''
     def mgf(s:Subst) -> Ma:
         @tailcall
-        def ma(y:Success, n:Failure, e:Failure) -> ThunkData:
+        def ma(y:Success, n:Failure, e:Failure) -> Result:
             # we pass mf and mg the same success continuation, so we
             # can invoke mf and mg at the same point in the computation:
             @tailcall
-            def on_failure() -> ThunkData:
+            def on_failure() -> Result:
                 return mg(s)(y, n, e)
             return mf(s)(y, on_failure, e)
         return ma
@@ -207,7 +208,7 @@ def from_iterable(mfs:Iterable[Mf]) -> Mf:
     joined = reduce(choice, mfs, fail)  # type: ignore
     def mf(s:Subst) -> Ma:
         @tailcall
-        def ma(y:Success, n:Failure, e:Failure) -> ThunkData:
+        def ma(y:Success, n:Failure, e:Failure) -> Result:
             # we serialize the mfs and inject the
             # fail continuation as the escape path:
             return joined(s)(y, n, n)
@@ -280,8 +281,7 @@ def unify_any(v:Variable, *values) -> Mf:
 def resolve(goal:Mf) -> Iterable[Mapping]:
     '''Start the logical resolution of 'goal'. Return all solutions.'''
     thunk:Failure = lambda: goal(Subst())(success, failure, failure)
-    while thunk_data := thunk():
-        solutions, thunk = thunk_data  # type: ignore
-        print('>>>', thunk.__name__)
+    while result := thunk():
+        solutions, thunk = result  # type: ignore
         for subst in solutions:  # type: ignore
             yield subst.proxy  # type: ignore
