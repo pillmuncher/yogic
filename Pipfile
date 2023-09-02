@@ -4,21 +4,18 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pytoolz = "*"
-toolz = "*"
 
 [dev-packages]
 debugpy = "*"
 mypy = "*"
 neotest = "*"
+pyright = "*"
 pytest = "*"
 remote-pdb = "*"
 setuptools = "*"
+termcolor = "*"
 tomli = "*"
 versioneer = "*"
-termcolor = "*"
-pyright = "*"
 
 [requires]
 python_version = "3.11"
-# python_full_version = "3.11.4"
