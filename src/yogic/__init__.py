@@ -6,7 +6,6 @@
 # “The continuation that obeys only obvious stack semantics,
 # O grasshopper, is not the true continuation.” — Guy Steele.
 
-from __future__ import annotations
 
 __date__ = '2023-07-04'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
