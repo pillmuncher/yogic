@@ -70,7 +70,7 @@ def descendant(a, c):
     # and cause a stack overflow:
     return lambda subst: amb(               # a is a descendant of c iff:
         child(a, c),                        # a is a child of c, or
-        seq(child(a, b), descendant(b, c))  # a is a child of b and b is b descendant of c.
+        seq(child(a, b), descendant(b, c))  # a is a child of b and b is a descendant of c.
     )(subst)
 
 def mortal(a):
