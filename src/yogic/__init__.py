@@ -85,27 +85,25 @@ class Subst(ChainMap):
             return len(self._subst)
 
 
-Solutions = Iterable[Subst]
-Result = Optional[tuple[Solutions, 'Failure']]
-Failure = Callable[[], Result]
-Success = Callable[[Subst, Failure], Result]
-Ma = Callable[[Success, Failure, Failure], Result]
-Mf = Callable[[Subst], Ma]
-Cont = Ma | Success | Failure
+Result = Optional[tuple[Iterable[Subst], 'Next']]
+Next = Callable[[], Result]
+Emit = Callable[[Subst, Next], Result]
+Step = Callable[[Emit, Next, Next], Result]
+Goal = Callable[[Subst], Step]
 
 
-def tailcall(cont:Cont) -> Callable[..., Result]:
+def tailcall(goal:Step|Emit|Next) -> Callable[..., Result]:
     '''Tail-call elimination.'''
-    @wraps(cont)  # type: ignore
+    @wraps(goal)  # type: ignore
     def wrapped(*args) -> Result:
-        return (), wraps(cont)(lambda: cont(*args))  # type: ignore
+        return (), wraps(goal)(lambda: goal(*args))  # type: ignore
     return wrapped
 
 
 @tailcall
-def success(s:Subst, b:Failure) -> Result:
-    '''Return the Subst s and start searching for more Solutions.'''
-    return [s], b
+def success(subst:Subst, backtrack:Next) -> Result:
+    '''Return the Subst subst and start searching for more Solutions.'''
+    return [subst], backtrack
 
 
 @tailcall
@@ -113,123 +111,112 @@ def failure() -> Result:
     '''Fail.'''
 
 
-def bind(ma:Ma, mf:Mf) -> Ma:
-    '''Return the result of applying mf to ma.'''
+def bind(step:Step, goal:Goal) -> Step:
+    '''Return the result of applying goal to step.'''
     @tailcall
-    def mb(y:Success, n:Failure, e:Failure) -> Result:
+    def mb(succeed:Emit, backtrack:Next, escape:Next) -> Result:
         @tailcall
-        def on_success(s:Subst, b:Failure) -> Result:
-            return mf(s)(y, b, e)
-        return ma(on_success, n, e)
+        def on_success(subst:Subst, backtrack:Next) -> Result:
+            return goal(subst)(succeed, backtrack, escape)
+        return step(on_success, backtrack, escape)
     return mb
 
 
-def unit(s:Subst) -> Ma:
-    '''Take the single value s into the monad. Represents success.
+def unit(subst:Subst) -> Step:
+    '''Take the single value subst into the monad. Represents success.
     Together with 'then', this makes the monad also a monoid. Together
     with 'fail' and 'choice', this makes the monad also a lattice.'''
     @tailcall
-    def ma(y:Success, n:Failure, e:Failure) -> Result:
-        return y(s, n)
-    return ma
+    def step(succeed:Emit, backtrack:Next, escape:Next) -> Result:
+        return succeed(subst, backtrack)
+    return step
 
 
-def cut(s:Subst) -> Ma:
+def cut(subst:Subst) -> Step:
     '''Succeed, then prune the search tree at the previous choice point.'''
     @tailcall
-    def ma(y:Success, n:Failure, e:Failure) -> Result:
+    def step(succeed:Emit, backtrack:Next, escape:Next) -> Result:
         # we commit to the current execution path by injecting
         # the escape continuation as our new backtracking path:
-        return y(s, e)
-    return ma
+        return succeed(subst, escape)
+    return step
 
 
-def fail(s:Subst) -> Ma:
+def fail(subst:Subst) -> Step:
     '''Ignore the argument and start backtracking. Represents failure.
     Together with 'coice', this makes the monad also a monoid. Together
     with 'unit' and 'then', this makes the monad also a lattice.
     It is also mzero.'''
     @tailcall
-    def ma(y:Success, n:Failure, e:Failure) -> Result:
-        return n()
-    return ma
+    def step(succeed:Emit, backtrack:Next, escape:Next) -> Result:
+        return backtrack()
+    return step
 
 
-def then(mf:Mf, mg:Mf) -> Mf:
-    '''Apply two monadic functions mf and mg in sequence.
+def then(goal1:Goal, goal2:Goal) -> Goal:
+    '''Apply two monadic functions goal1 and goal2 in sequence.
     Together with 'unit', this makes the monad also a monoid. Together
     with 'fail' and 'choice', this makes the monad also a lattice.'''
-    def mgf(s:Subst) -> Ma:
-        return bind(mf(s), mg)
-    return mgf
+    def goal(subst:Subst) -> Step:
+        return bind(goal1(subst), goal2)
+    return goal
 
 
-def seq(*mfs:Mf) -> Mf:
-    '''Find solutions for all mfs in sequence.'''
+def seq(*goals:Goal) -> Goal:
+    '''Find solutions for all goals in sequence.'''
     # pylint: disable=E1101
-    return seq.from_iterable(mfs)  # type: ignore
+    return seq.from_iterable(goals)  # type: ignore
 
 
 @extend(seq)
-def from_iterable(mfs:Iterable[Mf]) -> Mf:  # type: ignore
-    '''Find solutions for all mfs in sequence.'''
-    return reduce(then, mfs, unit)  # type: ignore
+def from_iterable(goals:Iterable[Goal]) -> Goal:  # type: ignore
+    '''Find solutions for all goals in sequence.'''
+    return reduce(then, goals, unit)  # type: ignore
 del from_iterable
 
 
-def choice(mf:Mf, mg:Mf) -> Mf:
-    '''Succeeds if either of the Mf functions succeeds.
+def choice(goal1:Goal, goal2:Goal) -> Goal:
+    '''Succeeds if either of the goal functions succeeds.
     Together with 'fail', this makes the monad also a monoid. Together
     with 'unit' and 'then', this makes the monad also a lattice.'''
-    def mgf(s:Subst) -> Ma:
+    def goal(subst:Subst) -> Step:
         @tailcall
-        def ma(y:Success, n:Failure, e:Failure) -> Result:
-            # we pass mf and mg the same success continuation, so we
-            # can invoke mf and mg at the same point in the computation:
+        def step(succeed:Emit, backtrack:Next, escape:Next) -> Result:
+            # we pass goal and goal2 the same success continuation, so we
+            # can invoke goal and goal2 at the same point in the computation:
             @tailcall
             def on_failure() -> Result:
-                return mg(s)(y, n, e)
-            return mf(s)(y, on_failure, e)
-        return ma
-    return mgf
+                return goal2(subst)(succeed, backtrack, escape)
+            return goal1(subst)(succeed, on_failure, escape)
+        return step
+    return goal
 
 
-def amb(*mfs:Mf) -> Mf:
-    '''Find solutions for some mfs. This creates a choice point.'''
+def amb(*goals:Goal) -> Goal:
+    '''Find solutions for some goals. This creates a choice point.'''
      # pylint: disable=E1101
-    return amb.from_iterable(mfs)  # type: ignore
+    return amb.from_iterable(goals)  # type: ignore
 
 
 # pylint: disable=E0102
 @extend(amb)  # type: ignore
-def from_iterable(mfs:Iterable[Mf]) -> Mf:
-    '''Find solutsons for some mfs. This creates a choice point.'''
-    joined = reduce(choice, mfs, fail)  # type: ignore
-    def mf(s:Subst) -> Ma:
+def from_iterable(goals:Iterable[Goal]) -> Goal:
+    '''Find solutsons for some goals. This creates a choice point.'''
+    joined = reduce(choice, goals, fail)  # type: ignore
+    def goal(subst:Subst) -> Step:
         @tailcall
-        def ma(y:Success, n:Failure, e:Failure) -> Result:
-            # we serialize the mfs and inject the
+        def step(succeed:Emit, backtrack:Next, escape:Next) -> Result:
+            # we serialize the goals and inject the
             # fail continuation as the escape path:
-            return joined(s)(y, n, n)
-        return ma
-    return mf
+            return joined(subst)(succeed, backtrack, backtrack)
+        return step
+    return goal
 del from_iterable
 
 
-def no(mf:Mf) -> Mf:
+def no(goal:Goal) -> Goal:
     '''Invert the result of a monadic computation, AKA negation as failure.'''
-    return amb(seq(mf, cut, fail), unit)
-
-
-def predicate(p:Callable[..., Mf]) -> Callable[..., Mf]:
-    '''Helper decorator for backtrackable functions.'''
-    # All this does is to create another level of indirection.
-    @wraps(p)
-    def pred(*args, **kwargs) -> Mf:
-        def mf(s:Subst) -> Ma:
-            return p(*args, **kwargs)(s)
-        return mf
-    return pred
+    return amb(seq(goal, cut, fail), unit)
 
 
 def compatible(this, that):
@@ -259,7 +246,7 @@ def _unify(this, that):
 
 
 # Public interface to _unify:
-def unify(*pairs:tuple[Any, Any]) -> Mf:
+def unify(*pairs:tuple[Any, Any]) -> Goal:
     '''Unify 'this' and 'that'.
     If at least one is an unbound Variable, bind it to the other object.
     If both are either lists or tuples, try to unify them recursively.
@@ -270,16 +257,27 @@ def unify(*pairs:tuple[Any, Any]) -> Mf:
     )(subst)
 
 
-def unify_any(v:Variable, *values) -> Mf:
+def unify_any(v:Variable, *values) -> Goal:
     ''' Tries to unify a variable with any one of objects.
     Fails if no object is unifiable.'''
      # pylint: disable=E1101
     return amb.from_iterable(unify((v, value)) for value in values)  # type: ignore
 
 
-def resolve(goal:Mf) -> Iterable[Mapping]:
+def predicate(pred:Callable[..., Goal]) -> Callable[..., Goal]:
+    '''Helper decorator for backtrackable functions.'''
+    # All this does is to create another level of indirection.
+    @wraps(pred)
+    def pred(*args, **kwargs) -> Goal:
+        def goal(subst:Subst) -> Step:
+            return pred(*args, **kwargs)(subst)
+        return goal
+    return pred
+
+
+def resolve(goal:Goal) -> Iterable[Mapping]:
     '''Start the logical resolution of 'goal'. Return all solutions.'''
-    thunk:Failure = lambda: goal(Subst())(success, failure, failure)
+    thunk:Next = lambda: goal(Subst())(success, failure, failure)
     while result := thunk():
         solutions, thunk = result  # type: ignore
         for subst in solutions:  # type: ignore
