@@ -64,6 +64,7 @@ class Subst(ChainMap):
         while isinstance(obj, Variable) and obj in self:
             obj = self[obj]
         return obj
+
     def smooth(self, obj):
         '''Recursively replace all variables with their bindings.'''
         match self.deref(obj):
@@ -257,20 +258,20 @@ def unify(*pairs:tuple[Any, Any]) -> Goal:
     )(subst)
 
 
-def unify_any(v:Variable, *values) -> Goal:
+def unify_any(var:Variable, *values) -> Goal:
     ''' Tries to unify a variable with any one of objects.
     Fails if no object is unifiable.'''
      # pylint: disable=E1101
-    return amb.from_iterable(unify((v, value)) for value in values)  # type: ignore
+    return amb.from_iterable(unify((var, value)) for value in values)  # type: ignore
 
 
-def predicate(pred:Callable[..., Goal]) -> Callable[..., Goal]:
+def predicate(func:Callable[..., Goal]) -> Callable[..., Goal]:
     '''Helper decorator for backtrackable functions.'''
     # All this does is to create another level of indirection.
-    @wraps(pred)
+    @wraps(func)
     def pred(*args, **kwargs) -> Goal:
         def goal(subst:Subst) -> Step:
-            return pred(*args, **kwargs)(subst)
+            return func(*args, **kwargs)(subst)
         return goal
     return pred
 
