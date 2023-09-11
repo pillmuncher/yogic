@@ -3,8 +3,39 @@
 '''A simple combinator library for logic programming.'''
 
 
+# It uses the Triple-Barreled Continuation Monad for resolution,
+# backtracking, and branch pruning.
+#
+#
 # “The continuation that obeys only obvious stack semantics,
 # O grasshopper, is not the true continuation.” — Guy Steele.
+#
+#
+# To keep more closely to the terminology of logic programming and to not
+# bother users too much with the terminology of monads and continuations, the
+# monadic computation type is called 'Step' and the monadic continuation type
+# is called 'Goal'.
+#
+# A set of basic combinators you would expect in such a library is provided,
+# like 'unit' (succeeds once), 'fail' (never succeeds), and 'cut' (succeeds
+# once, then curtails backtracking at the previous choice point), 'and' for
+# conjunction of goals, 'or' for adjunction, 'not' for negation, and 'unify'
+# and 'unify_any' for unification. The resolution process is started by
+# calling 'resolve' on a goal and then iterating over the solutions, which
+# consist of substitution environments (proxy mappings) of variables to their
+# bindings.
+#
+# The code makes use of the algebraic structure of the monadic combinators:  
+# 'unit' and 'then' form a Monoid over monadic combinator functions, as do
+# 'fail' and 'choice', which allows us to fold a sequence of combinators into
+# a single one. Taken thogether, these structures form a Distributive Lattice
+# with 'then' as the meet (infimum) and 'choice' as the join (supremum)
+# operator, a fact that is not utilized in the code, though. Because of the
+# sequential nature of the employed resolution algorithm combined with the
+# 'cut', neither the lattice nor the monoids are commutative.
+#
+# Due to the absence of Tail Call Elimination in C#, Trampolining with
+# Thunking is used to prevent stack overflows.
 
 
 __date__ = '2023-07-04'
