@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo "XXXXXXXXXXXXXXXXXXXXXXX"
 
 # Get the absolute path of the root of the repository
 repo_root=$(git rev-parse --show-toplevel)
@@ -9,6 +8,8 @@ repo_root=$(git rev-parse --show-toplevel)
 if git diff --quiet HEAD~1 HEAD -- "${repo_root}/src/yogic/_version.py"; then
     # _version.py hasn't been modified; do nothing
     exit 0
+else
+    echo "XXXXXXXXXXXXXXXXXXXXXXX"
 fi
 
 # Extract the version number from _version.py
