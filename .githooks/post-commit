@@ -8,12 +8,12 @@ repo_root=$(git rev-parse --show-toplevel)
 if git diff --quiet HEAD~1 HEAD -- "${repo_root}/src/yogic/_version.py"; then
     # _version.py hasn't been modified; do nothing
     exit 0
-else
-    echo "XXXXXXXXXXXXXXXXXXXXXXX"
 fi
 
 # Extract the version number from _version.py
-version=$(grep -oE '__version__ = "[0-9]+\.[0-9]+\.[0-9]+"' "${repo_root}/src/yogic/_version.py" | cut -d'"' -f2)
+version=$(python -c "import yogic; print(yogic.__version__)")
+
+echo "XXXXXXXXXXXXXXXXXXXXXXX - $version"
 
 # Create a Git tag with the version number
 if git tag -l | grep -q "^$version$"; then
