@@ -6,6 +6,7 @@ repo_root=$(git rev-parse --show-toplevel)
 # Check if _version.py has been modified
 if git diff --quiet HEAD~1 HEAD -- "${repo_root}/src/yogic/_version.py"; then
     # _version.py hasn't been modified; do nothing
+    echo "XXXXXXXXXXX"
     exit 0
 fi
 
