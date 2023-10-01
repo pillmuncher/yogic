@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # Get the absolute path of the root of the repository
 repo_root=$(git rev-parse --show-toplevel)
 
@@ -12,8 +11,6 @@ fi
 
 # Extract the version number from _version.py
 version=$(python -c "import yogic; print(yogic.__version__)")
-
-echo "XXXXXXXXXXXXXXXXXXXXXXX - $version"
 
 # Create a Git tag with the version number
 if git tag -l | grep -q "^$version$"; then
