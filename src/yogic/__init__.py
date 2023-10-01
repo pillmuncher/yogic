@@ -41,7 +41,7 @@
 __date__ = '2023-07-04'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
-__version__ = "0.7.5"
+__version__ = "0.7.6"
 
 __all__ = (
     # re-export from .backtracking
