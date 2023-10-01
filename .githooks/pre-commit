@@ -1,14 +1,13 @@
 #!/bin/bash
 
-# Get the absolute path of the root of the repository
-repo_root=$(git rev-parse --show-toplevel)
-
-# Extract the version number from _version.py
+# Extract the version number:
 version=$(python -c "import yogic; print(yogic.__version__)")
+
 # Create a Git tag with the version number
-if "$(git describe --tags --abbrev=0)"=="$version"; then
-    echo "Tag $version already exists"
-    exit 1
+if git tag -l | grep "^$version$"; then
+    echo "pre-commit hook: Nothing to do. Tag $version already exists."
+    exit 0
 else
+    echo "pre-commit hook: Adding new tag $version"
     git tag -a "$version" -m "Version $version"
 fi
