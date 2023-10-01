@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Check if _version.py has been modified
+if git diff --quiet HEAD~1 HEAD -- _version.py; then
+    # _version.py hasn't been modified; do nothing
+    exit 0
+fi
+
+# Extract the version number from _version.py
+version=$(grep -oE '__version__ = "[0-9]+\.[0-9]+\.[0-9]+"' _version.py | cut -d'"' -f2)
+
+# Create a Git tag with the version number
+git tag -a "$version" -m "Version $version"
