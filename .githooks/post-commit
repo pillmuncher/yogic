@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo "XXXXXXXXXXXXXXXXXXXXXXX"
 
 # Get the absolute path of the root of the repository
 repo_root=$(git rev-parse --show-toplevel)
@@ -13,7 +14,6 @@ fi
 # Extract the version number from _version.py
 version=$(grep -oE '__version__ = "[0-9]+\.[0-9]+\.[0-9]+"' "${repo_root}/src/yogic/_version.py" | cut -d'"' -f2)
 
-echo "XXXXXXXXXXXXXXXXXXXXXXX - $version"
 # Create a Git tag with the version number
 if git tag -l | grep -q "^$version$"; then
     echo "Tag $version already exists"
