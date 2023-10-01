@@ -3,18 +3,10 @@
 # Get the absolute path of the root of the repository
 repo_root=$(git rev-parse --show-toplevel)
 
-# Check if _version.py has been modified
-if git diff --quiet HEAD~1 HEAD -- "${repo_root}/src/yogic/_version.py"; then
-    # _version.py hasn't been modified; do nothing
-    echo "XXXXXXXXXXX"
-    exit 0
-fi
-
 # Extract the version number from _version.py
 version=$(python -c "import yogic; print(yogic.__version__)")
-
 # Create a Git tag with the version number
-if git tag -l | grep -q "^$version$"; then
+if "$(git describe --tags --abbrev=0)"=="$version"; then
     echo "Tag $version already exists"
     exit 1
 else
