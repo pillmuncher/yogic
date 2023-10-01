@@ -7,7 +7,12 @@ if git diff --quiet HEAD~1 HEAD -- src/yogic/_version.py; then
 fi
 
 # Extract the version number from _version.py
-version=$(grep -oE '__version__ = "[0-9]+\.[0-9]+\.[0-9]+"' _version.py | cut -d'"' -f2)
+version=$(grep -oE '__version__ = "[0-9]+\.[0-9]+\.[0-9]+"' src/yogic/_version.py | cut -d'"' -f2)
 
 # Create a Git tag with the version number
-git tag -a "$version" -m "Version $version"
+if git tag -l | grep -q "^$version$"; then
+    echo "Tag $version already exists"
+    exit 1
+else
+    git tag -a "$version" -m "Version $version"
+fi
