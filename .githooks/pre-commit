@@ -1,13 +1,16 @@
 #!/bin/bash
 
+# Get all version tags:
+tags=$(git tag -l | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*)?$')
+
 # Extract the version number:
 version=$(python -c "import yogic; print(yogic.__version__)")
 
 # Create a Git tag with the version number
-if git tag -l | grep "^$version$"; then
+if echo "$tags" | grep "^$version$"; then
     echo "pre-commit hook: Nothing to do. Tag $version already exists."
     exit 0
 else
-    echo "pre-commit hook: Adding new tag $version"
+    echo "pre-commit hook: Adding new version tag $version"
     git tag -a "$version" -m "Version $version"
 fi
