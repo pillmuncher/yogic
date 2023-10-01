@@ -1,15 +1,16 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
-
 from itertools import permutations
 
-from yogic import *
+from yogic import amb, predicate, resolve, seq, unify, var
 
 
 @predicate
 def equate(letters, numbers):
     return amb.from_iterable(
         unify(*zip(list(letters), list(permutation)))
-            for permutation in permutations(numbers))
+        for permutation in permutations(numbers)
+    )
+
 
 # -----8<---------8<---------8<---------8<---------8<---------8<---------8<-----
 
@@ -24,18 +25,18 @@ puzzle = seq(
 )
 
 for n, each in enumerate(resolve(puzzle)):
-    print('Ergebnis', n, '----------------------------------------------')
-    print('a', each[a])
-    print('b', each[b])
-    print('c', each[c])
-    print('d', each[d])
-    print('e', each[e])
-    print('f', each[f])
-    print('g', each[g])
-    print('h', each[h])
-    print('i', each[i])
-    print('j', each[j])
-    print('k', each[k])
-    print('l', each[l])
+    print("Ergebnis", n, "----------------------------------------------")
+    print("a", each[a])
+    print("b", each[b])
+    print("c", each[c])
+    print("d", each[d])
+    print("e", each[e])
+    print("f", each[f])
+    print("g", each[g])
+    print("h", each[h])
+    print("i", each[i])
+    print("j", each[j])
+    print("k", each[k])
+    print("l", each[l])
     print()
 print()

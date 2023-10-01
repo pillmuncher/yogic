@@ -1,6 +1,7 @@
 # Copyright (c) 2021 Mick Krippendorf <m.krippendorf@freenet.de>
 
-from yogic import *
+from yogic import amb, no, predicate, resolve, seq, unify, unify_any, var
+
 
 def human(a):                               # socrates, plato, and archimedes are human
     return unify_any(a, "socrates", "plato", "archimedes")

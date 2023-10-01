@@ -41,7 +41,7 @@
 __date__ = '2023-07-04'
 __author__ = 'Mick Krippendorf <m.krippendorf@freenet.de>'
 __license__ = 'MIT'
-__version__ = "0.6.5"
+__version__ = "0.7.0"
 
 __all__ = (
     # re-export from .backtracking
@@ -115,7 +115,7 @@ class Subst(ChainMap):
             return len(self._subst)
 
 
-Result = Optional[tuple[Iterable[Subst], 'Next']]
+Result = Optional[tuple[Subst, 'Next']]
 Next = Callable[[], Result]
 Emit = Callable[[Subst, Next], Result]
 Step = Callable[[Emit, Next, Next], Result]
@@ -133,7 +133,7 @@ def tailcall(goal:Step|Emit|Next) -> Callable[..., Result]:
 @tailcall
 def success(subst:Subst, backtrack:Next) -> Result:
     '''Return the Subst subst and start searching for more Solutions.'''
-    return [subst], backtrack
+    return subst, backtrack
 
 
 @tailcall
@@ -307,8 +307,9 @@ def predicate(func:Callable[..., Goal]) -> Callable[..., Goal]:
 
 def resolve(goal:Goal) -> Iterable[Mapping]:
     '''Start the logical resolution of 'goal'. Return all solutions.'''
-    thunk:Next = lambda: goal(Subst())(success, failure, failure)
-    while result := thunk():
-        solutions, thunk = result  # type: ignore
-        for subst in solutions:  # type: ignore
+    result: Result = goal(Subst())(success, failure, failure)
+    while result:
+        subst, next = result  # type: ignore
+        if subst:
             yield subst.proxy  # type: ignore
+        result = next()
