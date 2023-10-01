@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check if _version.py has been modified
-if git diff --quiet HEAD~1 HEAD -- _version.py; then
+if git diff --quiet HEAD~1 HEAD -- src/yogic/_version.py; then
     # _version.py hasn't been modified; do nothing
     exit 0
 fi
