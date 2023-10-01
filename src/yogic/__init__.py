@@ -25,7 +25,7 @@
 # consist of substitution environments (proxy mappings) of variables to their
 # bindings.
 #
-# The code makes use of the algebraic structure of the monadic combinators:  
+# The code makes use of the algebraic structure of the monadic combinators:
 # 'unit' and 'then' form a Monoid over monadic combinator functions, as do
 # 'fail' and 'choice', which allows us to fold a sequence of combinators into
 # a single one. Taken thogether, these structures form a Distributive Lattice
@@ -68,9 +68,6 @@ from itertools import count
 from typing import Any, Callable, ClassVar, Optional
 
 from .extension import extend
-
-from . import _version
-__version__ = _version.get_versions()['version']
 
 
 @dataclass(frozen=True, slots=True)
