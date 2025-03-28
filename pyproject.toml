@@ -1,0 +1,17 @@
+[project]
+name = "yogic"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    { name = "Mick Krippendorf", email = "m.krippendorf@freenet.de" },
+]
+dependencies = [
+    "-e file:///${PROJECT_ROOT}/#egg=yogic",
+    "-e file:///${PROJECT_ROOT}/src/examples#egg=examples",
+]
+requires-python = "==3.13.*"
+readme = "README.md"
+license = { text = "MIT" }
+
+[tool.pdm]
+distribution = false

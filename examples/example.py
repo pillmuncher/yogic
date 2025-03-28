@@ -3,11 +3,15 @@
 from yogic import amb, no, predicate, resolve, seq, unify, unify_any, var
 
 
-def human(a):                               # socrates, plato, and archimedes are human
+def human(a):
+    # socrates, plato, and archimedes are human
     return unify_any(a, "socrates", "plato", "archimedes")
 
-def dog(a):                                 # fluffy, daisy, and fifi are dogs
+
+def dog(a):
+    # fluffy, daisy, and fifi are dogs
     return unify_any(a, "fluffy", "daisy", "fifi")
+
 
 def child(a, b):
     return amb(
@@ -18,13 +22,16 @@ def child(a, b):
         unify((a, "fluffy"), (b, "daisy"))  # fluffy is a child of daisy.
     )
 
+
 @predicate
 def descendant(a, c):
     b = var()
     return amb(                             # a is a descendant of c iff:
         child(a, c),                        # a is a child of c, or
-        seq(child(a, b), descendant(b, c))  # a is a child of b and b is a descendant of c.
+        # a is a child of b and b is a descendant of c.
+        seq(child(a, b), descendant(b, c))
     )
+
 
 @predicate
 def mortal(a):
@@ -34,6 +41,7 @@ def mortal(a):
         dog(a),                             # a is a dog, or
         seq(descendant(a, b), mortal(b))    # a descends from a mortal.
     )
+
 
 def main():
     x = var()
