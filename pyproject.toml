@@ -2,16 +2,27 @@
 name = "yogic"
 version = "0.1.0"
 description = "Default template for PDM package"
-authors = [
-    { name = "Mick Krippendorf", email = "m.krippendorf@freenet.de" },
-]
-dependencies = [
-    "-e file:///${PROJECT_ROOT}/#egg=yogic",
-    "-e file:///${PROJECT_ROOT}/src/examples#egg=examples",
-]
-requires-python = "==3.13.*"
+authors = [{ name = "Mick Krippendorf", email = "m.krippendorf@freenet.de" }]
+dependencies = []
+requires-python = ">=3.13"
 readme = "README.md"
 license = { text = "MIT" }
 
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+    "pytest-cov>=6.0.0",
+    "hypothesis>=6.130.5",
+    "bumpversion>=0.6.0",
+]
+
+[tool.pytest.ini_options]
+addopts = "--cov=src --cov-report=term-missing"
+testpaths = ["tests"]
+
 [tool.pdm]
+dev = [{ path = "./examples" }]
 distribution = false
+
+[tool.pdm.scripts]
+test = "pytest"
